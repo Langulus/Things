@@ -134,7 +134,7 @@ namespace Langulus::Things
    ///   @return the number of added children                                 
    template<bool TWOSIDED>
    Count Thing::AddChild(Thing* entity) {
-      LANGULUS_ASSUME(UserAssumes, entity, "Bad entity pointer");
+      LglsAssumeUser(entity, "Bad entity pointer");
 
       const auto added = mChildren.Merge(IndexBack, entity);
       if constexpr (TWOSIDED) {
@@ -163,7 +163,7 @@ namespace Langulus::Things
    ///   @return the number of removed children                               
    template<bool TWOSIDED>
    Count Thing::RemoveChild(Thing* entity) {
-      LANGULUS_ASSUME(UserAssumes, entity, "Bad entity pointer");
+      LglsAssumeUser(entity, "Bad entity pointer");
       
       const auto removed = mChildren.Remove(entity);
       if constexpr (TWOSIDED) {
@@ -551,7 +551,7 @@ namespace Langulus::Things
    ///   @return created data                                                 
    template<Seek SEEK>
    Many Thing::CreateData(const Construct& construct) {
-      LANGULUS_ASSUME(UserAssumes, construct.GetType(),
+      LglsAssumeUser(construct.GetType(),
          "Invalid construct type");
 
       const auto type = construct.GetType();

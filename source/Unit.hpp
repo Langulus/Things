@@ -101,9 +101,9 @@ namespace Langulus::A
       auto SeekTraitAux(const Many&, TMeta, Index = 0) -> Langulus::Trait;
 
       template<Seek = Seek::HereAndAbove>
-      bool SeekValue(TMeta, CT::Data auto&, Index = 0) const;
+      bool SeekValue(TMeta, CT::NotVoid auto&, Index = 0) const;
       template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(TMeta, const Many&, CT::Data auto&, Index = 0) const;
+      bool SeekValueAux(TMeta, const Many&, CT::NotVoid auto&, Index = 0) const;
 
       ///                                                                     
       ///   Gather                                                            
@@ -120,7 +120,7 @@ namespace Langulus::A
       template<Seek = Seek::HereAndAbove>
       auto GatherTraits(TMeta) -> TraitList;
 
-      template<CT::Data D, Seek = Seek::HereAndAbove>
+      template<CT::NotVoid D, Seek = Seek::HereAndAbove>
       auto GatherValues() const -> TMany<D>;
 
    protected:

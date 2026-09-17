@@ -120,7 +120,7 @@ namespace Langulus::Things
    ///   @tparam D - type to convert to                                       
    ///   @tparam SEEK - where in the hierarchy are we seeking in?             
    ///   @return the gathered values                                          
-   template<CT::Data D, Seek SEEK>
+   template<CT::NotVoid D, Seek SEEK>
    TMany<D> Thing::GatherValues() const {
       TMany<D> results;
 

@@ -28,13 +28,13 @@ namespace Langulus::Things
          ->template GatherUnits<SEEK>(meta);
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    TMany<T*> TME()::GatherUnits() {
       return static_cast<THIS*>(this)
          ->template GatherUnits<SEEK>(MetaDataOf<Decay<T>>());
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    TMany<const T*> TME()::GatherUnits() const {
       return const_cast<TME()*>(this)
          ->template GatherUnits<T, SEEK>();
@@ -124,7 +124,7 @@ namespace Langulus::Things
    ///   @tparam D - type to convert to                                       
    ///   @tparam SEEK - where in the hierarchy are we seeking in?             
    ///   @return the gathered values                                          
-   template<CT::Data D, Seek SEEK> LANGULUS(INLINED)
+   template<CT::NotVoid D, Seek SEEK> LANGULUS(INLINED)
    TMany<D> Hierarchy::GatherValues() const {
       TMany<D> result;
       for (auto owner : *this)

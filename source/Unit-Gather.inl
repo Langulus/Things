@@ -35,7 +35,7 @@ namespace Langulus::A
    ///   @tparam D - type to convert to                                       
    ///   @tparam SEEK - where in the hierarchy are we seeking in?             
    ///   @return the gathered values                                          
-   template<CT::Data D, Seek SEEK> LANGULUS(INLINED)
+   template<CT::NotVoid D, Seek SEEK> LANGULUS(INLINED)
    TMany<D> Unit::GatherValues() const {
       return mOwners.template GatherValues<SEEK, D>();
    }

@@ -29,13 +29,13 @@ namespace Langulus::Things
          ->template SeekUnit<SEEK>(type, offset);
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnit(Index offset) -> Decay<T>* {
       return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
          ->template SeekUnit<SEEK>(MetaDataOf<Decay<T>>(), offset));
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnit(Index offset) const -> const Decay<T>* {
       return const_cast<TME()*>(this)
          ->template SeekUnit<T, SEEK>(offset);
@@ -54,13 +54,13 @@ namespace Langulus::Things
          ->template SeekUnitAux<SEEK>(aux, type, offset);
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnitAux(const Many& aux, Index offset) -> Decay<T>* {
       return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
          ->template SeekUnitAux<SEEK>(aux, MetaDataOf<Decay<T>>(), offset));
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnitAux(const Many& aux, Index offset) const -> const Decay<T>* {
       return const_cast<TME()*>(this)
          ->template SeekUnitAux<T, SEEK>(aux, offset);
@@ -78,13 +78,13 @@ namespace Langulus::Things
          ->template SeekUnitExt<SEEK>(type, ext, offset);
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnitExt(const Many& ext, Index offset) -> Decay<T>* {
       return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
          ->template SeekUnitExt<SEEK>(MetaDataOf<Decay<T>>(), ext, offset));
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnitExt(const Many& ext, Index offset) const -> const Decay<T>* {
       return const_cast<TME()*>(this)
          ->template SeekUnitExt<T, SEEK>(ext, offset);
@@ -104,13 +104,13 @@ namespace Langulus::Things
          ->template SeekUnitAuxExt<SEEK>(type, aux, ext, offset);
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnitAuxExt(const Many& aux, const Many& ext, Index offset) -> Decay<T>* {
       return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
          ->template SeekUnitAuxExt<SEEK>(MetaDataOf<Decay<T>>(), aux, ext, offset));
    }
 
-   TEMPLATE() template<CT::Data T, Seek SEEK> LANGULUS(INLINED)
+   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
    auto TME()::SeekUnitAuxExt(const Many& aux, const Many& ext, Index offset) const -> const Decay<T>* {
       return const_cast<TME()*>(this)
          ->template SeekUnitAuxExt<T, SEEK>(aux, ext, offset);
@@ -249,13 +249,13 @@ namespace Langulus::Things
       }
 
       TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      bool TME()::SeekValue(const Token& traitToken, CT::Data auto& output, Index offset) const {
+      bool TME()::SeekValue(const Token& traitToken, CT::NotVoid auto& output, Index offset) const {
          return static_cast<THIS*>(this)
             ->template SeekValue<SEEK>(RTTI::GetMetaTrait(traitToken), output, offset);
       }
      
       TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      bool TME()::SeekValueAux(const Token& traitToken, const Many& aux, CT::Data auto& output, Index offset) const {
+      bool TME()::SeekValueAux(const Token& traitToken, const Many& aux, CT::NotVoid auto& output, Index offset) const {
          return static_cast<THIS*>(this)
             ->template SeekValueAux<SEEK>(RTTI::GetMetaTrait(traitToken), aux, output, offset);
       }
@@ -456,7 +456,7 @@ namespace Langulus::Things
    ///   @param offset - the number of the matching trait to use              
    ///   @return true if output was rewritten                                 
    template<Seek SEEK> LANGULUS(INLINED)
-   bool Hierarchy::SeekValue(TMeta meta, CT::Data auto& output, Index offset) const {
+   bool Hierarchy::SeekValue(TMeta meta, CT::NotVoid auto& output, Index offset) const {
       using D = Deref<decltype(output)>;
 
       if constexpr (CT::Pinnable<D>) {
@@ -488,7 +488,7 @@ namespace Langulus::Things
    ///   @param offset - the number of the matching trait to use              
    ///   @return the trait, which is not empty, if trait was found            
    template<Seek SEEK> LANGULUS(INLINED)
-   bool Hierarchy::SeekValueAux(TMeta meta, const Many& aux, CT::Data auto& output, Index offset) const {
+   bool Hierarchy::SeekValueAux(TMeta meta, const Many& aux, CT::NotVoid auto& output, Index offset) const {
       using D = Deref<decltype(output)>;
 
       if constexpr (CT::Pinnable<D>) {

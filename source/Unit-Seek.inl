@@ -88,7 +88,7 @@ namespace Langulus::A
    ///   @param offset - the number of the matching trait to use              
    ///   @return true if output was rewritten                                 
    template<Seek SEEK> LANGULUS(INLINED)
-   bool Unit::SeekValue(TMeta meta, CT::Data auto& output, Index offset) const {
+   bool Unit::SeekValue(TMeta meta, CT::NotVoid auto& output, Index offset) const {
       return mOwners.template SeekValue<SEEK>(meta, output, offset);
    }
   
@@ -103,7 +103,7 @@ namespace Langulus::A
    ///   @param offset - the number of the matching trait to use              
    ///   @return the trait, which is not empty, if trait was found            
    template<Seek SEEK> LANGULUS(INLINED)
-   bool Unit::SeekValueAux(TMeta meta, const Many& aux, CT::Data auto& output, Index offset) const {
+   bool Unit::SeekValueAux(TMeta meta, const Many& aux, CT::NotVoid auto& output, Index offset) const {
       return mOwners.template SeekValueAux<SEEK>(meta, aux, output, offset);
    }
 

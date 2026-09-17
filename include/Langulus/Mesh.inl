@@ -644,7 +644,7 @@ namespace Langulus::A
    ///   @return the selected element                                         
    template<CT::Topology T>
    auto Mesh::PickVertex(Offset i, const CT::Trait auto& stream, const CT::Trait auto& indices) const {
-      LANGULUS_ASSUME(DevAssumes, mView.mIndexCount,
+      LglsAssumeDev(mView.mIndexCount,
          "PickVertex can be used only on indexed geometry");
 
       if (stream.GetCount() <= 1) {

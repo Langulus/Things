@@ -160,7 +160,7 @@ namespace Langulus::Things
       // from the Reference routine                                     
       Teardown();
 
-      LANGULUS_ASSUME(DevAssumes, GetReferences() <= 1,
+      LglsAssumeDev(GetReferences() <= 1,
          "Can't teardown while this Thing is still used", " in ",
          GetReferences(), " places"
       );
@@ -565,7 +565,7 @@ namespace Langulus::Things
    ///   @return the instantiated module interface                            
    auto Thing::LoadMod(const Token& module, const Many& descriptor) -> A::Module* {
       const auto runtime = GetRuntime();
-      LANGULUS_ASSUME(UserAssumes, runtime,
+      LglsAssumeUser(runtime,
          "No runtime available for loading a module");
       const auto instance = runtime->InstantiateModule(module, descriptor);
       LANGULUS_ASSERT(instance, Module, "Missing module");
@@ -580,7 +580,7 @@ namespace Langulus::Things
    ///   @return the instantiated module interface                            
    auto Thing::LoadModPath(const Path& path, const Many& descriptor) -> A::Module* {
       const auto runtime = GetRuntime();
-      LANGULUS_ASSUME(UserAssumes, runtime,
+      LglsAssumeUser(runtime,
          "No runtime available for loading a module");
       const auto instance = runtime->InstantiateModulePath(path, descriptor);
       LANGULUS_ASSERT(instance, Module, "Missing module");

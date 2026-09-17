@@ -124,9 +124,9 @@ void Unit::Decouple(const Thing* entity) {
 ///   @param replaceThis - owner to replace                                   
 ///   @param withThis - entity to replace it with                             
 void Unit::ReplaceOwner(const Thing* replaceThis, const Thing* withThis) {
-   LANGULUS_ASSUME(DevAssumes, replaceThis != withThis,
+   LglsAssumeDev(replaceThis != withThis,
       "Pointers are the same");
-   LANGULUS_ASSUME(DevAssumes, replaceThis and withThis,
+   LglsAssumeDev(replaceThis and withThis,
       "Nullptr not allowed");
 
    const auto found = mOwners.Find(replaceThis);

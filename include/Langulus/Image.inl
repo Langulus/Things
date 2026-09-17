@@ -110,11 +110,11 @@ namespace Langulus::A
    auto Image::ForEachPixel(F&& call) const {
       auto pixels = GetData<Traits::Color>();
 
-      LANGULUS_ASSUME(DevAssumes, pixels and *pixels,
+      LglsAssumeDev(pixels and *pixels,
          "No color data", " in ", Self());
-      LANGULUS_ASSUME(DevAssumes, pixels->IsDense(),
+      LglsAssumeDev(pixels->IsDense(),
          "Image data is not dense", " for ", Self());
-      LANGULUS_ASSUME(DevAssumes,
+      LglsAssumeDev(
          pixels->CastsTo<Bytes>() or pixels->CastsTo<A::Color>(),
          "Image doesn't contain pixel data", 
          " - contains ", pixels->GetType(), " instead");
@@ -125,7 +125,7 @@ namespace Langulus::A
       static_assert(CT::Constant<A>, "Color iterator must be constant");
       static_assert(CT::Dense<A>, "Color iterator must be dense");
 
-      LANGULUS_ASSUME(DevAssumes, mView.mFormat->IsSimilar<A>(),
+      LglsAssumeDev(mView.mFormat->IsSimilar<A>(),
          "Iterator type is not compatible with contained color data");
 
       // Iterate using the desired color type                           
@@ -246,7 +246,7 @@ namespace Langulus::A
    template<bool M> template<CT::ColorBased T>
    T Image::Iterator<M>::As() const {
       const auto from = mImage->GetView().mFormat;
-      LANGULUS_ASSUME(DevAssumes, from, "No color type");
+      LglsAssumeDev(from, "No color type");
       const auto fromRed = from->GetMember(MetaOf<Traits::R>());
       const auto fromGre = from->GetMember(MetaOf<Traits::G>());
       const auto fromBlu = from->GetMember(MetaOf<Traits::B>());
@@ -258,7 +258,7 @@ namespace Langulus::A
          fromAlf ? fromAlf :
          nullptr;
 
-      LANGULUS_ASSUME(DevAssumes, fromAny, "Supposed color type doesn't have "
+      LglsAssumeDev(fromAny, "Supposed color type doesn't have "
          "a recognizable channel member");
 
       // Get the values (and normalize them if we have to)              

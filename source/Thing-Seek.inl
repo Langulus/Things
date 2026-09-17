@@ -224,7 +224,7 @@ namespace Langulus::Things
    ///   @param offset - the number of the matching trait to use              
    ///   @return true if output was rewritten                                 
    template<Seek SEEK>
-   bool Thing::SeekValue(TMeta meta, CT::Data auto& output, Index offset) const {
+   bool Thing::SeekValue(TMeta meta, CT::NotVoid auto& output, Index offset) const {
       using D = Deref<decltype(output)>;
 
       if constexpr (CT::Pinnable<D>) {
@@ -285,7 +285,7 @@ namespace Langulus::Things
    ///   @return true if value has been found and rewritten                   
    template<Seek SEEK> LANGULUS(INLINED)
    bool Thing::SeekValueAux(
-      TMeta meta, const Many& aux, CT::Data auto& output, Index offset
+      TMeta meta, const Many& aux, CT::NotVoid auto& output, Index offset
    ) const {
       using D = Deref<decltype(output)>;
 

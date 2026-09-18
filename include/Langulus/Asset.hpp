@@ -51,18 +51,18 @@ namespace Langulus::A
    public:
       Asset() : Resolvable {this} {}
 
-      virtual bool Generate(TMeta, Offset = 0) { return true; }
+      virtual bool Generate(TMeta, size_t = 0) { return true; }
 
       template<CT::TraitBased = Langulus::Trait>
       void Commit(auto&&);
 
       template<CT::TraitBased = Langulus::Trait>
-      auto GetData(Offset = 0)       noexcept -> Data*;
+      auto GetData(size_t = 0)       noexcept -> Data*;
       template<CT::TraitBased = Langulus::Trait>
-      auto GetData(Offset = 0) const noexcept -> Data const*;
+      auto GetData(size_t = 0) const noexcept -> Data const*;
 
-      auto GetData(TMeta, Offset = 0)       noexcept -> Data*;
-      auto GetData(TMeta, Offset = 0) const noexcept -> Data const*;
+      auto GetData(TMeta, size_t = 0)       noexcept -> Data*;
+      auto GetData(TMeta, size_t = 0) const noexcept -> Data const*;
 
       template<CT::TraitBased = Langulus::Trait>
       auto GetDataList()       noexcept -> DataList*;

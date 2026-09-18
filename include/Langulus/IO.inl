@@ -51,7 +51,7 @@ namespace Langulus::A
    /// Get the size of the file in bytes (if file exists)                     
    ///   @return the size of the file in bytes, or 0 if it doesn't exist      
    LANGULUS(INLINED)
-   Size File::GetBytesize() const noexcept {
+   size_t File::GetBytesize() const noexcept {
       return mByteCount;
    }
 

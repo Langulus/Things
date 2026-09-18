@@ -137,9 +137,9 @@ namespace Langulus::Things
       auto CreateChild(T&&...) -> Ref<Thing>;
 
       template<bool TWOSIDED = true>
-      Count AddChild(Thing*);
+      size_t AddChild(Thing*);
       template<bool TWOSIDED = true>
-      Count RemoveChild(Thing*);
+      size_t RemoveChild(Thing*);
 
       LANGULUS_API(THINGS)
       auto LoadMod(const Token&, const Many& = {}) -> A::Module*;
@@ -172,9 +172,9 @@ namespace Langulus::Things
       ///   Unit management                                                   
       ///                                                                     
       template<bool TWOSIDED = true>
-      Count AddUnit(A::Unit*);
+      size_t AddUnit(A::Unit*);
       template<bool TWOSIDED = true>
-      Count RemoveUnit(A::Unit*);
+      size_t RemoveUnit(A::Unit*);
 
       template<CT::Unit, class...A>
       Many CreateUnit(A&&...);
@@ -187,12 +187,12 @@ namespace Langulus::Things
       #endif
 
       template<CT::Unit = A::Unit, bool TWOSIDED = true>
-      Count RemoveUnits();
+      size_t RemoveUnits();
 
       LANGULUS_API(THINGS)
-      auto HasUnits(DMeta) const -> Count;
+      auto HasUnits(DMeta) const -> size_t;
       template<CT::Unit>
-      auto HasUnits() const -> Count;
+      auto HasUnits() const -> size_t;
 
       LANGULUS_API(THINGS)
       auto GetUnits() const noexcept -> const UnitList&;
@@ -234,13 +234,13 @@ namespace Langulus::Things
       ///                                                                     
       LANGULUS_API(THINGS) auto AddTrait(Trait) -> Trait*;
 
-      LANGULUS_API(THINGS) Count RemoveTrait(TMeta);
-      LANGULUS_API(THINGS) Count RemoveTrait(Trait);
+      LANGULUS_API(THINGS) size_t RemoveTrait(TMeta);
+      LANGULUS_API(THINGS) size_t RemoveTrait(Trait);
 
       LANGULUS_API(THINGS)
-      Count HasTraits(TMeta) const;
+      size_t HasTraits(TMeta) const;
       LANGULUS_API(THINGS)
-      Count HasTraits(const Trait&) const;
+      size_t HasTraits(const Trait&) const;
 
       LANGULUS_API(THINGS)
       auto GetTraits() const noexcept -> const TraitMap&;

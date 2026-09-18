@@ -32,7 +32,7 @@ void Unit::Select(Flow::Verb& verb) {
 bool Unit::CompareDescriptor(const Many& descriptor) const {
    // First we compare traits only, all of them must be present         
    bool mismatch = false;
-   Offset memberOffset = 0;
+   size_t memberOffset = 0;
    descriptor.ForEachDeep([&](const Annies::Trait& trait) {
       if (not GetMember(trait.GetTrait(), memberOffset)
       .Compare(static_cast<const Many&>(trait))) {

@@ -145,7 +145,7 @@ namespace Langulus::Things
                auto unitBlock = unit->GetBlock();
                construct->ForEach(
                   [&](const Many& part) {
-                     for (Offset i = 0; i < part.GetCount(); ++i) {
+                     for (size_t i = 0; i < part.GetCount(); ++i) {
                         auto element = part.GetElementResolved(i);
                         Verbs::Select selector {element};
                         if (not Flow::DispatchFlat(unitBlock, selector)) {

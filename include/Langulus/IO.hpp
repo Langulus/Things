@@ -51,7 +51,7 @@ namespace Langulus::A
       Path mFilePath;
       bool mExists {};
       DMeta mFormat {};
-      Size mByteCount {};
+      size_t mByteCount {};
       bool mIsReadOnly {};
 
       // Parent directory substring, mapped onto mFilePath              
@@ -70,7 +70,7 @@ namespace Langulus::A
       auto IsReadOnly()  const noexcept -> bool;
       auto GetFilePath() const noexcept -> const Path&;
       auto GetFormat()   const noexcept -> DMeta;
-      auto GetBytesize() const noexcept -> Size;
+      auto GetBytesize() const noexcept -> size_t;
 
       template<class T>
       T ReadAs() const;
@@ -81,7 +81,7 @@ namespace Langulus::A
       struct Reader {
       protected:
          Ref<File> mFile;
-         Offset    mProgress = 0;
+         size_t    mProgress = 0;
 
       public:
          Reader() = delete;
@@ -90,7 +90,7 @@ namespace Langulus::A
          Reader(File* f)
             : mFile {f} {}
 
-         virtual auto Read(Many&) -> Offset = 0;
+         virtual auto Read(Many&) -> size_t = 0;
 
          auto GetFile() const noexcept -> const Ref<File>& {
             return mFile;
@@ -103,7 +103,7 @@ namespace Langulus::A
       struct Writer {
       protected:
          Ref<File> mFile;
-         Offset    mProgress = 0;
+         size_t    mProgress = 0;
          bool      mAppend = false;
 
       public:
@@ -114,7 +114,7 @@ namespace Langulus::A
             : mFile  {f}
             , mAppend{append} {}
 
-         virtual auto Write(const Many&) -> Offset = 0;
+         virtual auto Write(const Many&) -> size_t = 0;
 
          auto GetFile() const noexcept -> const Ref<File>& {
             return mFile;

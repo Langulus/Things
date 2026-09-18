@@ -88,7 +88,7 @@ namespace Langulus::Things
 
          // Then check each unit's static traits                        
          for (auto& unit : mUnitsList) {
-            Offset index {};
+            size_t index {};
             auto t = unit->GetMember(trait, index);
             while (t) {
                results <<= Trait::From(trait, t);
@@ -135,7 +135,7 @@ namespace Langulus::Things
 
          // Then check each unit's static traits                        
          for (auto& unit : mUnitsList) {
-            Offset index {};
+            size_t index {};
             auto t = unit->GetMember(TMeta {}, index);
             while (t) {
                try { results << t.template AsCast<D>(); }
@@ -146,7 +146,7 @@ namespace Langulus::Things
          }
 
          // Then check the Thing's members                              
-         Offset index {};
+         size_t index {};
          auto t = GetMember(TMeta {}, index);
          while (t) {
             try { results << t.template AsCast<D>(); }

@@ -56,8 +56,8 @@ namespace Langulus::A
       virtual int GetQuantity() const noexcept = 0;
       virtual int GetQuantityLocal(const Place&, Real radius) const noexcept = 0;
 
-      virtual Count GetInstanceCount() const noexcept = 0;
-      virtual Count GetInstanceCountLocal(const Place&, Real radius) const noexcept = 0;
+      virtual size_t GetInstanceCount() const noexcept = 0;
+      virtual size_t GetInstanceCountLocal(const Place&, Real radius) const noexcept = 0;
 
       virtual Real GetSupply() const noexcept = 0;
       virtual Real GetSupplyLocal(const Place&, Real radius) const noexcept = 0;
@@ -99,8 +99,8 @@ namespace Langulus::A
       using Real = Langulus::Real;
       using Place = Math::Vec3;
 
-      virtual Count GetInstanceCount() const noexcept = 0;
-      virtual Count GetInstanceCountLocal(const Place&, Real radius) const noexcept = 0;
+      virtual size_t GetInstanceCount() const noexcept = 0;
+      virtual size_t GetInstanceCountLocal(const Place&, Real radius) const noexcept = 0;
 
       virtual auto At(const Place&) const noexcept -> const ConverterInstance* = 0;
    };

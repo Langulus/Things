@@ -136,7 +136,7 @@ namespace Langulus::Things
    /// Remove a trait from the universal entity                               
    ///   @param trait - type of trait to remove                               
    ///   @return the number of removed traits                                 
-   auto Thing::RemoveTrait(TMeta trait) -> Count {
+   auto Thing::RemoveTrait(TMeta trait) -> size_t {
       const auto found = mTraits.FindIt(trait);
       if (found) {
          const auto removed = found.GetValue().GetCount();
@@ -152,7 +152,7 @@ namespace Langulus::Things
    /// Remove an exact-matching trait from this entity                        
    ///   @param trait - type and value to remove                              
    ///   @return the number of removed traits                                 
-   auto Thing::RemoveTrait(Trait trait) -> Count {
+   auto Thing::RemoveTrait(Trait trait) -> size_t {
       const auto found = mTraits.FindIt(trait.GetTrait());
       if (found) {
          const auto removed = found.GetValue().Remove(trait);
@@ -169,7 +169,7 @@ namespace Langulus::Things
    /// A fast check whether traits of the given type are inside this entity   
    ///   @param trait - type of trait to check                                
    ///   @return the number of matching traits                                
-   auto Thing::HasTraits(TMeta trait) const -> Count {
+   auto Thing::HasTraits(TMeta trait) const -> size_t {
       const auto found = mTraits.FindIt(trait);
       return found ? found.GetValue().GetCount() : 0;
    }
@@ -177,12 +177,12 @@ namespace Langulus::Things
    /// A fast check whether traits of the given type and value are inside     
    ///   @param trait - trait to search for                                   
    ///   @return the number of matching traits                                
-   auto Thing::HasTraits(const Trait& trait) const -> Count {
+   auto Thing::HasTraits(const Trait& trait) const -> size_t {
       const auto found = mTraits.FindIt(trait.GetTrait());
       if (not found)
          return 0;
 
-      Count counter = 0;
+      size_t counter = 0;
       for (auto& trait : found.GetValue()) {
          if (trait == trait)
             ++counter;

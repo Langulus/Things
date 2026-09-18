@@ -74,35 +74,35 @@ namespace Langulus::A
 
       // Point utilities                                                
       bool MadeOfPoints() const noexcept;
-      auto GetPointCount() const -> Count;
+      auto GetPointCount() const -> size_t;
       template<CT::Trait>
-      Many GetPointTrait(Offset) const;
+      Many GetPointTrait(size_t) const;
 
       // Line utilities                                                 
       bool MadeOfLines() const noexcept;
-      auto GetLineCount() const -> Count;
-      auto GetLineIndices(Offset) const -> Vec2u;
+      auto GetLineCount() const -> size_t;
+      auto GetLineIndices(size_t) const -> Vec2u;
       template<CT::Trait>
-      Many GetLineTrait(Offset) const;
+      Many GetLineTrait(size_t) const;
 
       // Triangle utilities                                             
       bool MadeOfTriangles() const noexcept;
-      auto GetTriangleCount() const -> Count;
-      auto GetTriangleIndices(Offset) const -> Vec3u;
+      auto GetTriangleCount() const -> size_t;
+      auto GetTriangleIndices(size_t) const -> Vec3u;
       template<CT::Trait>
-      Many GetTriangleTrait(Offset) const;
+      Many GetTriangleTrait(size_t) const;
 
       ///                                                                     
       ///   Iteration                                                         
       ///                                                                     
-      Count ForEachVertex(auto&&) const;
+      size_t ForEachVertex(auto&&) const;
 
    protected:
       Vec2u InnerGetIndices(const Data*, const Vec2u&) const;
       Vec3u InnerGetIndices(const Data*, const Vec3u&) const;
 
       template<bool INDEXED, class...T>
-      Count ForEachVertexInner(Types<T...>, auto&& call) const;
+      size_t ForEachVertexInner(Types<T...>, auto&& call) const;
 
       template<CT::Trait T>
       T ForEachVertex_PrepareStream() const;
@@ -111,10 +111,10 @@ namespace Langulus::A
       T ForEachVertex_PrepareIndexStream() const;
 
       template<CT::Topology>
-      auto PickVertex(Offset i, const CT::Trait auto& data, const CT::Trait auto& indices) const;
+      auto PickVertex(size_t i, const CT::Trait auto& data, const CT::Trait auto& indices) const;
 
       template<CT::Topology, size_t...STREAM_ID>
-      auto GenerateVertex(Offset i, const auto& data, const auto& indices, std::index_sequence<STREAM_ID...>&&) const;
+      auto GenerateVertex(size_t i, const auto& data, const auto& indices, std::index_sequence<STREAM_ID...>&&) const;
    };
 
 } // namespace Langulus::A

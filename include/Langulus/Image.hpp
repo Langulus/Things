@@ -34,8 +34,8 @@ namespace Langulus
 
       constexpr uint32_t GetPixelCount() const noexcept;
       constexpr uint32_t GetDimensionCount() const noexcept;
-      Size GetPixelBytesize() const noexcept;
-      Size GetBytesize() const noexcept;
+      size_t GetPixelBytesize() const noexcept;
+      size_t GetBytesize() const noexcept;
       auto GetChannelCount() const noexcept -> uint32_t;
       Hash GetHash() const noexcept;
       auto GetScale() const noexcept -> Math::Scale3;

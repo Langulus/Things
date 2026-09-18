@@ -41,14 +41,14 @@ namespace Langulus
    /// Get the size in bytes for a single pixel                               
    ///   @return the size in bytes                                            
    LANGULUS(INLINED)
-   Size ImageView::GetPixelBytesize() const noexcept {
-      return mFormat ? mFormat->mSize : Size {0};
+   size_t ImageView::GetPixelBytesize() const noexcept {
+      return mFormat ? mFormat->mSize : size_t {0};
    }
 
    /// Get the bytesize of the entire image across all dimensions             
    ///   @return the bytesize of the entire image                             
    LANGULUS(INLINED)
-   Size ImageView::GetBytesize() const noexcept {
+   size_t ImageView::GetBytesize() const noexcept {
       return GetPixelCount() * GetPixelBytesize();
    }
 
@@ -129,7 +129,7 @@ namespace Langulus::A
          "Iterator type is not compatible with contained color data");
 
       // Iterate using the desired color type                           
-      [[maybe_unused]] Count counter = 0;
+      [[maybe_unused]] size_t counter = 0;
       auto data = pixels->CastsTo<Bytes>()
          ? pixels->Get<Bytes>().GetRaw<A>()
          : pixels->GetRaw<A>();

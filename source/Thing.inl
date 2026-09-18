@@ -133,7 +133,7 @@ namespace Langulus::Things
    ///   @param entity - entity instance to add as child                      
    ///   @return the number of added children                                 
    template<bool TWOSIDED>
-   Count Thing::AddChild(Thing* entity) {
+   size_t Thing::AddChild(Thing* entity) {
       LglsAssumeUser(entity, "Bad entity pointer");
 
       const auto added = mChildren.Merge(IndexBack, entity);
@@ -162,7 +162,7 @@ namespace Langulus::Things
    ///   @param entity - entity instance to remove from children              
    ///   @return the number of removed children                               
    template<bool TWOSIDED>
-   Count Thing::RemoveChild(Thing* entity) {
+   size_t Thing::RemoveChild(Thing* entity) {
       LglsAssumeUser(entity, "Bad entity pointer");
       
       const auto removed = mChildren.Remove(entity);
@@ -296,7 +296,7 @@ namespace Langulus::Things
    ///   @param unit - the unit to add                                        
    ///   @return 1 if unit has been added                                     
    template<bool TWOSIDED>
-   Count Thing::AddUnit(A::Unit* unit) {
+   size_t Thing::AddUnit(A::Unit* unit) {
       // Check if the unit instance is already registered here          
       const auto meta = unit->GetType();
       const auto found = mUnitsAmbiguous.FindIt(meta);
@@ -337,7 +337,7 @@ namespace Langulus::Things
    ///   @param unit - unit to remove from the entity                         
    ///   @return 1 if unit has been removed                                   
    template<bool TWOSIDED>
-   Count Thing::RemoveUnit(A::Unit* unit) {
+   size_t Thing::RemoveUnit(A::Unit* unit) {
       const auto meta = unit->GetType();
       const auto foundType = mUnitsAmbiguous.FindIt(meta);
       if (not foundType)
@@ -369,7 +369,7 @@ namespace Langulus::Things
    ///                      used mainly internally to avoid endless loops     
    ///   @return the number of removed units                                  
    template<CT::Unit T, bool TWOSIDED>
-   Count Thing::RemoveUnits() {
+   size_t Thing::RemoveUnits() {
       if constexpr (CT::Same<T, A::Unit>) {
          // Remove all units                                            
          const auto removed = mUnitsList.GetCount();
@@ -395,18 +395,18 @@ namespace Langulus::Things
          // List intentionally shallow-copied, its memory will diverge  
          // upon RemoveUnit                                             
          auto list = mUnitsAmbiguous.GetValue(found);
-         Count removed {};
+         size_t removed {};
          for (auto& unit : list)
             removed += RemoveUnit(unit);
          return removed;
       }
    }
 
-   /// Count the number of matching units in this entity                      
+   /// size_t the number of matching units in this entity                      
    ///   @tparam T - the type of units to seach for, use Unit for all         
    ///   @return the number of matching units                                 
    template<CT::Unit T> LANGULUS(INLINED)
-   Count Thing::HasUnits() const {
+   size_t Thing::HasUnits() const {
       return HasUnits(MetaOf<Decay<T>>());
    }
 

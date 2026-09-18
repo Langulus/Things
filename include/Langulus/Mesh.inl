@@ -192,13 +192,13 @@ namespace Langulus::A
    /// Get the number of points inside the geometry                           
    ///   @return the number of points                                         
    LANGULUS(INLINED)
-   Count Mesh::GetPointCount() const {
+   size_t Mesh::GetPointCount() const {
       TODO();
       return {};
    }
 
    template<CT::Trait T>
-   Many Mesh::GetPointTrait(Offset) const {
+   Many Mesh::GetPointTrait(size_t) const {
       TODO();
       return {};
    }
@@ -212,7 +212,7 @@ namespace Langulus::A
 
    /// Get the number of lines inside the geometry                            
    ///   @return the number of points                                         
-   inline Count Mesh::GetLineCount() const {
+   inline size_t Mesh::GetLineCount() const {
       if (MadeOfPoints())
          return 0;
       
@@ -264,7 +264,7 @@ namespace Langulus::A
    /// Get the point indices of a given line                                  
    ///   @param index - line index                                            
    ///   @return the point indices as a 32bit unsigned 2D vector              
-   inline auto Mesh::GetLineIndices(Offset index) const -> Vec2u {
+   inline auto Mesh::GetLineIndices(size_t index) const -> Vec2u {
       const auto indices = GetData<Traits::Index>();
 
       if (CheckTopology<A::Line>())
@@ -314,7 +314,7 @@ namespace Langulus::A
    ///   @param lineIndex - the line index                                    
    ///   @return data for the specific line                                   
    template<CT::Trait T>
-   Many Mesh::GetLineTrait(Offset lineIndex) const {
+   Many Mesh::GetLineTrait(size_t lineIndex) const {
       const auto indices = GetLineIndices(lineIndex);
       const auto soughtt = GetData<T>(0);
       if (not soughtt or not *soughtt)
@@ -344,7 +344,7 @@ namespace Langulus::A
    /// Get the number of triangles inside the geometry, after indexing and    
    /// topology considerations                                                
    ///   @return the number of triangles                                      
-   inline Count Mesh::GetTriangleCount() const {
+   inline size_t Mesh::GetTriangleCount() const {
       if (MadeOfPoints() or MadeOfLines())
          return 0;
 
@@ -371,7 +371,7 @@ namespace Langulus::A
    ///   @attention not optimized for iteration                               
    ///   @param index - triangle index                                        
    ///   @return the indices as a 32bit unsigned 3D vector                    
-   inline auto Mesh::GetTriangleIndices(Offset index) const -> Vec3u {
+   inline auto Mesh::GetTriangleIndices(size_t index) const -> Vec3u {
       const auto indices = GetData<Traits::Index>(0);
 
       if (CheckTopology<A::Triangle>()) {
@@ -405,7 +405,7 @@ namespace Langulus::A
    ///   @param triangleIndex - the triangle index                            
    ///   @return data for the specific triangle                               
    template<CT::Trait T>
-   Many Mesh::GetTriangleTrait(Offset triangleIndex) const {
+   Many Mesh::GetTriangleTrait(size_t triangleIndex) const {
       const auto indices = GetTriangleIndices(triangleIndex);
       const auto soughtt = GetData<T>(0);
       if (not soughtt or not *soughtt)
@@ -430,7 +430,7 @@ namespace Langulus::A
    /// Will generate triangles based on indices and topology                  
    ///   @param call - lambda with the desired triangle traits as arguments   
    ///   @return the number of iterated triangles                             
-   Count Mesh::ForEachVertex(auto&& call) const {
+   size_t Mesh::ForEachVertex(auto&& call) const {
       using F = Deref<decltype(call)>;
       using A = ArgumentsOf<F>;
 
@@ -446,7 +446,7 @@ namespace Langulus::A
    ///   @param call - the call to execute on each iteration                  
    ///   @return the number of executions of 'call'                           
    template<bool INDEXED, class...T>
-   Count Mesh::ForEachVertexInner(Types<T...>, auto&& call) const {
+   size_t Mesh::ForEachVertexInner(Types<T...>, auto&& call) const {
       static_assert(CT::Trait<Decay<T>...>,
          "All iterator arguments must be traits, like Traits::Place, "
          "Traits::Aim, Traits::Color, etc.");
@@ -454,7 +454,7 @@ namespace Langulus::A
       // Represent iterator arguments as a tuple of disowned Blocks     
       using Tuple = std::tuple<Decay<T>...>;
       const Tuple data_streams {ForEachVertex_PrepareStream<Decay<T>>()...};
-      Count counter = 0;
+      size_t counter = 0;
 
       if constexpr (not INDEXED) {
          // Unindexed triangles                                         
@@ -627,7 +627,7 @@ namespace Langulus::A
    ///   @param indices - the index stream tuple                              
    ///   @return the tuple of arguments for a vertex                          
    template<CT::Topology T, size_t...STREAM_ID>
-   auto Mesh::GenerateVertex(Offset i,
+   auto Mesh::GenerateVertex(size_t i,
       const auto& data, const auto& indices,
       std::index_sequence<STREAM_ID...>&&
    ) const {
@@ -643,7 +643,7 @@ namespace Langulus::A
    ///   @param indices - the index stream                                    
    ///   @return the selected element                                         
    template<CT::Topology T>
-   auto Mesh::PickVertex(Offset i, const CT::Trait auto& stream, const CT::Trait auto& indices) const {
+   auto Mesh::PickVertex(size_t i, const CT::Trait auto& stream, const CT::Trait auto& indices) const {
       LglsAssumeDev(mView.mIndexCount,
          "PickVertex can be used only on indexed geometry");
 
@@ -660,7 +660,7 @@ namespace Langulus::A
          if (indices.template IsExact<uint32_t>())
             return stream.Select(indices.template GetRaw<uint32_t>()[i], 1);
          else if (indices.template IsExact<uint64_t>())
-            return stream.Select(static_cast<Offset>(indices.template GetRaw<uint64_t>()[i]), 1);
+            return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[i]), 1);
          else if (indices.template IsExact<uint16_t>())
             return stream.Select(indices.template GetRaw<uint16_t>()[i], 1);
          else if (indices.template IsExact<uint8_t>())
@@ -675,7 +675,7 @@ namespace Langulus::A
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<Offset>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
@@ -688,7 +688,7 @@ namespace Langulus::A
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<Offset>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
@@ -701,7 +701,7 @@ namespace Langulus::A
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<Offset>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
@@ -714,7 +714,7 @@ namespace Langulus::A
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<Offset>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())

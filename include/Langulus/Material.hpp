@@ -76,10 +76,10 @@ namespace Langulus
          virtual auto GetLOD(const Math::LOD&) const -> Ref<Material> = 0;
 
          auto GetInputs(RefreshRate)  const -> const TraitList&;
-         auto GetInputs(Offset)       const -> const TraitList&;
+         auto GetInputs(size_t)       const -> const TraitList&;
 
          auto GetOutputs(RefreshRate) const -> const TraitList&;
-         auto GetOutputs(Offset)      const -> const TraitList&;
+         auto GetOutputs(size_t)      const -> const TraitList&;
 
       protected:
          mutable TraitList mInputs[RefreshRate::InputCount];

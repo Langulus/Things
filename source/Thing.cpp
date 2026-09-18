@@ -500,7 +500,7 @@ namespace Langulus::Things
    /// Count the number of matching units in this entity                      
    ///   @param type - the type of units to search for                        
    ///   @return the number of matching units                                 
-   auto Thing::HasUnits(DMeta type) const -> Count {
+   auto Thing::HasUnits(DMeta type) const -> size_t {
       const auto found = mUnitsAmbiguous.FindIt(type);
       return found ? found.GetValue().GetCount() : 0;
    }

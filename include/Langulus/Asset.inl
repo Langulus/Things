@@ -37,7 +37,7 @@ namespace Langulus::A
    ///   @param index - the Nth data associated to the trait                  
    ///   @return a pointer to the data entry, or nullptr if none exists       
    template<CT::TraitBased T> LANGULUS(INLINED)
-   auto Asset::GetData(Offset index) noexcept -> Data* {
+   auto Asset::GetData(size_t index) noexcept -> Data* {
       TMeta trait;
       if constexpr (CT::Trait<T>)
          trait = MetaTraitOf<T>();
@@ -45,7 +45,7 @@ namespace Langulus::A
    }
 
    template<CT::TraitBased T> LANGULUS(INLINED)
-   auto Asset::GetData(Offset index) const noexcept -> Data const* {
+   auto Asset::GetData(size_t index) const noexcept -> Data const* {
       return const_cast<Asset*>(this)->GetData<T>(index);
    }
 
@@ -54,7 +54,7 @@ namespace Langulus::A
    ///   @param index - the Nth data associated to the trait                  
    ///   @return a pointer to the data entry, or nullptr if none exists       
    LANGULUS(INLINED)
-   auto Asset::GetData(TMeta trait, Offset index) noexcept -> Data* {
+   auto Asset::GetData(TMeta trait, size_t index) noexcept -> Data* {
       if (not Generate(trait, index))
          return nullptr;
 
@@ -65,7 +65,7 @@ namespace Langulus::A
    }
 
    LANGULUS(INLINED)
-   auto Asset::GetData(TMeta trait, Offset index) const noexcept -> Data const* {
+   auto Asset::GetData(TMeta trait, size_t index) const noexcept -> Data const* {
       return const_cast<Asset*>(this)->GetData(trait, index);
    }
 

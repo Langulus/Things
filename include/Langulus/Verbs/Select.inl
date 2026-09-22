@@ -20,6 +20,22 @@
 
 namespace Langulus::CTTI
 {
+   LglsImplementAbilitiesFor(void) {
+      using Can = Verbs::Select;
+
+      /// Stateless selection, for selecting some global things, like the     
+      /// logger, for example.                                                
+      ///   @param verb selection verb                                        
+      ///   @return true if verb has been satisfied                           
+      bool Stateless(Verb& verb) {
+         verb.ForEachDeep([&](RTTI::TMeta t) {
+            if (t == MetaTagOf<Tags::Logger>())
+               verb << Logger::Context {};
+         });
+         return verb.IsDone();
+      }
+   }
+      
    LglsImplementAbilitiesFor(Many) {
       using Can = Verbs::Select;
 

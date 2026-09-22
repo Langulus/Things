@@ -99,7 +99,7 @@ namespace Langulus::CTTI
    LglsImplementAbilitiesFor(Many) {
       using Can = Verbs::Associate;
 
-      bool Default(Many& lhs, Verb& verb) {
+      static bool Default(Many& lhs, Verb& verb) {
          const Many& rhs = verb.GetArgument();
    
          if (lhs.IsConstant() or lhs.GetCount() != rhs.GetCount())

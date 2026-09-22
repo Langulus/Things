@@ -6,24 +6,16 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-
-LANGULUS_DEFINE_TRAIT(FOV,
-   "Horizontal field of view angle, usually a real number");
-LANGULUS_DEFINE_TRAIT(AspectRatio,
-   "Aspect ratio trait (width / height), usually a real number");
-LANGULUS_DEFINE_TRAIT(Viewport,
-   "Viewport and depth clipping, usually a Range4");
+#include "Thing.hpp"
 
 
-namespace Langulus::A
+namespace Langulus
 {
-
    ///                                                                        
    ///   Abstract graphics module                                             
    ///                                                                        
    struct GraphicsModule : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       GraphicsModule() : Resolvable {this}, Module {nullptr} {}
    };
 
@@ -31,7 +23,7 @@ namespace Langulus::A
    ///   Abstract graphics units                                              
    ///                                                                        
    struct Graphics : virtual Unit {
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
       Graphics() : Resolvable {this} {}
    };
 
@@ -89,14 +81,11 @@ namespace Langulus::A
       Type mType = Directional;
       bool mCastShadows = true;
    };
-
-} // namespace Langulus::A
+}
 
 namespace Langulus::CT
 {
-
    /// A concept for any kind of a graphics unit                              
    template<class T>
    concept Graphics = DerivedFrom<T, A::Graphics>;
-
-} // namespace Langulus::CT
+}

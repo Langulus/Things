@@ -7,16 +7,13 @@
 ///                                                                           
 #pragma once
 #include "Asset.hpp"
-#include <Langulus/Math/Color.hpp>
-#include <Langulus/Math/Scale.hpp>
+#include <Langulus/Colors/TColor.hpp>
+#include <Langulus/Vectors/TScale.hpp>
 
-LANGULUS_DEFINE_TRAIT(Image, "Image unit");
-LANGULUS_EXCEPTION(Image);
 
 
 namespace Langulus
 {
-
    ///                                                                        
    ///   Universal pixel buffer view                                          
    ///                                                                        
@@ -40,12 +37,10 @@ namespace Langulus
       Hash GetHash() const noexcept;
       auto GetScale() const noexcept -> Math::Scale3;
    };
-   
-} // namespace Langulus
+}
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Abstract texture content                                             
    ///                                                                        
@@ -138,16 +133,13 @@ namespace Langulus::A
          : Resolvable   {this}
          , ProducedFrom {nullptr, {}} {}
    };
-
-} // namespace Langulus::A
+}
 
 namespace Langulus::CT
 {
-
    /// A concept for any kind of image content unit                           
    template<class T>
-   concept Image = DerivedFrom<T, A::Image>;
-
-} // namespace Langulus::CT
+   concept Image = DerivedFrom<T, Things::Image>;
+}
 
 #include "Image.inl"

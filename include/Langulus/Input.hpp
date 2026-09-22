@@ -6,18 +6,17 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-#include "Things/Event.hpp"
+#include "Thing.hpp"
+#include "Event.hpp"
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Abstract input module                                                
    ///                                                                        
    struct InputModule : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       InputModule() : Resolvable {this}, Module {nullptr} {}
    };
 
@@ -25,7 +24,7 @@ namespace Langulus::A
    ///   Abstract input unit                                                  
    ///                                                                        
    struct Input : virtual Unit {
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
       Input() : Resolvable {this} {}
    };
 
@@ -33,8 +32,8 @@ namespace Langulus::A
    ///   Abstract input gatherer                                              
    ///                                                                        
    struct InputGatherer : virtual Input {
-      LANGULUS(PRODUCER) InputModule;
-      LANGULUS_BASES(Input);
+      using CTTI_Bases = Input;
+      using CTTI_Producer = InputModule;
 
    protected:
       // Accumulated events, dispatched on each Update() to listeners   
@@ -66,9 +65,9 @@ namespace Langulus::A
    ///   Abstract input listener                                              
    ///                                                                        
    struct InputListener : virtual Input {
-      LANGULUS(PRODUCER) InputGatherer;
-      LANGULUS_BASES(Input);
+      using CTTI_Bases = Input;
+      using CTTI_Producer = InputGatherer;
+      
       InputListener() : Resolvable {this} {}
    };
-
-} // namespace Langulus::A
+}

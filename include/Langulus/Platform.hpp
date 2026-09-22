@@ -6,24 +6,12 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-#include <Langulus/Math/Scale.hpp>
-
-LANGULUS_DEFINE_TRAIT(Cursor,
-   "Enables or disables cursor for window");
-LANGULUS_DEFINE_TRAIT(Monitor,
-   "Monitor to which window is bound, making it fullscreen");
-LANGULUS_DEFINE_TRAIT(MousePosition,
-   "Mouse position, relative to a window");
-LANGULUS_DEFINE_TRAIT(MouseScroll,
-   "Mouse scroll for window");
-LANGULUS_DEFINE_TRAIT(NativeWindowHandle,
-   "Native window handle");
+#include "Thing.hpp"
+#include <Langulus/Vectors/TScale.hpp>
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    struct Image; // If undefined, include <Langulus/Image.hpp>          
 
 
@@ -31,7 +19,7 @@ namespace Langulus::A
    ///   Abstract platform module                                             
    ///                                                                        
    struct PlatformModule : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       PlatformModule() : Resolvable {this}, Module {nullptr} {}
    };
 
@@ -39,7 +27,7 @@ namespace Langulus::A
    ///   Abstract platform unit                                               
    ///                                                                        
    struct Platform : virtual Unit {
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
       Platform() : Resolvable {this} {}
    };
    
@@ -47,8 +35,8 @@ namespace Langulus::A
    ///   Abstract platform window                                             
    ///                                                                        
    struct Window : virtual Platform {
-      LANGULUS(PRODUCER) PlatformModule;
-      LANGULUS_BASES(Platform);
+      using CTTI_Bases = Platform;
+      using CTTI_Producer = PlatformModule;
       using Platform::Platform;
 
       using Scale2 = Math::Scale2;
@@ -63,9 +51,8 @@ namespace Langulus::A
    ///   Abstract platform cursor                                             
    ///                                                                        
    struct Cursor : virtual Platform {
-      LANGULUS(PRODUCER) PlatformModule;
-      LANGULUS_BASES(Platform);
+      using CTTI_Producer = PlatformModule;
+      using CTTI_Bases = Platform;
       using Platform::Platform;
    };
-
-} // namespace Langulus::A
+}

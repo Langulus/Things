@@ -9,17 +9,11 @@
 #include "Module.hpp"
 
 
-namespace Langulus::A
-{
-   struct File;
-   struct Folder;
-}
-
 namespace Langulus::Things
 {
-
    class Thing;
-
+   struct File;
+   struct Folder;
 
    ///                                                                        
    ///   Runtime                                                              
@@ -43,11 +37,11 @@ namespace Langulus::Things
          // Library handle, returned by dlopen or LoadLibrary           
          uintptr_t mHandle {};
          // Exported entry function, that registers library types       
-         A::Module::EntryFunction mEntry {};
+         Module::EntryFunction mEntry {};
          // Exported module instantiation function, produces modules    
-         A::Module::CreateFunction mCreator {};
+         Module::CreateFunction mCreator {};
          // Information function, returning module description          
-         A::Module::InfoFunction mInfo {};
+         Module::InfoFunction mInfo {};
          // Type of the module instance                                 
          DMeta mModuleType {};
          // The RTTI::Boundary of the library                           
@@ -60,7 +54,7 @@ namespace Langulus::Things
 
          /// Explicit abandon construction, for optimized containment         
          ///   @param other - the library to abandon                          
-         SharedLibrary(Abandoned<SharedLibrary>&& other) noexcept
+         SharedLibrary(Abandon<SharedLibrary>&& other) noexcept
             : mHandle          {other->mHandle}
             , mEntry           {other->mEntry}
             , mCreator         {other->mCreator}
@@ -90,11 +84,11 @@ namespace Langulus::Things
       // Loaded shared libraries, indexed by filename                   
       // This is a static registry - all Runtimes use the same shared   
       // library objects, but manage their own module instantiations    
-      static TUnorderedMap<Path, SharedLibrary> mLibraries;
+      static TMapUnsorted<Path, SharedLibrary> mLibraries;
       // Instantiated modules, sorted by priority                       
-      TOrderedMap<Real, ModuleList> mModules;
+      TMapSorted<Real, ModList> mModules;
       // Instantiated modules, indexed by type                          
-      TUnorderedMap<DMeta, ModuleList> mModulesByType;
+      TMapUnsorted<DMeta, ModList> mModulesByType;
 
    protected:
       LANGULUS_API(THINGS)
@@ -156,5 +150,4 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       explicit operator Text() const;
    };
-
-} // namespace Langulus::Things
+}

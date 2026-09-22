@@ -9,14 +9,8 @@
 #include "Hierarchy.hpp"
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
-   using Things::Thing;
-   using Things::Hierarchy;
-   using Things::Runtime;
-
-
    ///                                                                        
    ///   An abstract unit                                                     
    ///                                                                        
@@ -35,7 +29,7 @@ namespace Langulus::A
       #endif
       , Things::SeekInterface<Unit>
    {
-      LANGULUS_BASES(Resolvable);
+      using CTTI_Bases = Resolvable;
 
    protected:
       friend class Thing;
@@ -128,14 +122,10 @@ namespace Langulus::A
       void Decouple(const Thing*);
       void ReplaceOwner(const Thing*, const Thing*);
    };
-
-} // namespace Langulus::Things
-
+}
 namespace Langulus::CT
 {
-
    /// Any type that inherits Unit is considered a unit                       
    template<class T>
-   concept Unit = DerivedFrom<T, A::Unit>;
-
-} // namespace Langulus::CT
+   concept Unit = DerivedFrom<T, Things::Unit>;
+}

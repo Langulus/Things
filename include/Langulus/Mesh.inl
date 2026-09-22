@@ -7,12 +7,11 @@
 ///                                                                           
 #pragma once
 #include "Mesh.hpp"
-#include <Langulus/Math/Primitives.hpp>
+#include <Langulus/Primitives/Primitive.hpp>
 
 
-namespace Langulus
+namespace Langulus::Things
 {
-   
    /// Compare geometry views                                                 
    ///   @param rhs - the geometry view to compare against                    
    ///   @return true if both views are the same                              
@@ -68,11 +67,6 @@ namespace Langulus
          mTopology, mBilateral, mTextureMapping
       );
    }
-
-} // namespace Langulus
-
-namespace Langulus::A
-{
    
    /// Get the topology of the geometry                                       
    ///   @return the topology type                                            
@@ -728,5 +722,4 @@ namespace Langulus::A
 
       return stream;
    }
-
-} // namespace Langulus::A
+}

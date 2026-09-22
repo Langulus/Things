@@ -6,10 +6,8 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Hierarchy.hpp"
-#include "Thing.hpp"
-#include "Unit.hpp"
-#include "Pin.inl"
+#include <Langulus/Thing.hpp>
+#include <Langulus/Unit.hpp>
 
 #define TEMPLATE()   template<class THIS>
 #define TME()        SeekInterface<THIS>

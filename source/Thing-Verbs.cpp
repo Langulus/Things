@@ -5,15 +5,14 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
-#include "Thing.hpp"
-#include "Thing.inl"
+#include <Langulus/Thing.hpp>
 #include <Langulus/Verbs/Conjunct.hpp>
 #include <Langulus/AI.hpp>
+#include "Thing.inl"
 
 
 namespace Langulus::Things
 {
-
    /// Interpret and execute a natural message wherever possible in the       
    /// current context                                                        
    ///   @param text - text to execute                                        
@@ -212,5 +211,4 @@ namespace Langulus::Things
       if (not verb.IsDone() and mOwner)
          mOwner->Select(verb);
    }
-      
-} // namespace Langulus::Entry
+}

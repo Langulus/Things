@@ -7,16 +7,11 @@
 ///                                                                           
 #pragma once
 #include "Asset.hpp"
-#include <Langulus/Flow/Rate.hpp>
-
-LANGULUS_DEFINE_TRAIT(Material, "Material unit");
-LANGULUS_DEFINE_TRAIT(Shader,   "Shader unit");
-LANGULUS_EXCEPTION(Material);
+#include <Langulus/Rate.hpp>
 
 
-namespace Langulus
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Shader stages                                                        
    ///                                                                        
@@ -44,7 +39,6 @@ namespace Langulus
       };
    }
 
-
    ///                                                                        
    ///   Shader layout tokens                                                 
    ///                                                                        
@@ -63,30 +57,25 @@ namespace Langulus
       constexpr Token Functions     = "//#FUNCTIONS\n";
    }
 
-   namespace A
-   {
+   ///                                                                     
+   ///   Abstract material content                                         
+   ///                                                                     
+   struct Material : Asset {
+      using CTTI_Bases = Asset;
+      using Asset::Asset;
 
-      ///                                                                     
-      ///   Abstract material content                                         
-      ///                                                                     
-      struct Material : Asset {
-         LANGULUS_BASES(Asset);
-         using Asset::Asset;
+      virtual auto GetLOD(const Math::LOD&) const -> Ref<Material> = 0;
 
-         virtual auto GetLOD(const Math::LOD&) const -> Ref<Material> = 0;
+      auto GetInputs(RefreshRate)  const -> const TraitList&;
+      auto GetInputs(size_t)       const -> const TraitList&;
 
-         auto GetInputs(RefreshRate)  const -> const TraitList&;
-         auto GetInputs(size_t)       const -> const TraitList&;
+      auto GetOutputs(RefreshRate) const -> const TraitList&;
+      auto GetOutputs(size_t)      const -> const TraitList&;
 
-         auto GetOutputs(RefreshRate) const -> const TraitList&;
-         auto GetOutputs(size_t)      const -> const TraitList&;
-
-      protected:
-         mutable TraitList mInputs[RefreshRate::InputCount];
-         mutable TraitList mOutputs[RefreshRate::InputCount];
-      };
-
-   } // namespace Langulus::A
-} // namespace Langulus
+   protected:
+      mutable TagList mInputs[RefreshRate::InputCount];
+      mutable TagList mOutputs[RefreshRate::InputCount];
+   };
+}
 
 #include "Material.inl"

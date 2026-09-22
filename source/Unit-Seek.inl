@@ -6,13 +6,12 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Unit.hpp"
+#include <Langulus/Unit.hpp>
 #include "Hierarchy-Seek.inl"
 
 
-namespace Langulus::A
+namespace Langulus
 {
-      
    /// Find a specific unit, searching into the hierarchy                     
    ///   @tparam SEEK - where in the hierarchy are we seeking in?             
    ///   @param meta - the unit to seek for                                   
@@ -106,5 +105,4 @@ namespace Langulus::A
    bool Unit::SeekValueAux(TMeta meta, const Many& aux, CT::NotVoid auto& output, Index offset) const {
       return mOwners.template SeekValueAux<SEEK>(meta, aux, output, offset);
    }
-
-} // namespace Langulus::Things
+}

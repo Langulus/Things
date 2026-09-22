@@ -9,9 +9,8 @@
 #include "IO.hpp"
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    /// Get the current working path (where the main exe was executed)         
    ///   @return the path                                                     
    LANGULUS(INLINED)
@@ -91,5 +90,4 @@ namespace Langulus::A
    auto Folder::GetFolderPath() const noexcept -> const Path& {
       return mFolderPath;
    }
-
-} // namespace Langulus::A
+}

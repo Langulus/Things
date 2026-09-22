@@ -6,21 +6,19 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
+#include "Thing.hpp"
 
 
-namespace Langulus::A 
+namespace Langulus::Things
 {
-
    struct File;
    struct Folder;
-
 
    ///                                                                        
    ///   Abstract file system module                                          
    ///                                                                        
    struct FileSystem : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
 
    protected:
       // Working directory path                                         
@@ -44,8 +42,8 @@ namespace Langulus::A
    ///   Abstract file interface                                              
    ///                                                                        
    struct File : virtual Unit {
-      LANGULUS(PRODUCER) FileSystem;
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
+      using CTTI_Producer = FileSystem;
 
    protected:
       Path mFilePath;
@@ -130,8 +128,8 @@ namespace Langulus::A
    ///   Abstract folder interface                                            
    ///                                                                        
    struct Folder : virtual Unit {
-      LANGULUS(PRODUCER) FileSystem;
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
+      using CTTI_Producer = FileSystem;
 
    protected:
       Path mFolderPath;
@@ -146,7 +144,6 @@ namespace Langulus::A
       auto IsReadOnly()    const noexcept -> bool;
       auto GetFolderPath() const noexcept -> const Path&;
    };
-
-} // namespace Langulus::A
+}
 
 #include "IO.inl"

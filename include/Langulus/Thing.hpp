@@ -6,25 +6,19 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Pin.hpp"
 #include "Runtime.hpp"
 #include "Hierarchy.hpp"
-#include "Unit.hpp"
+//#include "Unit.hpp"
 #include <Langulus/Verbs/Create.hpp>
 #include <Langulus/Verbs/Select.hpp>
-
-LANGULUS_DEFINE_TRAIT(Runtime,
-   "Accesses the runtime of a hierarchy of Things");
-LANGULUS_DEFINE_TRAIT(Unit,
-   "Accesses units (components) of Things");
-
+#include <Langulus/TPin.hpp>
 
 namespace Langulus::Things
 {
-
-   using UnitList = TMany<A::Unit*>;
-   using UnitMap = TUnorderedMap<DMeta, TMany<A::Unit*>>;
-   using TraitMap = TUnorderedMap<TMeta, TraitList>;
+   struct Unit;
+   using UnitList = TMany<Unit*>;
+   using UnitMap  = TMapUnsorted<RTTI::DMeta, TMany<Unit*>>;
+   using TagMap   = TMapUnsorted<RTTI::TMeta, TagList>;
 
 
    ///                                                                        
@@ -63,7 +57,7 @@ namespace Langulus::Things
       // Units indexed by all their relevant reflected bases            
       UnitMap mUnitsAmbiguous;
       // Traits                                                         
-      TraitMap mTraits;
+      TagMap mTags;
       // Hierarchy requires an update                                   
       bool mRefreshRequired {};
       // The entity's parent                                            
@@ -319,5 +313,4 @@ namespace Langulus::Things
       template<CT::NotVoid D, Seek = Seek::HereAndAbove>
       auto GatherValues() const -> TMany<D>;
    };
-
-} // namespace Langulus::Things
+}

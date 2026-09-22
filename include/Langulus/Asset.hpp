@@ -6,24 +6,23 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
+#include <Langulus/Producible.hpp>
+#include <Langulus/LOD.hpp>
 #include "IO.hpp"
-#include <Langulus/Flow/Producible.hpp>
-#include <Langulus/Math/LOD.hpp>
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Abstract asset module                                                
    ///                                                                        
    struct AssetModule : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       AssetModule() : Resolvable {this}, Module {nullptr} {}
 
    protected:
       // Data folder, where assets will be saved or loaded from         
-      Ref<A::Folder> mFolder;
+      Ref<Folder> mFolder;
 
    public:
       // @attention never delete stuff from this call! Do it on         
@@ -37,12 +36,11 @@ namespace Langulus::A
    ///   Abstract asset unit                                                  
    ///                                                                        
    struct Asset : virtual Unit, virtual ProducedFrom<AssetModule> {
-      LANGULUS(PRODUCER) AssetModule;
-      LANGULUS_BASES(Unit);
-      
-      using Data = Many;
-      using DataList = TMany<Data>;
-      using DataListMap = TUnorderedMap<TMeta, DataList>;
+      using CTTI_Bases     = Unit;
+      using CTTI_Producer  = AssetModule;      
+      using Data           = Many;
+      using DataList       = TMany<Data>;
+      using DataListMap    = TUnorderedMap<TMeta, DataList>;
 
    protected:
       // Map of lists of generated data                                 
@@ -75,16 +73,13 @@ namespace Langulus::A
       auto GetDataListMap()       noexcept -> DataListMap&;
       auto GetDataListMap() const noexcept -> DataListMap const&;
    };
-
-} // namespace Langulus::A
+}
 
 namespace Langulus::CT
 {
-
    /// A concept for any kind of asset                                        
    template<class T>
    concept Asset = DerivedFrom<T, A::Asset>;
-
-} // namespace Langulus::CT
+}
 
 #include "Asset.inl"

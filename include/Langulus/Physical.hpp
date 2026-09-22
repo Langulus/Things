@@ -6,21 +6,20 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-#include <Langulus/Math/LOD.hpp>
-#include <Langulus/Math/Level.hpp>
-#include <Langulus/Math/Matrix.hpp>
-#include <Langulus/Math/Color.hpp>
+#include "Thing.hpp"
+#include <Langulus/LOD.hpp>
+#include <Langulus/Numbers/Level.hpp>
+#include <Langulus/Matrices/TMatrix.hpp>
+#include <Langulus/Colors/TColor.hpp>
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Abstract physical module                                             
    ///                                                                        
    struct PhysicalModule : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       PhysicalModule() : Resolvable {this}, Module {nullptr} {}
    };
 
@@ -28,7 +27,7 @@ namespace Langulus::A
    ///   Abstract physical unit                                               
    ///                                                                        
    struct Physical : virtual Unit {
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
       Physical() : Resolvable {this} {}
    };
 
@@ -36,8 +35,8 @@ namespace Langulus::A
    ///   Abstract physical world unit                                         
    ///                                                                        
    struct World : virtual Physical {
-      LANGULUS(PRODUCER) PhysicalModule;
-      LANGULUS_BASES(Physical);
+      using CTTI_Bases = Physical;
+      using CTTI_Producer = PhysicalModule;
       World() : Resolvable {this} {}
    };
    
@@ -45,8 +44,8 @@ namespace Langulus::A
    ///   Abstract physical instance unit                                      
    ///                                                                        
    struct Instance : virtual Physical {
-      LANGULUS(PRODUCER) World;
-      LANGULUS_BASES(Physical);
+      using CTTI_Bases = Physical;
+      using CTTI_Producer = World;
       Instance() : Resolvable {this} {}
 
       using LOD   = Math::LOD;
@@ -67,8 +66,8 @@ namespace Langulus::A
    ///   Abstract physical bond unit                                          
    ///                                                                        
    struct Bond : virtual Physical {
-      LANGULUS(PRODUCER) World;
-      LANGULUS_BASES(Physical);
+      using CTTI_Bases = Physical;
+      using CTTI_Producer = World;
       Bond() : Resolvable {this} {}
    };
 
@@ -76,8 +75,8 @@ namespace Langulus::A
    ///   Abstract physical particles unit                                     
    ///                                                                        
    struct Particles : virtual Physical {
-      LANGULUS(PRODUCER) World;
-      LANGULUS_BASES(Physical);
+      using CTTI_Bases = Physical;
+      using CTTI_Producer = World;
       Particles() : Resolvable {this} {}
    };
 
@@ -85,18 +84,15 @@ namespace Langulus::A
    ///   Abstract physical field unit                                         
    ///                                                                        
    struct Field : virtual Physical {
-      LANGULUS(PRODUCER) World;
-      LANGULUS_BASES(Physical);
+      using CTTI_Bases = Physical;
+      using CTTI_Producer = World;
       Field() : Resolvable {this} {}
    };
-
-} // namespace Langulus::A
+}
 
 namespace Langulus::CT
 {
-
    /// A concept for any kind of a physical unit                              
    template<class T>
-   concept Physical = DerivedFrom<T, A::Physical>;
-
-} // namespace Langulus::CT
+   concept Physical = DerivedFrom<T, Things::Physical>;
+}

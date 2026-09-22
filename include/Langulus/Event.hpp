@@ -6,8 +6,8 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Common.hpp"
-#include <Langulus/Flow/Time.hpp>
+#include "Things/Export.hpp"
+#include <Langulus/Time.hpp>
 
 
 namespace Langulus
@@ -20,10 +20,10 @@ namespace Langulus
    ///   Event state                                                          
    ///                                                                        
    struct EventState {
-      LANGULUS(POD) true;
-      LANGULUS(NULLIFIABLE) true;
+      using CTTI_POD       = Yup;
+      using CTTI_Nullable  = Yup;
 
-      enum Enum {
+      enum Enum : int {
          Point = 0,  // Default event state - a point event, that       
                      // does not have a beginning or end, it happens    
                      // once, immediately                               
@@ -31,11 +31,11 @@ namespace Langulus
          End   = 2,  // The end of an event, such as key release        
       };
 
-      using Type = TypeOf<Enum>;
-      LANGULUS_NAMED_VALUES(Point, Begin, End);
-      LANGULUS(TYPED) Type;
+      using CTTI_Values = Values<Enum::Point, Enum::Begin, Enum::End>;
+      using CTTI_Typed  = ::std::underlying_type_t<Enum>;
+      using Type        = CTTI_Typed;
 
-      Type mState {Point};
+      Type mState = Enum::Point;
 
    public:
       constexpr EventState() noexcept = default;

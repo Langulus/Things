@@ -6,14 +6,13 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-#include "Things/Module.hpp"
-#include <Langulus/Math/Vector.hpp>
+#include "Thing.hpp"
+#include "Module.hpp"
+#include <Langulus/Vectors/TVector.hpp>
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    struct Resource;
    struct Converter;
 
@@ -21,10 +20,9 @@ namespace Langulus::A
    ///   Abstract economy module                                              
    ///                                                                        
    struct Economy : virtual Module {
-      LANGULUS_BASES(Module);
-      Economy() : Resolvable {this}, Module {nullptr} {}
+      using CTTI_Bases = Module;
 
-      using Text = Annies::Text;
+      Economy() : Resolvable {this}, Module {nullptr} {}
 
       virtual auto GetResource (const Text&) const -> const Resource*  = 0;
       virtual auto GetConverter(const Text&) const -> const Converter* = 0;
@@ -34,8 +32,9 @@ namespace Langulus::A
    ///   Abstract economy unit                                                
    ///                                                                        
    struct EconomyUnit : virtual Unit {
-      LANGULUS(PRODUCER) Economy;
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
+      using CTTI_Producer = Economy;
+
       EconomyUnit() : Resolvable {this} {}
    };
    
@@ -46,11 +45,11 @@ namespace Langulus::A
    ///   Abstract resource                                                    
    ///                                                                        
    struct Resource : virtual EconomyUnit {
-      LANGULUS(PRODUCER) Economy;
-      LANGULUS_BASES(EconomyUnit);
+      using CTTI_Bases = EconomyUnit;
+      using CTTI_Producer = Economy;
+
       Resource() : Resolvable {this} {}
 
-      using Real  = Langulus::Real;
       using Place = Math::Vec3;
 
       virtual int GetQuantity() const noexcept = 0;
@@ -75,11 +74,10 @@ namespace Langulus::A
    ///   Abstract resource instance                                           
    ///                                                                        
    struct ResourceInstance : virtual EconomyUnit {
-      LANGULUS(PRODUCER) Economy;
-      LANGULUS_BASES(EconomyUnit);
+      using CTTI_Bases = EconomyUnit;
+      using CTTI_Producer = Economy;
+      
       ResourceInstance() : Resolvable {this} {}
-
-      using Real = Langulus::Real;
 
       virtual int  GetQuantity()    const noexcept = 0;
       virtual int  GetCapacity()    const noexcept = 0;
@@ -92,11 +90,11 @@ namespace Langulus::A
    ///   Abstract converter                                                   
    ///                                                                        
    struct Converter : virtual EconomyUnit {
-      LANGULUS(PRODUCER) Economy;
-      LANGULUS_BASES(EconomyUnit);
+      using CTTI_Bases = EconomyUnit;
+      using CTTI_Producer = Economy;
+      
       Converter() : Resolvable {this} {}
 
-      using Real = Langulus::Real;
       using Place = Math::Vec3;
 
       virtual size_t GetInstanceCount() const noexcept = 0;
@@ -109,8 +107,9 @@ namespace Langulus::A
    ///   Abstract converter instance                                          
    ///                                                                        
    struct ConverterInstance : virtual EconomyUnit {
-      LANGULUS(PRODUCER) Economy;
-      LANGULUS_BASES(EconomyUnit);
+      using CTTI_Bases = EconomyUnit;
+      using CTTI_Producer = Economy;
+      
       ConverterInstance() : Resolvable {this} {}
    };
 
@@ -118,9 +117,9 @@ namespace Langulus::A
    ///   Abstract trader                                                      
    ///                                                                        
    struct Trader : virtual EconomyUnit {
-      LANGULUS(PRODUCER) Economy;
-      LANGULUS_BASES(EconomyUnit);
+      using CTTI_Bases = EconomyUnit;
+      using CTTI_Producer = Economy;
+
       Trader() : Resolvable {this} {}
    };
-
-} // namespace Langulus::A
+}

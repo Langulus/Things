@@ -6,22 +6,20 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Common.hpp"
+#include <Langulus/TSet.hpp>
+#include <Langulus/TMany.hpp>
+#include <Langulus/RTTI/Definition.hpp>
+#include <Langulus/Resolvable.hpp>
+#include "Runtime.hpp"
+#include "Things/Export.hpp"
 
-LANGULUS_EXCEPTION(Module);
 
-
-namespace Langulus
+namespace Langulus::Things
 {
-   namespace A
-   {
-      class Module;
-   }
-
-
-   using MetaList = TUnorderedSet<AMeta>;
-   using TraitList = TMany<Trait>;
-   using ModuleList = TMany<A::Module*>;
+   struct Module;
+   using MetaList = TSetUnsorted<RTTI::Inner::Definition const*>;
+   using TagList  = TMany<Tag>;
+   using ModList  = TMany<Module*>;
 
    /// Helper function, that reflects and registers a list of any reflection  
    /// primitives, like data, verbs, and traits.                              
@@ -43,30 +41,21 @@ namespace Langulus
       (list << ... << MetaOf<T>());
    }
 
-   namespace Things
-   {
-      class Runtime;
-   }
-}
-
-namespace Langulus::A
-{
 
    ///                                                                        
    ///   External module interface                                            
    ///                                                                        
-   class Module : public virtual Resolvable {
+   struct Module : public virtual Resolvable {
    public:
-      using Runtime = Things::Runtime;
-      LANGULUS(PRODUCER) Runtime;
-      LANGULUS_BASES(Resolvable);
+      using CTTI_Producer = Runtime;
+      using CTTI_Bases = Resolvable;
 
    private:
       // Runtime that owns the module instance                          
       Runtime* mRuntime;
 
    public:
-      Module(Runtime* runtime) IF_UNSAFE(noexcept)
+      Module(Runtime* runtime) assumptious
          : Resolvable {this}
          , mRuntime   {runtime} {}
 
@@ -80,7 +69,7 @@ namespace Langulus::A
 
       struct Info {
          // Define the order in which module updates, relative to others
-         Langulus::Real mPriority;
+         Real mPriority;
          // Name of the module                                          
          const char* mName;
          // Information about the module                                
@@ -106,17 +95,14 @@ namespace Langulus::A
          return true;
       }
    };
-
-} // namespace Langulus::A
+}
 
 namespace Langulus::CT
 {
-
    /// Any type that inherits Module is considered a module                   
    template<class T>
-   concept Module = DerivedFrom<T, ::Langulus::A::Module>;
-
-} // namespace Langulus::CT
+   concept Module = DerivedFrom<T, ::Langulus::Module>;
+}
 
 
 /// Name of module entry function                                             
@@ -150,7 +136,7 @@ namespace Langulus::CT
       } \
       \
       LANGULUS_EXPORT() \
-      ::Langulus::A::Module* LANGULUS_MODULE_CREATE() ( \
+      ::Langulus::Things::Module* LANGULUS_MODULE_CREATE() ( \
          ::Langulus::Things::Runtime* rt, const ::Langulus::Annies::Many& desc) { \
          static_assert(::Langulus::CT::DerivedFrom<m, ::Langulus::A::Module>, \
             "Langulus module class interface " \
@@ -162,8 +148,8 @@ namespace Langulus::CT
       } \
       \
       LANGULUS_EXPORT() \
-      const ::Langulus::A::Module::Info* LANGULUS_MODULE_INFO() () { \
-         static const ::Langulus::A::Module::Info i { \
+      const ::Langulus::Things::Module::Info* LANGULUS_MODULE_INFO() () { \
+         static const ::Langulus::Things::Module::Info i { \
             prio, name, info, depo, ::Langulus::MetaDataOf<cat>() \
          }; \
          return &i; \

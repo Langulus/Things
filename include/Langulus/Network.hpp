@@ -6,18 +6,17 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-#include "Things/Module.hpp"
+#include "Thing.hpp"
+#include "Module.hpp"
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Abstract network module                                              
    ///                                                                        
    struct Network : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       Network() : Resolvable {this}, Module {nullptr} {}
    };
 
@@ -25,8 +24,8 @@ namespace Langulus::A
    ///   Abstract network unit                                                
    ///                                                                        
    struct NetworkUnit : virtual Unit {
-      LANGULUS(PRODUCER) Network;
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
+      using CTTI_Producer = Network;
       NetworkUnit() : Resolvable {this} {}
    };
 
@@ -34,7 +33,7 @@ namespace Langulus::A
    ///   Abstract network client                                              
    ///                                                                        
    struct Client : virtual NetworkUnit {
-      LANGULUS_BASES(NetworkUnit);
+      using CTTI_Bases = NetworkUnit;
       Client() : Resolvable {this} {}
    };
    
@@ -42,7 +41,7 @@ namespace Langulus::A
    ///   Abstract network server                                              
    ///                                                                        
    struct Server : virtual NetworkUnit {
-      LANGULUS_BASES(NetworkUnit);
+      using CTTI_Bases = NetworkUnit;
       Server() : Resolvable {this} {}
    };
    
@@ -50,9 +49,8 @@ namespace Langulus::A
    ///   Abstract network shared object                                       
    ///                                                                        
    struct Shared : virtual NetworkUnit {
-      LANGULUS(PRODUCER) NetworkUnit;
-      LANGULUS_BASES(NetworkUnit);
+      using CTTI_Bases = NetworkUnit;
+      using CTTI_Producer = NetworkUnit;
       Shared() : Resolvable {this} {}
    };
-
-} // namespace Langulus::A
+}

@@ -5,7 +5,7 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
-#include "Thing.hpp"
+#include <Langulus/Thing.hpp>
 #include "Thing.inl"
 
 

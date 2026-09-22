@@ -6,18 +6,17 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-#include "Things/Module.hpp"
+#include "Thing.hpp"
+#include "Module.hpp"
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Abstract artificial intelligence module                              
    ///                                                                        
    struct AIModule : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       AIModule() : Resolvable {this}, Module {nullptr} {}
    };
 
@@ -25,8 +24,8 @@ namespace Langulus::A
    ///   Abstract artificial intelligence unit                                
    ///                                                                        
    struct AIUnit : virtual Unit {
-      LANGULUS(PRODUCER) AIModule;
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases     = Unit;
+      using CTTI_Producer  = AIModule;
       AIUnit() : Resolvable {this} {}
    };
 
@@ -34,10 +33,9 @@ namespace Langulus::A
    ///   Abstract mind                                                        
    ///                                                                        
    struct Mind : virtual AIUnit {
-      LANGULUS_BASES(AIUnit);
+      using CTTI_Bases = AIUnit;
       Mind() : Resolvable {this} {}
 
-      virtual Many Interpret(const Langulus::Text&) = 0;
+      virtual Many Interpret(const Text&) = 0;
    };
-
-} // namespace Langulus::A
+}

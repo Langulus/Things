@@ -72,22 +72,31 @@ LANGULUS_DEFINE_TAG(Time,
    "Temporal properties");
 LANGULUS_DEFINE_TAG(Precedence,
    "Precedence, priority, or other similar properties");
-
-namespace Langulus::CTTI
-{
-   LglsImplementAbilitiesFor(void) {
-      using Can = Verbs::Select;
-
-      /// Stateless selection, for selecting some global things, like the     
-      /// logger, for example.                                                
-      ///   @param verb selection verb                                        
-      ///   @return true if verb has been satisfied                           
-      bool Stateless(Verb& verb) {
-         verb.ForEachDeep([&](RTTI::TMeta t) {
-            if (t == MetaTagOf<Tags::Logger>())
-               verb << Logger::Context {};
-         });
-         return verb.IsDone();
-      }
-   }
-}
+LANGULUS_DEFINE_TAG(Runtime,
+   "Accesses the runtime of a hierarchy of Things");
+LANGULUS_DEFINE_TAG(Unit,
+   "Accesses units (components) of Things");
+LANGULUS_DEFINE_TAG(Mesh,
+   "Associated geometry asset");
+LANGULUS_DEFINE_TAG(FOV,
+   "Horizontal field of view angle, usually a real number");
+LANGULUS_DEFINE_TAG(AspectRatio,
+   "Aspect ratio (width / height), usually a real number");
+LANGULUS_DEFINE_TAG(Viewport,
+   "Viewport and depth clipping, usually a Range4");
+LANGULUS_DEFINE_TAG(Image, 
+   "Associated image asset");
+LANGULUS_DEFINE_TAG(Material,
+   "Associated material asset");
+LANGULUS_DEFINE_TAG(Shader, 
+   "Associated shader asset");
+LANGULUS_DEFINE_TAG(Cursor,
+   "Enables or disables cursor for window");
+LANGULUS_DEFINE_TAG(Monitor,
+   "Monitor to which window is bound, making it fullscreen");
+LANGULUS_DEFINE_TAG(MousePosition,
+   "Mouse position, relative to a window");
+LANGULUS_DEFINE_TAG(MouseScroll,
+   "Mouse scroll for window");
+LANGULUS_DEFINE_TAG(NativeWindowHandle,
+   "Native window handle");

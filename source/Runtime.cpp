@@ -5,23 +5,23 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
-#include "Thing.hpp"
-#include "Runtime.hpp"
-#include "../include/Langulus/Asset.hpp"
-#include "../include/Langulus/Graphics.hpp"
-#include "../include/Langulus/Image.hpp"
-#include "../include/Langulus/IO.hpp"
-#include "../include/Langulus/Material.hpp"
-#include "../include/Langulus/Mesh.hpp"
-#include "../include/Langulus/Physical.hpp"
-#include "../include/Langulus/Platform.hpp"
-#include "../include/Langulus/UI.hpp"
-#include "../include/Langulus/AI.hpp"
-#include "../include/Langulus/Input.hpp"
-#include "../include/Langulus/Life.hpp"
-#include "../include/Langulus/Network.hpp"
-#include "../include/Langulus/User.hpp"
-#include "../include/Langulus/Economy.hpp"
+#include <Langulus/Thing.hpp>
+#include <Langulus/Runtime.hpp>
+#include <Langulus/Asset.hpp>
+#include <Langulus/Graphics.hpp>
+#include <Langulus/Image.hpp>
+#include <Langulus/IO.hpp>
+#include <Langulus/Material.hpp>
+#include <Langulus/Mesh.hpp>
+#include <Langulus/Physical.hpp>
+#include <Langulus/Platform.hpp>
+#include <Langulus/UI.hpp>
+#include <Langulus/AI.hpp>
+#include <Langulus/Input.hpp>
+#include <Langulus/Life.hpp>
+#include <Langulus/Network.hpp>
+#include <Langulus/User.hpp>
+#include <Langulus/Economy.hpp>
 
 #if LANGULUS_OS(WINDOWS)
    #include <Windows.h>

@@ -6,18 +6,17 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Thing.hpp"
-#include "Things/Module.hpp"
+#include "Thing.hpp"
+#include "Module.hpp"
 
 
-namespace Langulus::A
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Abstract user module                                                 
    ///                                                                        
    struct UserModule : virtual Module {
-      LANGULUS_BASES(Module);
+      using CTTI_Bases = Module;
       UserModule() : Resolvable {this}, Module {nullptr} {}
    };
 
@@ -25,9 +24,8 @@ namespace Langulus::A
    ///   Abstract user unit                                                   
    ///                                                                        
    struct User : virtual Unit {
-      LANGULUS(PRODUCER) UserModule;
-      LANGULUS_BASES(Unit);
+      using CTTI_Bases = Unit;
+      using CTTI_Producer = UserModule;
       User() : Resolvable {this} {}
    };
-
-} // namespace Langulus::A
+}

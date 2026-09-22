@@ -5,7 +5,7 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
-#include "Unit.hpp"
+#include <Langulus/Unit.hpp>
 #include "Thing.inl"
 #include "Unit-Gather.inl"
 #include "Unit-Seek.inl"

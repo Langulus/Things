@@ -7,15 +7,12 @@
 ///                                                                           
 #pragma once
 #include "Asset.hpp"
-#include <Langulus/Math/Mapping.hpp>
-
-LANGULUS_DEFINE_TRAIT(Mesh, "Mesh unit");
-LANGULUS_EXCEPTION(Mesh);
+#include <Langulus/Mapping.hpp>
+#include <Langulus/Vectors/TVector.hpp>
 
 
-namespace Langulus
+namespace Langulus::Things
 {
-
    ///                                                                        
    ///   Vertex/index buffer view                                             
    ///                                                                        
@@ -42,11 +39,7 @@ namespace Langulus
       auto Decay() const -> MeshView;
       Hash GetHash() const noexcept;
    };
-   
-} // namespace Langulus
 
-namespace Langulus::A
-{
    
    ///                                                                        
    ///   Abstract geometry content                                            
@@ -59,7 +52,8 @@ namespace Langulus::A
       MeshView mView;
 
    public:
-      LANGULUS_BASES(Asset);
+      using CTTI_Bases = Asset;
+
       Mesh() : Resolvable {this} {}
 
       template<CT::Topology, CT::Topology...>
@@ -75,21 +69,21 @@ namespace Langulus::A
       // Point utilities                                                
       bool MadeOfPoints() const noexcept;
       auto GetPointCount() const -> size_t;
-      template<CT::Trait>
+      template<CT::DefineTag>
       Many GetPointTrait(size_t) const;
 
       // Line utilities                                                 
       bool MadeOfLines() const noexcept;
       auto GetLineCount() const -> size_t;
       auto GetLineIndices(size_t) const -> Vec2u;
-      template<CT::Trait>
+      template<CT::DefineTag>
       Many GetLineTrait(size_t) const;
 
       // Triangle utilities                                             
       bool MadeOfTriangles() const noexcept;
       auto GetTriangleCount() const -> size_t;
       auto GetTriangleIndices(size_t) const -> Vec3u;
-      template<CT::Trait>
+      template<CT::DefineTag>
       Many GetTriangleTrait(size_t) const;
 
       ///                                                                     
@@ -104,28 +98,25 @@ namespace Langulus::A
       template<bool INDEXED, class...T>
       size_t ForEachVertexInner(Types<T...>, auto&& call) const;
 
-      template<CT::Trait T>
+      template<CT::DefineTag T>
       T ForEachVertex_PrepareStream() const;
 
-      template<CT::Trait T>
+      template<CT::DefineTag T>
       T ForEachVertex_PrepareIndexStream() const;
 
       template<CT::Topology>
-      auto PickVertex(size_t i, const CT::Trait auto& data, const CT::Trait auto& indices) const;
+      auto PickVertex(size_t i, const CT::DefineTag auto& data, const CT::DefineTag auto& indices) const;
 
       template<CT::Topology, size_t...STREAM_ID>
       auto GenerateVertex(size_t i, const auto& data, const auto& indices, std::index_sequence<STREAM_ID...>&&) const;
    };
-
-} // namespace Langulus::A
+}
 
 namespace Langulus::CT
 {
-
    /// A concept for any kind of geometric content unit                       
    template<class T>
    concept Mesh = DerivedFrom<T, A::Mesh>;
-
-} // namespace Langulus::CT
+}
 
 #include "Mesh.inl"

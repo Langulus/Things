@@ -6,13 +6,12 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Unit.hpp"
+#include <Langulus/Unit.hpp>
 #include "Hierarchy-Gather.inl"
 
 
-namespace Langulus::A
+namespace Langulus
 {
-   
    /// Collects all units of the given type inside the hierarchy              
    ///   @tparam SEEK - where in the hierarchy are we seeking in?             
    ///   @param meta - the units to seek for                                  
@@ -39,5 +38,4 @@ namespace Langulus::A
    TMany<D> Unit::GatherValues() const {
       return mOwners.template GatherValues<SEEK, D>();
    }
-
-} // namespace Langulus::Things
+}

@@ -5,7 +5,7 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
-#include "Event.inl"
+#include <Langulus/Event.inl>
 
 
 namespace Langulus

@@ -6,16 +6,18 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Things/Export.hpp"
+#include "Langulus/CT/Convertible.hpp"
+#include "Langulus/CT/Event.hpp"
+#include "Langulus/MetaOf.hpp"
+#include "Langulus/RTTI/Definition.hpp"
 #include <Langulus/Time.hpp>
+#include <Langulus/Many.hpp>
+#include <Langulus/Describe.hpp>
+#include "Things/Export.hpp"
 
 
 namespace Langulus
 {
-
-   LANGULUS_API(THINGS) extern void RegisterEvents();
-
-
    ///                                                                        
    ///   Event state                                                          
    ///                                                                        
@@ -58,74 +60,174 @@ namespace Langulus
 
       constexpr void Reset() noexcept;
    };
+}
 
+namespace Langulus::Annies::Inner
+{
+   /// Event extends the usual type-erased Many, by adding charge and         
+   /// type as members.                                                       
+   using EventBase = typename ManyBase::template Include<
+      Com::Stack<DMeta, 1>,         // Add the event type               
+      Com::Stack<EventState, 2>,    // Add the event state              
+      Com::Stack<TimePoint, 3>      // Add the timestamp of creation    
+   >;
+}
 
+namespace Langulus
+{
    ///                                                                        
    ///   An event                                                             
    ///                                                                        
    ///   Simply a named container, that has some of the conventional data     
    /// associated with events, like event type, state and timestamp moved     
-   /// to the stack, for less allocations, and faster runtime retrieval       
-   ///   Events are often used as arguments for Verbs::Interact               
+   /// to the stack, for less allocations and faster runtime retrieval.       
+   ///   Events are often used as arguments for Verbs::Interact.              
    ///                                                                        
-   struct Event {
-      using Many = Annies::Many;
+   struct Event : Annies::Inner::EventBase {
+      using CTTI_Event  = Yup;
+      using CTTI_Deep   = No;
+      using Base        = Annies::Inner::EventBase;
+      using DeepType    = Many;
+      using DMeta       = RTTI::DMeta;
 
-      LANGULUS_CONVERTS_TO(Annies::Text);
+      constexpr Event() noexcept {
+         this->ConstructDefault();
+      }
+      constexpr Event(Event const& other) {
+         this->Absorb(Refer(other));
+      }
+      constexpr Event(Event&& other) noexcept  {
+         this->Absorb(Move(other));
+      }
+      constexpr ~Event() noexcept {
+         this->Destroy();
+      }
 
-      // Event type                                                     
-      RTTI::DMeta mType {};
-      // Event state                                                    
-      EventState mState;
-      // Event timestamp                                                
-      TimePoint mTimestamp;
-      // Payload, for additional data                                   
-      Annies::Many mPayload;
+      /// Create an event of particular kind                                  
+      ///   @param event what is the event?                                   
+      ///   @param arguments... arguments for the descriptor                  
+      ///   @return the new event instance                                    
+      static Event Of(DMeta event, auto&&...arguments) {
+         Event result {LglsFwd(arguments)...};
+         result.SetEvent(event);
+         return Abandon(result);
+      }
+   
+      static Event Of(Event const& event, auto&&...arguments) {
+         Event result {LglsFwd(arguments)...};
+         result.SetEvent(event.GetType());
+         return Abandon(result);
+      }
 
-      ///                                                                     
-      ///   Construction                                                      
-      ///                                                                     
-      Event();
-      Event(const Event&);
-      Event(Event&&);
-      template<class T1, class...TN> requires CT::UnfoldInsertable<T1, TN...>
-      Event(T1&&, TN&&...);
-      Event(Describe);
+      /// Set what this event is                                              
+      void SetEvent(DMeta event) noexcept {
+         *Annies::Com::Stack<DMeta, 1>::Get() = event;
+      }
 
-      ///                                                                     
-      ///   Assignment                                                        
-      ///                                                                     
-      Event& operator = (const Event&);
-      Event& operator = (Event&&) noexcept;
-      Event& operator = (CT::UnfoldInsertable auto&&);
+      /// What is happening in that event?                                    
+      DMeta GetEvent() const noexcept {
+         return *Annies::Com::Stack<DMeta, 1>::Get();
+      }
+   
+      /// Set event state                                                     
+      void SetEventState(EventState state) noexcept {
+         *Annies::Com::Stack<EventState, 2>::Get() = state;
+      }
 
-      ///                                                                     
-      ///   Comparison                                                        
-      ///                                                                     
-      bool operator == (const Event&) const;
+      /// What is this event's state?                                         
+      EventState GetEventState() const noexcept {
+         return *Annies::Com::Stack<EventState, 2>::Get();
+      }
 
-      LANGULUS_API(THINGS) operator Annies::Text() const;
+      /// What is this a recipe for?                                          
+      TimePoint GetTimestamp() const noexcept {
+         return *Annies::Com::Stack<TimePoint, 3>::Get();
+      }
+   
+      /// Get the payload of the event                                        
+      Many GetPayload() const noexcept {
+         return Many {Annies::Inner::Absorb{}, *this};
+      }
+   
+      /// Construction that either absorbs the provided containers, or        
+      /// emplaces all A in the container                                     
+      template<Annies::Disambiguate A1, class...AN>
+      constexpr Event(A1&& a1, AN&&...an) {
+         if constexpr (sizeof...(AN) == 0) {
+            if constexpr (CT::DeepDense<Deint<A1>> or CT::Event<A1>) {
+               LglsAssumeUser(Same<Deint<A1>, Event>,
+                  "Ambiguous use of construction "
+                  "- you should use tag-dispatch with first argument either Absorb "
+                  "(if you want to overwrite the container itself) or Piecewise "
+                  "(if you want to overwrite the first item) in order to clearly "
+                  "state your intent. Absorb will be used by default!"
+               );
+               this->Absorb(LglsFwd(a1));
+            }
+            else this->EmplaceConstruct(LglsFwd(a1));
+         }
+         else {
+            this->ConstructDefault();
+            this->Insert(LglsFwd(a1), LglsFwd(an)...);
+         }
+      }
+      
+      /// Construction that absorbs the provided containers                   
+      template<class A1, class...AN>
+      constexpr Event(Annies::Inner::Absorb, A1&& a1, AN&&...an) {
+         if constexpr (sizeof...(AN) == 0)
+            this->Absorb(LglsFwd(a1));
+         else {
+            this->ConstructDefault();
+            this->Concat(LglsFwd(a1), LglsFwd(an)...);
+         }
+      }
+      
+      /// Construction that emplaces all arguments inside                     
+      template<class A1, class...AN>
+      constexpr Event(Annies::Inner::Piecewise, A1&& a1, AN&&...an) {
+         if constexpr (sizeof...(AN) == 0)
+            this->EmplaceConstruct(LglsFwd(a1));
+         else {
+            this->ConstructDefault();
+            this->Insert(LglsFwd(a1), LglsFwd(an)...);
+         }
+      }
+      
+      /// Assignment                                                          
+      constexpr Event& operator = (Many const& other) {
+         return this->AssignAbsorb(Refer(other));
+      }
+      constexpr Event& operator = (Many&& other) noexcept {
+         return this->AssignAbsorb(Move(other));
+      }
+      
+      template<class A>
+      constexpr Event& operator = (A&& argument) {
+         if constexpr (CT::DeepDense<Deint<A>> or CT::Event<A>) {
+            LglsAssumeUser(Same<Deint<A>, Event>,
+               "Ambiguous use of assignment "
+               "- you should use either AssignAbsorb (if you want to overwrite "
+               "the container itself) or Assign (if you want to overwrite the "
+               "first item) in order to clearly state your intent. "
+               "AssignAbsorb will be used by default!"
+            );
+            return this->AssignAbsorb(LglsFwd(argument));
+         }
+         else return this->Assign(LglsFwd(argument));
+      }
+
+      using Annies::Com::Comparison<>::operator <=>;
+      using Annies::Com::Comparison<>::operator ==;
+
+   private:
+      /// Set timestamp at which the event was generated                      
+      void SetTimestamp(TimePoint t) noexcept {
+         *Annies::Com::Stack<TimePoint, 3>::Get() = t;
+      }
    };
 
-   using EventList = TUnorderedMap<DMeta, TUnorderedMap<EventState, Event>>;
-
-   namespace CT
-   {
-
-      /// A EventBased type is any type that inherits Event                   
-      template<class...T>
-      concept EventBased = (DerivedFrom<T, ::Langulus::Event> and ...);
-
-      /// A reflected event type is any type that inherits Event, is not      
-      /// Event itself, and is binary compatible to an Event                  
-      template<class...T>
-      concept Event = EventBased<T...> and ((
-            sizeof(T) == sizeof(::Langulus::Event)
-            and requires { {Decay<T>::CTTI_Event} -> Similar<Token>; }
-         ) and ...);
-
-   } // namespace Langulus::CT
-
+   //using EventList = TMapUnsorted<DMeta, TMapUnsorted<EventState, Event>>;
 
    /// Define an event specialization in ::Langulus::Events namespace         
    ///   @param EVENT - name of the event type                                
@@ -133,21 +235,19 @@ namespace Langulus
    #define LANGULUS_DEFINE_EVENT(EVENT, INFOSTRING) \
       namespace Langulus::Events { \
          struct EVENT : Event { \
-            LANGULUS(INFO) INFOSTRING; \
-            LANGULUS_BASES(Event); \
-            static constexpr Token CTTI_Event = #EVENT; \
-            EVENT() : Event {} { \
-               mType = MetaOf<EVENT>(); \
-            } \
+            using CTTI_ReflectAs = Event; \
+            using CTTI_Info = Yes<INFOSTRING>; \
+            using CTTI_Bases = Event; \
+            using CTTI_DefineEvent = Yes<#EVENT>; \
+            EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
             EVENT(Describe descriptor) { \
-               mType = MetaOf<EVENT>(); \
-               descriptor->ExtractData(mState); \
-               descriptor->ExtractTrait<Traits::Data>(mPayload); \
+               SetEvent(MetaDataOf<EVENT>()); \
+               descriptor.ExtractData(*Annies::Com::Stack<EventState, 2>::Get()); \
+               descriptor.ExtractTag<Tags::Data>(*this); \
             } \
-            template<class... T_> \
-            EVENT(EventState state, T_&&...a) : Event {Forward<T_>(a)...} { \
-               mType = MetaOf<EVENT>(); \
-               mState = state; \
+            EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \
+               SetEvent(MetaDataOf<EVENT>()); \
+               SetEventState(state); \
             } \
          }; \
       }
@@ -158,27 +258,25 @@ namespace Langulus
    #define LANGULUS_DEFINE_KEY(EVENT, INFOSTRING) \
       namespace Langulus::Keys { \
          struct EVENT : Event { \
-            LANGULUS(INFO) INFOSTRING; \
-            LANGULUS_BASES(Event); \
-            static constexpr Token CTTI_Event = #EVENT; \
-            EVENT() : Event {} { \
-               mType = MetaOf<EVENT>(); \
-            } \
+            using CTTI_ReflectAs = Event; \
+            using CTTI_Info = Yes<INFOSTRING>; \
+            using CTTI_Bases = Event; \
+            using CTTI_DefineEvent = Yes<#EVENT>; \
+            EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
             EVENT(Describe descriptor) { \
-               mType = MetaOf<EVENT>(); \
-               descriptor->ExtractData(mState); \
-               descriptor->ExtractTrait<Traits::Data>(mPayload); \
+               SetEvent(MetaDataOf<EVENT>()); \
+               descriptor.ExtractData(*Annies::Com::Stack<EventState, 2>::Get()); \
+               descriptor.ExtractTag<Tags::Data>(*this); \
             } \
-            template<class... T_> \
-            EVENT(EventState state, T_&&...a) : Event {Forward<T_>(a)...} { \
-               mType = MetaOf<EVENT>(); \
-               mState = state; \
+            EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \
+               SetEvent(MetaDataOf<EVENT>()); \
+               SetEventState(state); \
             } \
          }; \
       }
+}
 
-} // namespace Langulus
-
+LANGULUS_MORPHISM(Langulus::Event, Langulus::Annies::Text);
 
 LANGULUS_DEFINE_EVENT(WindowClose,
    "An event that occurs when native window closes")

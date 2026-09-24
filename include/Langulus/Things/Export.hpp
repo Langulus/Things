@@ -100,3 +100,8 @@ LANGULUS_DEFINE_TAG(MouseScroll,
    "Mouse scroll for window");
 LANGULUS_DEFINE_TAG(NativeWindowHandle,
    "Native window handle");
+
+namespace Langulus
+{   
+   LANGULUS_API(THINGS) extern void RegisterEvents();
+}

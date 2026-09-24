@@ -71,27 +71,27 @@ namespace Langulus::Verbs
    ///   @return true if verb was satisfied                                   
    inline bool Create::ExecuteDefault(Many&, Verb& verb) {
       // Attempt creating/destroying constructs                         
-      verb.ForEachDeep([&](const Construct& construct) {
-         if (construct.GetProducer()) {
+      verb.ForEachDeep([&](const Recipe& recipe) {
+         if (recipe.GetProducer()) {
             // Creation of customly produced type hit default creation, 
             // and that should not be allowed - you probably forgot to  
             // add and reflect the Verbs::Create in the producer        
             return;
          }
-         else if (construct->IsMissingDeep()) {
+         else if (recipe->IsMissingDeep()) {
             // Creation of missing stuff is not allowed                 
             return;
          }
 
-         if (construct.GetCharge().mMass * verb.GetMass() < 0) {
+         if (recipe.GetCharge().mMass * verb.GetMass() < 0) {
             TODO(); //destroy
          }
          else {
             // Create                                                   
             // First allocate and default-initialize the results        
-            auto created = Many::FromMeta(construct.GetType());
-            created.New(size_t(construct.GetCharge().mMass));
-            auto& arguments = construct.GetDescriptor();
+            auto created = Many::FromMeta(recipe.GetTarget());
+            created.New(size_t(recipe.GetCharge().mMass));
+            auto& arguments = recipe.GetDescriptor();
 
             // Then forward the constructors to each element            
             if (arguments) {
@@ -133,19 +133,19 @@ namespace Langulus::Verbs
       if (not verb or verb.GetMass() <= 0)
          return false;
 
-      const auto createInner = [&](const Construct& descriptor) {
-         if (descriptor.GetType()->mProducerRetriever
-         or  descriptor->IsMissingDeep()) {
+      const auto createInner = [&](const Recipe& recipe) {
+         if (recipe.GetTarget()->mProducerRetriever
+         or  recipe->IsMissingDeep()) {
             // Creation of missing/runtime stuff is not allowed         
             return;
          }
 
          // Charged creation of a type                                  
-         const auto type = descriptor.GetType();
-         const auto count = static_cast<size_t>(descriptor.GetCharge().mMass * verb.GetMass());
+         const auto type = recipe.GetTarget();
+         const auto count = static_cast<size_t>(recipe.GetCharge().mMass * verb.GetMass());
          auto result = Many::FromMeta(type);
 
-         if (type->mDescriptorConstructor and descriptor.GetDescriptor()) {
+         if (type->mDescriptorConstructor and recipe.GetDescriptor()) {
             for (Offset i = 0; i < count; ++i) {
                if (count != 1) {
                   VERBOSE_CREATION(Logger::Yellow,
@@ -155,15 +155,15 @@ namespace Langulus::Verbs
                }
 
                try {
-                  result.Emplace(IndexBack, Describe {descriptor.GetDescriptor()});
+                  result.Emplace(IndexBack, Describe {recipe.GetDescriptor()});
                }
                catch (...) {
-                  ERROR_CREATION("Can't statelessly produce ", descriptor);
+                  ERROR_CREATION("Can't statelessly produce ", recipe);
                   return;
                }
             }
          }
-         else if (type->mDefaultConstructor and not descriptor.GetDescriptor()) {
+         else if (type->mDefaultConstructor and not recipe.GetDescriptor()) {
             for (Offset i = 0; i < count; ++i) {
                if (count != 1) {
                   VERBOSE_CREATION(Logger::Yellow,
@@ -176,13 +176,13 @@ namespace Langulus::Verbs
                   result.Emplace(IndexBack);
                }
                catch (...) {
-                  ERROR_CREATION("Can't statelessly produce ", descriptor);
+                  ERROR_CREATION("Can't statelessly produce ", recipe);
                   return;
                }
             }
          }
          else {
-            ERROR_CREATION("Can't statelessly produce ", descriptor);
+            ERROR_CREATION("Can't statelessly produce ", recipe);
             return;
          }
 
@@ -198,7 +198,7 @@ namespace Langulus::Verbs
 
          group.ForEach(
             [&](const Construct& construct) {
-               if (construct.GetType() and construct.GetCharge().mMass > 0) {
+               if (construct.GetTarget() and construct.GetCharge().mMass > 0) {
                   VERBOSE_CREATION("Creating: ", Logger::Yellow, construct);
                   createInner(construct);
                }

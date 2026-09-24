@@ -550,14 +550,14 @@ namespace Langulus::Things
    ///   @param construct - instructions for the creation of the data         
    ///   @return created data                                                 
    template<Seek SEEK>
-   Many Thing::CreateData(const Construct& construct) {
-      LglsAssumeUser(construct.GetType(),
+   Many Thing::CreateData(const Recipe& recipe) {
+      LglsAssumeUser(recipe.GetTarget(),
          "Invalid construct type");
 
-      const auto type = construct.GetType();
+      const auto type = recipe.GetTarget();
       const auto producer = type and type->mProducerRetriever
          ? type->mProducerRetriever() : nullptr;
-      Construct descriptor = construct;
+      Recipe descriptor = recipe;
 
       THINGS_VERBOSE_SELF(
          "Acting as producer context for making `", 

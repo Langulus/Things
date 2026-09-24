@@ -120,29 +120,29 @@ namespace Langulus::Things
          return Loop::Continue;
       };
 
-      const auto selectConstruct = [&](const Construct& construct) {
-         if (construct.Is<Thing>()) {
+      const auto selectConstruct = [&](const Recipe& recipe) {
+         if (recipe.Is<Thing>()) {
             // Find an entity containing construct arguments            
             // Start with this one                                      
-            Verbs::Select selector {construct.GetDescriptor()};
+            Verbs::Select selector {recipe.GetDescriptor()};
             Select(selector);
             if (selector.GetOutput()) {
                selectedEntities << this;
                return Loop::Continue;
             }
          }
-         else if (construct.CastsTo<A::Unit>()) {
+         else if (recipe.CastsTo<Things::Unit>()) {
             // Find a unit containing construct arguments               
-            if (not selectUnit(construct.GetType()))
+            if (not selectUnit(recipe.GetTarget()))
                return Loop::Break;
 
             // selectedComponents has been populated with results       
             // Filter them additionally by construct arguments          
-            TMany<A::Unit*> filteredSelectedComponents;
+            TMany<Things::Unit*> filteredSelectedComponents;
             for (auto& unit : selectedUnits) {
                bool localMismatch = false;
                auto unitBlock = unit->GetBlock();
-               construct->ForEach(
+               recipe->ForEach(
                   [&](const Many& part) {
                      for (size_t i = 0; i < part.GetCount(); ++i) {
                         auto element = part.GetElementResolved(i);
@@ -172,8 +172,8 @@ namespace Langulus::Things
       };
 
       verb.ForEachDeep(
-         [&](const Construct& construct) {
-            return selectConstruct(construct);
+         [&](const Recipe& recipe) {
+            return selectConstruct(recipe);
          },
          [&](const Trait& trait) {
             return selectTrait(trait.GetTrait());

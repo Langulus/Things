@@ -10,59 +10,6 @@
 #include <Langulus/Tag.hpp>
 
 
-namespace Langulus::Verbs
-{
-   /// Compile-time check if a verb is implemented in the provided type       
-   ///   @return true if verb is available                                    
-   /*template<CT::Dense T, CT::NotVoid...A>
-   constexpr bool Do::AvailableFor() noexcept {
-      if constexpr (sizeof...(A) == 0)
-         return requires (T& t, Verb& v) { t.Do(v); };
-      else
-         return requires (T& t, Verb& v, A...a) { t.Do(v, a...); };
-   }
-
-   /// Get the verb functor for the given type and arguments                  
-   ///   @return the function, or nullptr if not available                    
-   template<CT::Dense T, CT::NotVoid...A>
-   constexpr auto Do::Of() noexcept {
-      if constexpr (CT::Constant<T>) {
-         return [](const void* context, Flow::Verb& verb, A...args) {
-            auto typedContext = static_cast<const T*>(context);
-            typedContext->Do(verb, args...);
-         };
-      }
-      else {
-         return [](void* context, Flow::Verb& verb, A...args) {
-            auto typedContext = static_cast<T*>(context);
-            typedContext->Do(verb, args...);
-         };
-      }
-   }*/
-
-   /// Execute the do/undo verb in a specific context                         
-   ///   @param context - the context to execute in                           
-   ///   @param verb - the verb to execute                                    
-   ///   @return true if verb has been satisfied                              
-   /*bool Do::ExecuteIn(CT::Dense auto& context, Verb& verb) {
-      using T = Deref<decltype(context)>;
-      static_assert(Do::AvailableFor<T>(),
-         "Verb is not available for this context, this shouldn't be reached by flow");
-      context.Do(verb);
-      return verb.IsDone();
-   }*/
-
-   /// Wrap anything in a Do verb, executing stuff in a specific context      
-   ///   @param context - the context to execute in                           
-   ///   @param verb - the verb/flow to execute                               
-   ///   @return the Do verb                                                  
-   /*inline Do Do::In(auto&& context, auto&& verb) {
-      Do v = FWDIntent(verb);
-      v.context = FWDIntent(context);
-      return v;
-   }*/
-}
-
 namespace Langulus::Flow
 {
    /// Invoke a single verb on a single context                               
@@ -252,6 +199,7 @@ namespace Langulus::Flow
             return verb.GetSuccesses();
          }
       }*/
+
       if (not context) {
          // Context is empty and doesn't have any relevant states,      
          // and execution happens only if DEFAULT verbs are allowed,    

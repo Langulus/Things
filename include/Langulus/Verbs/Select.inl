@@ -20,7 +20,7 @@
 
 namespace Langulus::CTTI
 {
-   LglsImplementAbilitiesFor(void) {
+   LglsImplementAbilitiesFor(void) { //TODO not allowed - can't reflect void type, instead we should arrive here from the argument type instead of the context
       using Can = Verbs::Select;
 
       /// Stateless selection, for selecting some global things, like the     

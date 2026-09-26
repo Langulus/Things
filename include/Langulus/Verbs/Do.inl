@@ -6,9 +6,102 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Do.hpp"
-#include <Langulus/Tag.hpp>
+#include <Langulus/Verbs/Do.hpp>
+#include <Langulus/TTag.hpp>
+#include <Langulus/TMany.hpp>
 
+#if 0
+   #define VERBOSE(...)      Logger::Verbose(__VA_ARGS__)
+   #define VERBOSE_TAB(...)  const auto tab = Logger::VerboseTab(__VA_ARGS__)
+#else
+   #define VERBOSE(...)      LANGULUS(NOOP)
+   #define VERBOSE_TAB(...)  LANGULUS(NOOP)
+#endif
+
+#define FLOW_ERRORS(...)  Logger::Error(__VA_ARGS__)
+
+
+namespace Langulus::CTTI
+{
+   LglsImplementAbilitiesFor(Annies::Many) {
+      using Can = Verbs::Do;
+
+      /// Perform any flow in a deep context by dispatching the argument to   
+      /// each subcontainer, preserving hierarchy in the outputs. Example:    
+      ///    {1 or 2 or 3} add 1 --> {{1 add 1} or {2 add 1} or {3 add 1}}    
+      ///                         resulting in:                               
+      ///                         {2 or 3 or 4}                               
+      static bool Default(Annies::Many const& lhs, Annies::Verb& verb) {
+         // What kind of data does 'lhs' hold? Is it capable of         
+         // dispatching? If so, do that and ignore anything else.       
+         // This is where deep containers get nested before executing   
+         // any verbs. The verb's argument will get eventually run in   
+         // a dispatcher that cares about it.                           
+         auto& abilities = lhs.GetType().GetVerbs();
+         auto& output    = verb.GetOutput();
+         auto found_dispatcher = abilities.find(MetaVerbOf<Verbs::Do>().GetDefinition());
+         if (found_dispatcher != abilities.end()) {
+            // Custom reflected dispatcher is available.                
+            // It's your responsibility to implement it adequately.     
+            // Keep in mind, that once you declare a custom Do for your 
+            // type, you no longer rely on reflected bases' verbs or    
+            // default verbs. You must invoke those by yourself in your 
+            // dispatcher - the custom dispatcher provides full control!
+            auto dispatch = Verbs::Do::From(verb, verb.GetArgument());
+            size_t successCount = 0;
+            for (auto handle : lhs) {
+               if (found_dispatcher(handle.GetRaw(), dispatch)) {
+                  output.Compose(Move(dispatch.GetOutput()));
+                  ++successCount;
+                  dispatch.Clear();
+               }
+            }
+            return successCount > 0;
+         }
+
+         //                                                             
+         // If reached, then contained type has no dispatcher. Time     
+         // to run the verb's argument inside whatever context there is.
+         // Thing is, the argument might contain a whole hierarchy of   
+         // verbs, and we must preserve that.                           
+         auto const& flow = verb.GetArgument();
+         auto results = Many::CopyStates(flow);
+         if (flow) {
+            if (integrate)
+               VERBOSE_TAB("Executing scope (integrating): { ", flow, " }");
+            else
+               VERBOSE_TAB("Executing scope: { ", flow, ']');
+   
+            if (flow.IsOr())
+               ExecuteOR(flow, lhs, results, integrate, skipVerbs, silent);
+            else
+               ExecuteAND(flow, lhs, results, integrate, skipVerbs, silent);
+         }
+      
+         output.Compose(Abandon(results));
+         return true;
+      }
+   };
+   
+   LglsImplementAbilitiesFor(Annies::Tag) {
+      using Can = Verbs::Do;
+
+      /// Perform any verb in every tag inside the context, preserving        
+      /// hierarchy in the outputs. Example:                                  
+      ///         tag(1 or 2) add 1 --> tag({1 add 1} or {2 add 1})           
+      ///                         resulting in:                               
+      ///                          tag(2 or 3)                                
+      static bool Default(Annies::Tag const& tag, Annies::Verb& verb) {
+         auto& output  = verb.GetOutput();
+         auto dispatch = Verbs::Do(verb).In(tag.GetData());
+         if (not dispatch.Run())
+            return false;
+      
+         output.Compose(Annies::Tag::From(tag, Move(dispatch.GetOutput())));
+         return true;
+      }
+   };
+}
 
 namespace Langulus::Flow
 {
@@ -88,189 +181,8 @@ namespace Langulus::Flow
       return verb.GetSuccesses();
    }
 
-   /// Invoke a verb on a flat context of as much elements as you want        
-   /// If an element is not able to execute verb, attempt calling the default 
-   /// This should be called only in memory blocks that are flat              
-   ///   @tparam RESOLVE - whether or not to perform runtime resolve of the   
-   ///      contexts, getting the most concrete type                          
-   ///   @tparam DISPATCH - whether or not to use context's dispatcher, if    
-   ///      any is statically available or reflected. This is mainly used for 
-   ///      infinite regress protection when doing a verb from a dispatcher   
-   ///   @tparam DEFAULT - whether or not to allow default/stateless verb     
-   ///      execution, if all else fails                                      
-   ///   @param context - the context in which to dispatch the verb           
-   ///   @param verb - the verb to send over                                  
-   ///   @return the number of successful executions                          
-   template<bool RESOLVE, bool DISPATCH, bool DEFAULT>
-   size_t DispatchFlat(CT::Deep auto& context, CT::Executable auto& verb) {
-      /*if (not context or verb.IsMonocast()) {
-         if (context.IsInvalid()) {
-            // Context is empty and doesn't have any relevant states,   
-            // and execution happens only if DEFAULT verbs are allowed, 
-            // as a stateless verb execution                            
-            if constexpr (DEFAULT)
-               return Verb::GenericExecuteStateless(verb);
-            else
-               return 0;
-         }
-         else {
-            // Context is empty, but has relevant states, so directly   
-            // forward it as context. Alternatively, the verb is not a  
-            // multicast verb, and we're operating on context as one    
-            //verb.SetSource(context);
-            Execute<DISPATCH, DEFAULT, true>(context, verb);
-            return verb.GetSuccesses();
-         }
-      }*/
-      if (not context) {
-         // Context is empty and doesn't have any relevant states,      
-         // and execution happens only if DEFAULT verbs are allowed,    
-         // as a stateless verb execution                               
-         verb.SetSource(context);
-         Execute<DISPATCH, DEFAULT, true>(context, verb);
-         return verb.GetSuccesses();
-      }
-
-      size_t successCount = 0;
-      auto output = Many::CopyStates(context);
-
-      // Iterate elements in the current context                        
-      for (size_t i = 0; i < context.GetCount(); ++i) {
-         //verb.SetSource(context.GetElement(i));
-         auto ith = context.GetElement(i);
-         if constexpr (RESOLVE)
-            ith = ith.GetResolved();
-         else
-            ith = ith.GetDense();
-
-         verb.SetSource(ith);
-         Execute<DISPATCH, DEFAULT, false>(ith, verb);
-         
-         if (verb.IsDone()) {
-            if (verb.GetOutput()) {
-               // Cache output, conserving the context hierarchy        
-               output.SmartPush(Index::Back, Langulus::Move(verb.GetOutput()));
-            }
-
-            ++successCount;
-            verb.Undo();
-         }
-      }
-      
-      if (context.IsOr())
-         return verb.template CompleteDispatch<true >(successCount, Abandon(output));
-      else
-         return verb.template CompleteDispatch<false>(successCount, Abandon(output));
-   }
-
-   /// Invoke a verb on a container, that is either deep or flat, either      
-   /// AND, or OR. The verb will be executed for each flat element inside     
-   /// this block. If a failure occurs inside a scope, that scope will be     
-   /// considered failed, unless it's an OR scope - OR scopes stop execution  
-   /// right after the first success and fail only if all branches fail       
-   ///   @tparam RESOLVE - whether or not to perform runtime resolve of the   
-   ///      contexts, getting the most concrete type                          
-   ///   @tparam DISPATCH - whether or not to use context's dispatcher, if    
-   ///      any is statically available or reflected. This is mainly used for 
-   ///      infinite regress protection when doing a verb from a dispatcher   
-   ///   @tparam DEFAULT - whether or not to allow default/stateless verb     
-   ///      execution, if all else fails                                      
-   ///   @param context - the context in which scope will be dispatched to    
-   ///   @param verb - the verb to execute                                    
-   ///   @return the number of successful executions                          
-   template<bool RESOLVE, bool DISPATCH, bool DEFAULT>
-   size_t DispatchDeep(CT::Deep auto& context, CT::Executable auto& verb) {
-      /*if (not context or verb.IsMonocast()) {
-         if (context.IsInvalid()) {
-            // Context is empty and doesn't have any relevant states,   
-            // and execution happens only if DEFAULT verbs are allowed, 
-            // as a stateless verb execution                            
-            if constexpr (DEFAULT)
-               return Verb::GenericExecuteStateless(verb);
-            else
-               return 0;
-         }
-         else {
-            // Context is empty, but has relevant states, so directly   
-            // forward it as context. Alternatively, the verb is not a  
-            // multicast verb, and we're operating on context as one    
-            verb.SetSource(context);
-            Execute<DISPATCH, DEFAULT, true>(context, verb);
-            return verb.GetSuccesses();
-         }
-      }*/
-
-      if (not context) {
-         // Context is empty and doesn't have any relevant states,      
-         // and execution happens only if DEFAULT verbs are allowed,    
-         // as a stateless verb execution                               
-         verb.SetSource(context);
-         Execute<DISPATCH, DEFAULT, true>(context, verb);
-         return verb.GetSuccesses();
-      }
-
-      if (context.IsDeep()) {
-         // Nest if context is deep                                     
-         // There is no escape from this scope                          
-         size_t successCount = 0;
-         auto output = Many::CopyStates(context);
-         for (size_t i = 0; i < context.GetCount(); ++i) {
-            DispatchDeep<RESOLVE, DISPATCH, DEFAULT>(
-               context.template Get<Many>(i), verb);
-
-            if (verb.IsDone()) {
-               if (verb.GetOutput()) {
-                  // Cache output, conserving the context hierarchy     
-                  output.SmartPush(Index::Back, Langulus::Move(verb.GetOutput()));
-               }
-
-               ++successCount;
-               verb.Undo();
-            }
-         }
-
-         if (context.IsOr())
-            return verb.template CompleteDispatch<true >(successCount, Abandon(output));
-         else
-            return verb.template CompleteDispatch<false>(successCount, Abandon(output));
-      }
-      else if (context.template Is<Tag>()) {
-         // Nest if context is trait                                    
-         // Traits are considered deep only when executing in them      
-         // There is no escape from this scope                          
-         size_t successCount = 0;
-         auto output = Many::CopyStates(context);
-         for (size_t i = 0; i < context.GetCount(); ++i) {
-            auto& t = context.template Get<Tag>(i);
-            if constexpr (CT::Constant<decltype(context)>) {
-               DispatchDeep<RESOLVE, DISPATCH, DEFAULT>(
-                  static_cast<const Many&>(t), verb);
-            }
-            else {
-               DispatchDeep<RESOLVE, DISPATCH, DEFAULT>(
-                  static_cast<Many&>(t), verb);
-            }
-
-            if (verb.IsDone()) {
-               if (verb.GetOutput()) {
-                  // Cache output, conserving the context hierarchy     
-                  output.SmartPush(Index::Back, Langulus::Move(verb.GetOutput()));
-               }
-
-               ++successCount;
-               verb.Undo();
-            }
-         }
-
-         if (context.IsOr())
-            return verb.template CompleteDispatch<true >(successCount, Abandon(output));
-         else
-            return verb.template CompleteDispatch<false>(successCount, Abandon(output));
-      }
-
-      // If reached, then block is flat                                 
-      // Execute implemented verbs if available, or fallback to         
-      // default verbs, eventually                                      
-      return DispatchFlat<RESOLVE, DISPATCH, DEFAULT>(context, verb);
-   }
 }
+
+#undef VERBOSE
+#undef VERBOSE_TAB
+#undef FLOW_ERRORS

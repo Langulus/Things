@@ -32,28 +32,62 @@ namespace Langulus::CTTI
       ///                         resulting in:                               
       ///                         {2 or 3 or 4}                               
       static bool Default(Annies::Many const& lhs, Annies::Verb& verb) {
+         auto& output = verb.GetOutput();
+
          // What kind of data does 'lhs' hold? Is it capable of         
          // dispatching? If so, do that and ignore anything else.       
          // This is where deep containers get nested before executing   
          // any verbs. The verb's argument will get eventually run in   
          // a dispatcher that cares about it.                           
-         auto& abilities = lhs.GetType().GetVerbs();
-         auto& output    = verb.GetOutput();
-         auto found_dispatcher = abilities.find(MetaVerbOf<Verbs::Do>().GetDefinition());
-         if (found_dispatcher != abilities.end()) {
-            // Custom reflected dispatcher is available.                
-            // It's your responsibility to implement it adequately.     
-            // Keep in mind, that once you declare a custom Do for your 
-            // type, you no longer rely on reflected bases' verbs or    
-            // default verbs. You must invoke those by yourself in your 
-            // dispatcher - the custom dispatcher provides full control!
+         auto resolver = lhs.GetType().GetResolver();
+         if (not resolver) {
+            // No resolver is available, which means no dynamic_casts,  
+            // so all types are just as they appear, and we can check   
+            // all of them for abilities once.                          
+            auto& abilities = lhs.GetType().GetVerbs();
+            auto found_dispatcher = abilities.find(MetaVerbOf<Verbs::Do>().GetDefinition());
+            if (found_dispatcher != abilities.end()) {
+               // Custom reflected dispatcher is available.             
+               // It's your responsibility to implement it adequately.  
+               // Keep in mind, that once you declare a custom Do for   
+               // your type, you no longer rely on reflected bases'     
+               // verbs or default verbs. You must invoke those by      
+               // yourself in your dispatcher - the custom dispatcher   
+               // provides full control!                                
+               auto dispatch = Verbs::Do::From(verb, verb.GetArgument());
+               size_t successCount = 0;
+               for (auto handle : lhs) {
+                  if (found_dispatcher(handle.GetRaw(), dispatch)) {
+                     output.Compose(Move(dispatch.GetOutput()));
+                     ++successCount;
+                     dispatch.Clear();
+                  }
+               }
+               return successCount > 0;
+            }
+         }
+         else {
+            // Type is resolvable - probably abstract pointer. This     
+            // means that each element must be resolved to its concrete 
+            // type using dynamic_cast, and might end up possessing     
+            // completely different abilities.                          
             auto dispatch = Verbs::Do::From(verb, verb.GetArgument());
             size_t successCount = 0;
             for (auto handle : lhs) {
-               if (found_dispatcher(handle.GetRaw(), dispatch)) {
-                  output.Compose(Move(dispatch.GetOutput()));
-                  ++successCount;
-                  dispatch.Clear();
+               auto resolved = handle.GetResolved();
+               auto& abilities = resolved.GetType().GetVerbs();
+               auto found_dispatcher = abilities.find(MetaVerbOf<Verbs::Do>().GetDefinition());
+               if (found_dispatcher != abilities.end()) {
+                  // Custom reflected dispatcher is available           
+                  if (found_dispatcher(handle.GetRaw(), dispatch)) {
+                     output.Compose(Move(dispatch.GetOutput()));
+                     ++successCount;
+                     dispatch.Clear();
+                  }
+               }
+               else {
+                  // No dispatcher                                      
+
                }
             }
             return successCount > 0;
@@ -67,15 +101,7 @@ namespace Langulus::CTTI
          auto const& flow = verb.GetArgument();
          auto results = Many::CopyStates(flow);
          if (flow) {
-            if (integrate)
-               VERBOSE_TAB("Executing scope (integrating): { ", flow, " }");
-            else
-               VERBOSE_TAB("Executing scope: { ", flow, ']');
-   
-            if (flow.IsOr())
-               ExecuteOR(flow, lhs, results, integrate, skipVerbs, silent);
-            else
-               ExecuteAND(flow, lhs, results, integrate, skipVerbs, silent);
+            Execute(flow, lhs, results, integrate, skipVerbs, silent);
          }
       
          output.Compose(Abandon(results));

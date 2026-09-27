@@ -7,6 +7,7 @@
 ///                                                                           
 #pragma once
 #include "Module.hpp"
+#include <Langulus/TMap.hpp>
 
 
 namespace Langulus::Things
@@ -14,6 +15,7 @@ namespace Langulus::Things
    class Thing;
    struct File;
    struct Folder;
+   using Path = Annies::Text;
 
    ///                                                                        
    ///   Runtime                                                              
@@ -108,13 +110,13 @@ namespace Langulus::Things
       auto GetOwner() const noexcept { return mOwner; }
 
       LANGULUS_API(THINGS)
-      auto InstantiateModulePath(const Path&, const Many& = {}) -> A::Module*;
+      auto InstantiateModulePath(const Path&, const Many& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
-      auto InstantiateModule(const Token&, const Many& = {}) -> A::Module*;
+      auto InstantiateModule(const Token&, const Many& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
-      auto InstantiateModule(const SharedLibrary&, const Many& = {}) -> A::Module*;
+      auto InstantiateModule(const SharedLibrary&, const Many& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
       auto GetDependency(DMeta) const noexcept -> SharedLibrary;
@@ -132,13 +134,13 @@ namespace Langulus::Things
          auto GetDependencyToken(const Token&) const noexcept -> SharedLibrary;
 
          LANGULUS_API(THINGS)
-         auto GetModulesToken(const Token&) const noexcept -> const ModuleList&;
+         auto GetModulesToken(const Token&) const noexcept -> const ModList&;
       #endif
 
       LANGULUS_API(THINGS)
-      auto GetFile(const Path&) -> Ref<A::File>;
+      auto GetFile(const Path&) -> Ref<Things::File>;
       LANGULUS_API(THINGS)
-      auto GetFolder(const Path&) -> Ref<A::Folder>;
+      auto GetFolder(const Path&) -> Ref<Things::Folder>;
       LANGULUS_API(THINGS)
       auto GetWorkingPath() const -> const Path&;
       LANGULUS_API(THINGS)

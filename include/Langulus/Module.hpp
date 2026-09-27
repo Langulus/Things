@@ -17,6 +17,7 @@
 namespace Langulus::Things
 {
    struct Module;
+   class Runtime;
    using MetaList = TSetUnsorted<RTTI::Inner::Definition const*>;
    using TagList  = TMany<Tag>;
    using ModList  = TMany<Module*>;
@@ -101,7 +102,7 @@ namespace Langulus::CT
 {
    /// Any type that inherits Module is considered a module                   
    template<class T>
-   concept Module = DerivedFrom<T, ::Langulus::Module>;
+   concept Module = DerivedFrom<T, Things::Module>;
 }
 
 
@@ -138,9 +139,9 @@ namespace Langulus::CT
       LANGULUS_EXPORT() \
       ::Langulus::Things::Module* LANGULUS_MODULE_CREATE() ( \
          ::Langulus::Things::Runtime* rt, const ::Langulus::Annies::Many& desc) { \
-         static_assert(::Langulus::CT::DerivedFrom<m, ::Langulus::A::Module>, \
+         static_assert(::Langulus::CT::DerivedFrom<m, ::Langulus::Things::Module>, \
             "Langulus module class interface " \
-            #m " doesn't inherit ::Langulus::A::Module"); \
+            #m " doesn't inherit ::Langulus::Things::Module"); \
          static_assert(not ::Langulus::CT::Abstract<m>, \
             "Langulus module class interface " \
             #m " is abstract, have you forgotten to define its interface?"); \

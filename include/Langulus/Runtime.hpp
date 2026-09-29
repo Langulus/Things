@@ -29,7 +29,8 @@ namespace Langulus::Things
    /// children, modules, units, etc.                                         
    ///                                                                        
    class Runtime final {
-   protected:
+      using DMeta = RTTI::DMeta;
+
       ///                                                                     
       ///   Library handle                                                    
       ///                                                                     
@@ -92,15 +93,12 @@ namespace Langulus::Things
       // Instantiated modules, indexed by type                          
       TMapUnsorted<DMeta, ModList> mModulesByType;
 
-   protected:
       LANGULUS_API(THINGS)
       auto LoadSharedLibraryPath(Path) -> SharedLibrary;
       auto LoadSharedLibrary(const Token&) -> SharedLibrary;
       bool UnloadSharedLibrary(const SharedLibrary&);
 
    public:
-      LANGULUS_CONVERTS_TO(Text);
-
       Runtime() = delete;
       Runtime(Runtime&&) noexcept = default;
 
@@ -122,10 +120,10 @@ namespace Langulus::Things
       auto GetDependency(DMeta) const noexcept -> SharedLibrary;
 
       LANGULUS_API(THINGS)
-      auto GetModules(DMeta) const noexcept -> const ModuleList&;
+      auto GetModules(DMeta) const noexcept -> const ModList&;
 
       template<CT::Module M>
-      auto GetModules() const noexcept -> const ModuleList& {
+      auto GetModules() const noexcept -> const ModList& {
          return GetModules(MetaDataOf<M>());
       }
 

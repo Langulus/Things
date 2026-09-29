@@ -8,9 +8,9 @@
 #pragma once
 #include <Langulus/TSet.hpp>
 #include <Langulus/TMany.hpp>
-#include <Langulus/RTTI/Definition.hpp>
+#include <Langulus/MetaOf.hpp>
 #include <Langulus/Resolvable.hpp>
-#include "Runtime.hpp"
+//#include "Runtime.hpp"
 #include "Things/Export.hpp"
 
 
@@ -49,7 +49,7 @@ namespace Langulus::Things
    struct Module : public virtual Resolvable {
    public:
       using CTTI_Producer = Runtime;
-      using CTTI_Bases = Resolvable;
+      using CTTI_Bases    = Resolvable;
 
    private:
       // Runtime that owns the module instance                          
@@ -78,10 +78,10 @@ namespace Langulus::Things
          // Relative module dedicated file folder, under Data/Modules/  
          const char* mDepository;
          // Module abstract type                                        
-         DMeta mCategory;
+         RTTI::DMeta mCategory;
       };
 
-      using EntryFunction  = void(*)(DMeta&, MetaList&);
+      using EntryFunction  = void(*)(RTTI::DMeta&, MetaList&);
       using CreateFunction = Module*(*)(Runtime*, const Many&);
       using InfoFunction   = const Info*(*)();
 

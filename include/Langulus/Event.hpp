@@ -39,26 +39,74 @@ namespace Langulus
 
       Type mState = Enum::Point;
 
-   public:
       constexpr EventState() noexcept = default;
-      constexpr EventState(const Type&) noexcept;
 
-      explicit constexpr operator bool() const noexcept;
+      /// Construct from internal type                                        
+      constexpr EventState(const Type& state) noexcept
+         : mState {state} {}
+
+      /// Checks if the event isn't default (isn't immediate)                 
+      explicit constexpr operator bool() const noexcept {
+         return mState != Enum::Point;
+      }
+
       constexpr bool operator == (const EventState&) const noexcept = default;
 
-      constexpr EventState  operator +  (const EventState&) const noexcept;
-      constexpr EventState  operator -  (const EventState&) const noexcept;
-      constexpr EventState& operator += (const EventState&) noexcept;
-      constexpr EventState& operator -= (const EventState&) noexcept;
+      /// Operator for combining states (nondestructively)                    
+      constexpr EventState operator + (const EventState& state) const noexcept {
+         return {mState | state.mState};
+      }
 
-      constexpr bool operator & (const EventState&) const noexcept;
-      constexpr bool operator % (const EventState&) const noexcept;
+      /// Operator for excluding states (nondestructively)                    
+      constexpr EventState operator - (const EventState& state) const noexcept {
+         return {mState & (~state.mState)};
+      }
 
-      constexpr bool IsPoint() const noexcept;
-      constexpr bool IsBegin() const noexcept;
-      constexpr bool IsEnd() const noexcept;
+      /// Operator for adding (destructively) states to this one              
+      constexpr EventState& operator += (const EventState& state) noexcept {
+         mState |= state.mState;
+         return *this;
+      }
 
-      constexpr void Reset() noexcept;
+      /// Operator for removing (destructively) states from this one          
+      constexpr EventState& operator -= (const EventState& state) noexcept {
+         mState &= ~state.mState;
+         return *this;
+      }
+
+      /// Operator for checking if a combination of states is enabled         
+      ///   @param state the state combination to check                       
+      ///   @return true if all the provided states are enabled               
+      constexpr bool operator & (const EventState& state) const noexcept {
+         return state == (mState & state.mState);
+      }
+
+      /// Operator for checking if a combination of states is disabled        
+      ///   @param state the state combination to check                       
+      ///   @return true if all the provided states are disabled              
+      constexpr bool operator % (const EventState& state) const noexcept {
+         return 0 == (mState & state.mState);
+      }
+
+      /// Is this event immediate (has no beginning and end)?                 
+      constexpr bool IsPoint() const noexcept {
+         return mState == Enum::Point;
+      }
+
+      /// Is this the beginning of an event?                                  
+      constexpr bool IsBegin() const noexcept {
+         return mState == Enum::Begin;
+      }
+
+      /// Is this the end of a started event?                                 
+      constexpr bool IsEnd() const noexcept {
+         return mState == Enum::End;
+      }
+
+      /// Reset the state                                                     
+      constexpr void Reset() noexcept {
+         mState = 0;
+      }
    };
 }
 
@@ -92,6 +140,7 @@ namespace Langulus
 
       constexpr Event() noexcept {
          this->ConstructDefault();
+         *Com::Stack<TimePoint, 3>::Get() = SteadyClock::Now();
       }
       constexpr Event(Event const& other) {
          this->Absorb(Refer(other));

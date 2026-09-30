@@ -21,47 +21,6 @@
 #define FLOW_ERRORS(...)  Logger::Error(__VA_ARGS__)
 
 
-namespace Langulus::CTTI
-{
-   LglsImplementAbilitiesFor(Annies::Many) {
-      using Can = Verbs::Do;
-
-      /// Perform any flow in a deep context by dispatching the argument to   
-      /// each subcontainer, preserving hierarchy in the outputs. Example:    
-      ///    {1 or 2 or 3} add 1 --> {{1 add 1} or {2 add 1} or {3 add 1}}    
-      ///                         resulting in:                               
-      ///                         {2 or 3 or 4}                               
-      static bool Default(Annies::Many const& lhs, Annies::Verb& verb) {
-         auto& output  = verb.GetOutput();
-         auto dispatch = Verbs::Do::Like(verb).In(lhs);
-         if (not dispatch.Run())
-            return false;
-      
-         output.Compose(Move(dispatch.GetOutput()));
-         return true;
-      }
-   };
-   
-   LglsImplementAbilitiesFor(Annies::Tag) {
-      using Can = Verbs::Do;
-
-      /// Perform any verb in every tag inside the context, preserving        
-      /// hierarchy in the outputs. Example:                                  
-      ///         tag(1 or 2) add 1 --> tag({1 add 1} or {2 add 1})           
-      ///                         resulting in:                               
-      ///                          tag(2 or 3)                                
-      static bool Default(Annies::Tag const& tag, Annies::Verb& verb) {
-         auto& output  = verb.GetOutput();
-         auto dispatch = Verbs::Do::Like(verb).In(tag.GetData());
-         if (not dispatch.Run())
-            return false;
-      
-         output.Compose(Annies::Tag::From(tag, Move(dispatch.GetOutput())));
-         return true;
-      }
-   };
-}
-
 namespace Langulus::Flow
 {
    /// Invoke a single verb on a single context                               

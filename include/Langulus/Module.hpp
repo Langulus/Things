@@ -10,7 +10,7 @@
 #include <Langulus/TMany.hpp>
 #include <Langulus/MetaOf.hpp>
 #include <Langulus/Resolvable.hpp>
-//#include "Runtime.hpp"
+#include <Langulus/Time.hpp>
 #include "Things/Export.hpp"
 
 
@@ -92,7 +92,7 @@ namespace Langulus::Things
    public:
       virtual void Teardown() = 0;
 
-      virtual bool Update(Langulus::Time) {
+      virtual bool Update(Time) {
          return true;
       }
    };

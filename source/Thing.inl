@@ -51,7 +51,7 @@ namespace Langulus::Things
       if constexpr (CT::Deep<T> or CT::Neat<T>) {
          // Nest if deep/neat                                           
          stuff.ForEachDeep(
-            [this, &verb](const Trait& trait) {
+            [this, &verb](const Tag& trait) {
                verb << AddTrait(trait);
             },
             [this, &verb](const Construct& construct) {
@@ -253,7 +253,7 @@ namespace Langulus::Things
    /// Register unit by all its bases in mUnitsAmbiguous                      
    ///   @param unit - the unit instance to register                          
    ///   @param type - the type to register the unit as                       
-   inline void Thing::AddUnitBases(A::Unit* unit, DMeta type) {
+   inline void Thing::AddUnitBases(Part* unit, DMeta type) {
       const auto found = mUnitsAmbiguous.FindIt(type);
       if (found)
          found.GetValue() << unit;
@@ -261,7 +261,7 @@ namespace Langulus::Things
          mUnitsAmbiguous.Insert(type, unit);
 
       for (auto& base : type->mBases) {
-         if (base.mType->IsExact<A::Unit>())
+         if (base.mType->IsExact<Part>())
             break;
 
          AddUnitBases(unit, base.mType);
@@ -271,7 +271,7 @@ namespace Langulus::Things
    /// Unregister unit by all its bases in mUnitsAmbiguous                    
    ///   @param unit - the unit instance to unregister                        
    ///   @param type - the type to unregister the unit as                     
-   inline void Thing::RemoveUnitBases(A::Unit* unit, DMeta type) {
+   inline void Thing::RemoveUnitBases(Part* unit, DMeta type) {
       const auto found = mUnitsAmbiguous.FindIt(type);
       if (found) {
          auto& set = found.GetValue();
@@ -280,7 +280,7 @@ namespace Langulus::Things
       }
 
       for (auto& base : type->mBases) {
-         if (base.mType->IsExact<A::Unit>())
+         if (base.mType->IsExact<Part>())
             break;
 
          RemoveUnitBases(unit, base.mType);
@@ -296,7 +296,7 @@ namespace Langulus::Things
    ///   @param unit - the unit to add                                        
    ///   @return 1 if unit has been added                                     
    template<bool TWOSIDED>
-   size_t Thing::AddUnit(A::Unit* unit) {
+   size_t Thing::AddUnit(Part* unit) {
       // Check if the unit instance is already registered here          
       const auto meta = unit->GetType();
       const auto found = mUnitsAmbiguous.FindIt(meta);
@@ -337,7 +337,7 @@ namespace Langulus::Things
    ///   @param unit - unit to remove from the entity                         
    ///   @return 1 if unit has been removed                                   
    template<bool TWOSIDED>
-   size_t Thing::RemoveUnit(A::Unit* unit) {
+   size_t Thing::RemoveUnit(Part* unit) {
       const auto meta = unit->GetType();
       const auto foundType = mUnitsAmbiguous.FindIt(meta);
       if (not foundType)
@@ -363,14 +363,14 @@ namespace Langulus::Things
    }
 
    /// Remove all units that are derived from the provided type               
-   ///   @tparam T - the type of units to remove, use Unit for all            
+   ///   @tparam T - the type of units to remove, use Part for all            
    ///   @tparam TWOSIDED - if true, will both remove unit from thing, and    
    ///                      then remove the thing from unit's owners;         
    ///                      used mainly internally to avoid endless loops     
    ///   @return the number of removed units                                  
-   template<CT::Unit T, bool TWOSIDED>
+   template<CT::Part T, bool TWOSIDED>
    size_t Thing::RemoveUnits() {
-      if constexpr (CT::Same<T, A::Unit>) {
+      if constexpr (CT::Same<T, Part>) {
          // Remove all units                                            
          const auto removed = mUnitsList.GetCount();
          if constexpr (TWOSIDED) {
@@ -403,9 +403,9 @@ namespace Langulus::Things
    }
 
    /// size_t the number of matching units in this entity                      
-   ///   @tparam T - the type of units to seach for, use Unit for all         
+   ///   @tparam T - the type of units to seach for, use Part for all         
    ///   @return the number of matching units                                 
-   template<CT::Unit T> LANGULUS(INLINED)
+   template<CT::Part T> LANGULUS(INLINED)
    size_t Thing::HasUnits() const {
       return HasUnits(MetaOf<Decay<T>>());
    }
@@ -430,7 +430,7 @@ namespace Langulus::Things
    ///   @tparam A... - arguments for the unit's creation                     
    ///   @param arguments... - the arguments to provide for construct         
    ///   @return the created unit(s)                                          
-   template<CT::Unit T, class...A> LANGULUS(INLINED)
+   template<CT::Part T, class...A> LANGULUS(INLINED)
    Many Thing::CreateUnit(A&&...arguments) {
       return CreateData(
          Construct::From<Decay<T>>(Forward<A>(arguments)...)
@@ -440,7 +440,7 @@ namespace Langulus::Things
    /// Create default-initialized instances of each unit type                 
    ///   @tparam T... - the unit types to instantiate                         
    ///   @return the created unit(s)                                          
-   template<CT::Unit...T> LANGULUS(INLINED)
+   template<CT::Part...T> LANGULUS(INLINED)
    Many Thing::CreateUnits() {
       Many result;
       (result.SmartPush(IndexBack, CreateUnit<T>()), ...);
@@ -455,7 +455,7 @@ namespace Langulus::Things
    ///   @param arguments... - the arguments to provide for construct         
    ///   @return the created unit(s)                                          
    template<class... A> LANGULUS(INLINED)
-   Many Thing::CreateUnitToken(const Token& token, A&&...arguments) {
+   Many Thing::CreateUnitToken(Token const& token, A&&...arguments) {
       return CreateData(
          Construct::FromToken(token, Forward<A>(arguments)...)
       );
@@ -466,9 +466,9 @@ namespace Langulus::Things
    ///   @tparam T - the type of unit we're searching for                     
    ///   @param offset - optional offset (Nth match)                          
    ///   @return the unit if found, or nullptr if not                         
-   template<CT::Unit T> LANGULUS(INLINED)
+   template<CT::Part T> LANGULUS(INLINED)
    Decay<T>* Thing::GetUnit(Index offset) {
-      if constexpr (not CT::Same<T, A::Unit>) {
+      if constexpr (not CT::Same<T, Part>) {
          return static_cast<Decay<T>*>(
             GetUnitMeta(MetaOf<Decay<T>>(), offset)
          );
@@ -484,9 +484,9 @@ namespace Langulus::Things
    ///   @tparam T - the type of unit we're searching for                     
    ///   @param offset - optional offset (Nth match)                          
    ///   @return the unit if found, or nullptr if not                         
-   template<CT::Unit T> LANGULUS(INLINED)
+   template<CT::Part T> LANGULUS(INLINED)
    const Decay<T>* Thing::GetUnit(Index offset) const {
-      if constexpr (not CT::Same<T, A::Unit>) {
+      if constexpr (not CT::Same<T, Part>) {
          return static_cast<const Decay<T>*>(
             GetUnitMeta(MetaOf<Decay<T>>(), offset)
          );
@@ -505,7 +505,7 @@ namespace Langulus::Things
       ///   @param offset - optional offset (Nth match)                       
       ///   @return the unit if found, or nullptr if not                      
       LANGULUS(INLINED)
-      const A::Unit* Thing::GetUnitMeta(const Token& token, Index offset) const {
+      Part const* Thing::GetUnitMeta(Token const& token, Index offset) const {
          return const_cast<Thing*>(this)->GetUnitMeta(token, offset);
       }
 
@@ -515,14 +515,14 @@ namespace Langulus::Things
       ///   @param token - unit type token                                    
       ///   @param offset - optional offset (Nth match)                       
       ///   @return the unit if found, or nullptr if not                      
-      template<CT::Unit T> LANGULUS(INLINED)
-      Decay<T>* Thing::GetUnitAs(const Token& token, Index offset) {
+      template<CT::Part T> LANGULUS(INLINED)
+      Decay<T>* Thing::GetUnitAs(Token const& token, Index offset) {
          return dynamic_cast<Decay<T>*>(GetUnitMeta(token, offset));
       }
    #endif
 
    template<CT::TraitBased T> LANGULUS(INLINED)
-   Trait Thing::GetTrait(Index offset) {
+   Tag Thing::GetTrait(Index offset) {
       return GetTrait(MetaTraitOf<T>(), offset);
    }
 
@@ -531,7 +531,7 @@ namespace Langulus::Things
    ///   @param offset - the offset of the trait to return (optional)         
    ///   @return the trait or nullptr if none found                           
    template<CT::TraitBased T> LANGULUS(INLINED)
-   Trait* Thing::GetLocalTrait(Index offset) {
+   Tag* Thing::GetLocalTrait(Index offset) {
       return GetLocalTrait(MetaTraitOf<T>(), offset);
    }
 
@@ -540,7 +540,7 @@ namespace Langulus::Things
    ///   @param offset - the offset of the trait to return                    
    ///   @return the trait or nullptr if none found                           
    template<CT::TraitBased T> LANGULUS(INLINED)
-   const Trait* Thing::GetLocalTrait(Index offset) const {
+   const Tag* Thing::GetLocalTrait(Index offset) const {
       return const_cast<Thing&>(*this).template GetLocalTrait<T>(offset);
    }
 
@@ -583,9 +583,9 @@ namespace Langulus::Things
       if (producer) {
          // Data has a specific producer, we can narrow the required    
          // contexts for creation a lot                                 
-         if (producer->template CastsTo<A::Unit>()) {
+         if (producer->template CastsTo<Part>()) {
             // Data is producible from a unit                           
-            auto producers = GatherUnits<SEEK>(producer);
+            auto producers = GatherParts<SEEK>(producer);
             LANGULUS_ASSERT(producers, Construct, 
                "No producers", " (of unit type `", producer, "`) available "
                "in hierarchy for construct: ", construct
@@ -632,7 +632,7 @@ namespace Langulus::Things
          // Data doesn't have a specific producer, but it is abstract   
          // so we know that only a module/unit can concretize it        
          // Gather all units in the desired part of the hierarchy       
-         auto producers = GatherUnits<A::Unit, SEEK>();
+         auto producers = GatherParts<Part, SEEK>();
          if (producers) {
             // Potential unit producers found, attempt creation there   
             producers.MakeOr();
@@ -676,7 +676,7 @@ namespace Langulus::A
    ///   @param verb - the verb to execute                                    
    ///   @return the verb output                                              
    template<Seek SEEK, CT::VerbBased V>
-   V& A::Unit::RunIn(V& verb) {
+   V& Part::RunIn(V& verb) {
       if (not mOwners) {
          Logger::Warning(Self(), "No owners available for executing: ", verb);
          return verb;

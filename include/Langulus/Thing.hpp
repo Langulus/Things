@@ -8,16 +8,16 @@
 #pragma once
 #include "Runtime.hpp"
 #include "Hierarchy.hpp"
-//#include "Unit.hpp"
+//#include "Part.hpp"
 #include <Langulus/Verbs/Create.hpp>
 #include <Langulus/Verbs/Select.hpp>
 #include <Langulus/TPin.hpp>
 
 namespace Langulus::Things
 {
-   struct Unit;
-   using UnitList = TMany<Unit*>;
-   using UnitMap  = TMapUnsorted<RTTI::DMeta, TMany<Unit*>>;
+   struct Part;
+   using UnitList = TMany<Part*>;
+   using UnitMap  = TMapUnsorted<RTTI::DMeta, TMany<Part*>>;
    using TagMap   = TMapUnsorted<RTTI::TMeta, TagList>;
 
 
@@ -72,7 +72,7 @@ namespace Langulus::Things
    public:
       LANGULUS_API(THINGS) Thing();
       LANGULUS_API(THINGS) Thing(Describe&&);
-      LANGULUS_API(THINGS) Thing(Thing*, const Many& = {});
+      LANGULUS_API(THINGS) Thing(Thing*, Many const& = {});
       LANGULUS_API(THINGS) Thing(Thing&&) noexcept;
       LANGULUS_API(THINGS) Thing(Cloned<Thing>&&);
       LANGULUS_API(THINGS) Thing(Abandoned<Thing>&&);
@@ -136,9 +136,9 @@ namespace Langulus::Things
       size_t RemoveChild(Thing*);
 
       LANGULUS_API(THINGS)
-      auto LoadMod(const Token&, const Many& = {}) -> A::Module*;
+      auto LoadMod(Token const&, Many const& = {}) -> A::Module*;
       LANGULUS_API(THINGS)
-      auto LoadModPath(const Path&, const Many& = {}) -> A::Module*;
+      auto LoadModPath(const Path&, Many const& = {}) -> A::Module*;
 
       LANGULUS_API(THINGS)
       auto GetOwner() const noexcept -> const Ref<Thing>&;
@@ -153,39 +153,39 @@ namespace Langulus::Things
       auto GetChild(Index = 0) const -> const Thing*;
 
       LANGULUS_API(THINGS)
-      auto GetNamedChild(const Token&, Index = 0) -> Thing*;
+      auto GetNamedChild(Token const&, Index = 0) -> Thing*;
 
       LANGULUS_API(THINGS)
-      auto GetNamedChild(const Token&, Index = 0) const -> const Thing*;
+      auto GetNamedChild(Token const&, Index = 0) const -> const Thing*;
 
       LANGULUS_API(THINGS)
       void DumpHierarchy() const;
 
    public:
       ///                                                                     
-      ///   Unit management                                                   
+      ///   Part management                                                   
       ///                                                                     
       template<bool TWOSIDED = true>
-      size_t AddUnit(A::Unit*);
+      size_t AddUnit(Part*);
       template<bool TWOSIDED = true>
-      size_t RemoveUnit(A::Unit*);
+      size_t RemoveUnit(Part*);
 
-      template<CT::Unit, class...A>
+      template<CT::Part, class...A>
       Many CreateUnit(A&&...);
-      template<CT::Unit...>
+      template<CT::Part...>
       Many CreateUnits();
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          template<class...A>
-         Many CreateUnitToken(const Token&, A&&...);
+         Many CreateUnitToken(Token const&, A&&...);
       #endif
 
-      template<CT::Unit = A::Unit, bool TWOSIDED = true>
+      template<CT::Part = Part, bool TWOSIDED = true>
       size_t RemoveUnits();
 
       LANGULUS_API(THINGS)
       auto HasUnits(DMeta) const -> size_t;
-      template<CT::Unit>
+      template<CT::Part>
       auto HasUnits() const -> size_t;
 
       LANGULUS_API(THINGS)
@@ -194,69 +194,69 @@ namespace Langulus::Things
       auto GetUnitsMap() const noexcept -> const UnitMap&;
 
       LANGULUS_API(THINGS)
-      auto GetUnitMeta(DMeta, Index = 0)       -> A::Unit*;
+      auto GetUnitMeta(DMeta, Index = 0)       -> Part*;
       LANGULUS_API(THINGS)
-      auto GetUnitMeta(DMeta, Index = 0) const -> A::Unit const*;
+      auto GetUnitMeta(DMeta, Index = 0) const -> Part const*;
 
       LANGULUS_API(THINGS)
-      auto GetUnitExt(DMeta, const Many&, Index = 0)       -> A::Unit*;
+      auto GetUnitExt(DMeta, Many const&, Index = 0)       -> Part*;
       LANGULUS_API(THINGS)
-      auto GetUnitExt(DMeta, const Many&, Index = 0) const -> A::Unit const*;
+      auto GetUnitExt(DMeta, Many const&, Index = 0) const -> Part const*;
 
-      template<CT::Unit T = A::Unit>
+      template<CT::Part T = Part>
       auto GetUnit(Index = 0)       -> Decay<T>*;
-      template<CT::Unit T = A::Unit>
+      template<CT::Part T = Part>
       auto GetUnit(Index = 0) const -> Decay<T> const*;
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          LANGULUS_API(THINGS)
-         auto GetUnitMeta(const Token&, Index = 0) const -> A::Unit const*;
+         auto GetUnitMeta(Token const&, Index = 0) const -> Part const*;
          LANGULUS_API(THINGS)
-         auto GetUnitMeta(const Token&, Index = 0)       -> A::Unit*;
+         auto GetUnitMeta(Token const&, Index = 0)       -> Part*;
 
-         template<CT::Unit T>
-         auto GetUnitAs(const Token&, Index = 0) -> Decay<T>*;
+         template<CT::Part T>
+         auto GetUnitAs(Token const&, Index = 0) -> Decay<T>*;
       #endif
 
    private:
-      LANGULUS_API(THINGS) void AddUnitBases(A::Unit*, DMeta);
-      LANGULUS_API(THINGS) void RemoveUnitBases(A::Unit*, DMeta);
+      LANGULUS_API(THINGS) void AddUnitBases(Part*, DMeta);
+      LANGULUS_API(THINGS) void RemoveUnitBases(Part*, DMeta);
 
    public:
       ///                                                                     
-      ///   Trait management                                                  
+      ///   Tag management                                                  
       ///                                                                     
-      LANGULUS_API(THINGS) auto AddTrait(Trait) -> Trait*;
+      LANGULUS_API(THINGS) auto AddTrait(Tag) -> Tag*;
 
       LANGULUS_API(THINGS) size_t RemoveTrait(TMeta);
-      LANGULUS_API(THINGS) size_t RemoveTrait(Trait);
+      LANGULUS_API(THINGS) size_t RemoveTrait(Tag);
 
       LANGULUS_API(THINGS)
       size_t HasTraits(TMeta) const;
       LANGULUS_API(THINGS)
-      size_t HasTraits(const Trait&) const;
+      size_t HasTraits(const Tag&) const;
 
       LANGULUS_API(THINGS)
       auto GetTraits() const noexcept -> const TraitMap&;
       LANGULUS_API(THINGS)
-      auto GetTrait(TMeta, Index = 0) const -> Trait;
+      auto GetTrait(TMeta, Index = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTrait(TMeta, Index = 0)       -> Trait;
+      auto GetTrait(TMeta, Index = 0)       -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTrait(const Trait&, Index = 0) const -> Trait;
+      auto GetTrait(const Tag&, Index = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTrait(const Trait&, Index = 0)       -> Trait;
-      template<CT::TraitBased = Trait>
-      auto GetTrait(Index = 0) -> Trait;
+      auto GetTrait(const Tag&, Index = 0)       -> Tag;
+      template<CT::TraitBased = Tag>
+      auto GetTrait(Index = 0) -> Tag;
 
       LANGULUS_API(THINGS)
-      auto GetLocalTrait(TMeta, Index = 0) const -> Trait const*;
+      auto GetLocalTrait(TMeta, Index = 0) const -> Tag const*;
       LANGULUS_API(THINGS)
-      auto GetLocalTrait(TMeta, Index = 0)       -> Trait*;
-      template<CT::TraitBased = Trait>
-      auto GetLocalTrait(Index = 0)       -> Trait*;
-      template<CT::TraitBased = Trait>
-      auto GetLocalTrait(Index = 0) const -> Trait const*;
+      auto GetLocalTrait(TMeta, Index = 0)       -> Tag*;
+      template<CT::TraitBased = Tag>
+      auto GetLocalTrait(Index = 0)       -> Tag*;
+      template<CT::TraitBased = Tag>
+      auto GetLocalTrait(Index = 0) const -> Tag const*;
 
       LANGULUS_API(THINGS)
       void SetName(const Text&);
@@ -267,48 +267,48 @@ namespace Langulus::Things
       ///                                                                     
       ///   Seek                                                              
       ///                                                                     
-      using SeekInterface::SeekUnit;
-      using SeekInterface::SeekUnitAux;
-      using SeekInterface::SeekUnitExt;
-      using SeekInterface::SeekUnitAuxExt;
-      using SeekInterface::SeekTrait;
-      using SeekInterface::SeekTraitAux;
+      using SeekInterface::SeekPart;
+      using SeekInterface::SeekPartAux;
+      using SeekInterface::SeekPartExt;
+      using SeekInterface::SeekPartAuxExt;
+      using SeekInterface::SeekTag;
+      using SeekInterface::SeekTagAux;
       using SeekInterface::SeekValue;
       using SeekInterface::SeekValueAux;
 
       template<Seek = Seek::HereAndAbove>
-      auto SeekUnit(DMeta, Index = 0) -> A::Unit*;
+      auto SeekPart(DMeta, Index = 0) -> Part*;
       template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAux(const Many&, DMeta, Index = 0) -> A::Unit*;
+      auto SeekPartAux(Many const&, DMeta, Index = 0) -> Part*;
       template<Seek = Seek::HereAndAbove>
-      auto SeekUnitExt(DMeta, const Many&, Index = 0) -> A::Unit*;
+      auto SeekPartExt(DMeta, Many const&, Index = 0) -> Part*;
       template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAuxExt(DMeta, const Many&, const Many&, Index = 0) -> A::Unit*;
+      auto SeekPartAuxExt(DMeta, Many const&, Many const&, Index = 0) -> Part*;
 
       template<Seek = Seek::HereAndAbove>
-      auto SeekTrait(TMeta, Index = 0) -> Trait;
+      auto SeekTag(TMeta, Index = 0) -> Tag;
       template<Seek = Seek::HereAndAbove>
-      auto SeekTraitAux(const Many&, TMeta, Index = 0) -> Trait;
+      auto SeekTagAux(Many const&, TMeta, Index = 0) -> Tag;
 
       template<Seek = Seek::HereAndAbove>
       bool SeekValue(TMeta, CT::NotVoid auto&, Index = 0) const;
       template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(TMeta, const Many&, CT::NotVoid auto&, Index = 0) const;
+      bool SeekValueAux(TMeta, Many const&, CT::NotVoid auto&, Index = 0) const;
 
       ///                                                                     
       ///   Gather                                                            
       ///                                                                     
-      using SeekInterface::GatherUnits;
-      using SeekInterface::GatherUnitsExt;
-      using SeekInterface::GatherTraits;
+      using SeekInterface::GatherParts;
+      using SeekInterface::GatherPartsExt;
+      using SeekInterface::GatherTags;
 
       template<Seek = Seek::HereAndAbove>
-      auto GatherUnits(DMeta) -> TMany<A::Unit*>;
+      auto GatherParts(DMeta) -> TMany<Part*>;
       template<Seek = Seek::HereAndAbove>
-      auto GatherUnitsExt(DMeta, const Many&) -> TMany<A::Unit*>;
+      auto GatherPartsExt(DMeta, Many const&) -> TMany<Part*>;
 
       template<Seek = Seek::HereAndAbove>
-      auto GatherTraits(TMeta) -> TraitList;
+      auto GatherTags(TMeta) -> TagList;
 
       template<CT::NotVoid D, Seek = Seek::HereAndAbove>
       auto GatherValues() const -> TMany<D>;

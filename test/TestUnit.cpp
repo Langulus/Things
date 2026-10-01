@@ -8,12 +8,12 @@
 #include "Common.hpp"
 
 
-SCENARIO("Testing Unit", "[unit]") {
+SCENARIO("Testing Part", "[unit]") {
    WHEN("Dynamically casting to/from unit pointers") {
       TestUnit1 t1;
       TestUnit2 t2;
-      A::Unit* t1p = &t1;
-      A::Unit* t2p = &t2;
+      Part* t1p = &t1;
+      Part* t2p = &t2;
 
       REQUIRE(reinterpret_cast<void*>(t1p) == reinterpret_cast<void*>(&t1));
       REQUIRE(reinterpret_cast<void*>(t2p) == reinterpret_cast<void*>(&t2));

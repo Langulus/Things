@@ -35,8 +35,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract asset unit                                                  
    ///                                                                        
-   struct Asset : virtual Unit, virtual ProducedFrom<AssetModule> {
-      using CTTI_Bases     = Unit;
+   struct Asset : virtual Part, virtual ProducedFrom<AssetModule> {
+      using CTTI_Bases     = Part;
       using CTTI_Producer  = AssetModule;      
       using Data           = Many;
       using DataList       = TMany<Data>;
@@ -51,20 +51,20 @@ namespace Langulus::Things
 
       virtual bool Generate(TMeta, size_t = 0) { return true; }
 
-      template<CT::TraitBased = Langulus::Trait>
+      template<CT::TraitBased = Langulus::Tag>
       void Commit(auto&&);
 
-      template<CT::TraitBased = Langulus::Trait>
+      template<CT::TraitBased = Langulus::Tag>
       auto GetData(size_t = 0)       noexcept -> Data*;
-      template<CT::TraitBased = Langulus::Trait>
+      template<CT::TraitBased = Langulus::Tag>
       auto GetData(size_t = 0) const noexcept -> Data const*;
 
       auto GetData(TMeta, size_t = 0)       noexcept -> Data*;
       auto GetData(TMeta, size_t = 0) const noexcept -> Data const*;
 
-      template<CT::TraitBased = Langulus::Trait>
+      template<CT::TraitBased = Langulus::Tag>
       auto GetDataList()       noexcept -> DataList*;
-      template<CT::TraitBased = Langulus::Trait>
+      template<CT::TraitBased = Langulus::Tag>
       auto GetDataList() const noexcept -> DataList const*;
 
       auto GetDataList(TMeta)       noexcept -> DataList*;

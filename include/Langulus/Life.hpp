@@ -23,8 +23,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract life unit                                                   
    ///                                                                        
-   struct LifeUnit : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct LifeUnit : virtual Part {
+      using CTTI_Bases = Part;
       using CTTI_Producer = Life;
       LifeUnit() : Resolvable {this} {}
    };

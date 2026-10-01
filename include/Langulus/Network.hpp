@@ -23,8 +23,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract network unit                                                
    ///                                                                        
-   struct NetworkUnit : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct NetworkUnit : virtual Part {
+      using CTTI_Bases = Part;
       using CTTI_Producer = Network;
       NetworkUnit() : Resolvable {this} {}
    };

@@ -211,7 +211,7 @@ namespace Langulus::Things
    ///   @param path - explicit relative path                                 
    ///   @param descriptor - module initialization descriptor                 
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModulePath(const Path& path, const Many& descriptor) -> A::Module* {
+   auto Runtime::InstantiateModulePath(const Path& path, Many const& descriptor) -> A::Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibraryPath(path);
 
@@ -233,7 +233,7 @@ namespace Langulus::Things
    ///   @param name - module name                                            
    ///   @param descriptor - module initialization descriptor                 
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(const Token& name, const Many& descriptor) -> A::Module* {
+   auto Runtime::InstantiateModule(Token const& name, Many const& descriptor) -> A::Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibrary(name);
 
@@ -305,7 +305,7 @@ namespace Langulus::Things
    ///   @param library - the library handle                                  
    ///   @param descriptor - module initialization descriptor                 
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(const SharedLibrary& library, const Many& descriptor) -> A::Module* {
+   auto Runtime::InstantiateModule(const SharedLibrary& library, Many const& descriptor) -> A::Module* {
       if (not library.IsValid())
          return nullptr;
 
@@ -514,7 +514,7 @@ namespace Langulus::Things
    ///   @attention the name should correspond to the RTTI::Boundary it uses  
    ///   @return the shared library handle                                    
    LANGULUS(NOINLINE)
-   auto Runtime::LoadSharedLibrary(const Token& name) -> SharedLibrary {
+   auto Runtime::LoadSharedLibrary(Token const& name) -> SharedLibrary {
       // File prefix                                                    
       Path path;
       #if LANGULUS_OS(LINUX)
@@ -637,14 +637,14 @@ namespace Langulus::Things
    /// Get the dependency module of a given type by token                     
    ///   @param token - type token                                            
    ///   @return the shared library handle, you should check if it's valid    
-   auto Runtime::GetDependencyToken(const Token& token) const noexcept -> SharedLibrary {
+   auto Runtime::GetDependencyToken(Token const& token) const noexcept -> SharedLibrary {
       return GetDependency(RTTI::GetMetaData(token));
    }
 
    /// Get a module instance by type token                                    
    ///   @param token - type token                                            
    ///   @return the module instance, or nullptr if not found                 
-   auto Runtime::GetModulesToken(const Token& token) const noexcept -> const ModuleList& {
+   auto Runtime::GetModulesToken(Token const& token) const noexcept -> const ModuleList& {
       return GetModules(RTTI::GetMetaData(token));
    }
 #endif

@@ -6,7 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include <Langulus/Unit.hpp>
+#include <Langulus/Part.hpp>
 #include "Hierarchy-Seek.inl"
 
 
@@ -18,8 +18,8 @@ namespace Langulus
    ///   @param offset - which of the matches to return                       
    ///   @return the found unit, or nullptr if no such unit was found         
    template<Seek SEEK> LANGULUS(INLINED)
-   auto Unit::SeekUnit(DMeta meta, Index offset) -> Unit* {
-      return mOwners.template SeekUnit<SEEK>(meta, offset);
+   auto Part::SeekPart(DMeta meta, Index offset) -> Part* {
+      return mOwners.template SeekPart<SEEK>(meta, offset);
    }
 
    /// Find a unit by type and index from the hierarchy                       
@@ -29,8 +29,8 @@ namespace Langulus
    ///   @param offset - the index of the unit to return                      
    ///   @return the unit if found, or nullptr otherwise                      
    template<Seek SEEK> LANGULUS(INLINED)
-   auto Unit::SeekUnitAux(const Many& aux, DMeta meta, Index offset) -> Unit* {
-      return mOwners.template SeekUnitAux<SEEK>(aux, meta, offset);
+   auto Part::SeekPartAux(Many const& aux, DMeta meta, Index offset) -> Part* {
+      return mOwners.template SeekPartAux<SEEK>(aux, meta, offset);
    }
       
    /// Seek a unit with specific properties                                   
@@ -40,8 +40,8 @@ namespace Langulus
    ///   @param offset - the index of the unit to return                      
    ///   @return the unit if found, or nullptr otherwise                      
    template<Seek SEEK> LANGULUS(INLINED)
-   auto Unit::SeekUnitExt(DMeta type, const Many& ext, Index offset) -> Unit* {
-      return mOwners.template SeekUnitExt<SEEK>(type, ext, offset);
+   auto Part::SeekPartExt(DMeta type, Many const& ext, Index offset) -> Part* {
+      return mOwners.template SeekPartExt<SEEK>(type, ext, offset);
    }
 
    /// Seek a unit with specific properties                                   
@@ -53,8 +53,8 @@ namespace Langulus
    ///   @param offset - the index of the unit to return                      
    ///   @return a pointer to the found unit, or nullptr if not found         
    template<Seek SEEK> LANGULUS(INLINED)
-   auto Unit::SeekUnitAuxExt(DMeta type, const Many& aux, const Many& ext, Index offset) -> Unit* {
-      return mOwners.template SeekUnitAuxExt<SEEK>(type, aux, ext, offset);
+   auto Part::SeekPartAuxExt(DMeta type, Many const& aux, Many const& ext, Index offset) -> Part* {
+      return mOwners.template SeekPartAuxExt<SEEK>(type, aux, ext, offset);
    }
 
    /// Find a trait by type (and index), searching into the hierarchy         
@@ -63,8 +63,8 @@ namespace Langulus
    ///   @param offset - the offset to apply                                  
    ///   @return the trait, which is not empty, if trait was found            
    template<Seek SEEK> LANGULUS(INLINED)
-   auto Unit::SeekTrait(TMeta meta, Index offset) -> Langulus::Trait {
-      return mOwners.template SeekTrait<SEEK>(meta, offset);
+   auto Part::SeekTag(TMeta meta, Index offset) -> Langulus::Tag {
+      return mOwners.template SeekTag<SEEK>(meta, offset);
    }
    
    /// Find a trait, searching into the hierarchy (const)                     
@@ -74,8 +74,8 @@ namespace Langulus
    ///   @param offset - the number of the matching trait to use              
    ///   @return the trait, which is not empty, if trait was found            
    template<Seek SEEK> LANGULUS(INLINED)
-   auto Unit::SeekTraitAux(const Many& aux, TMeta meta, Index offset) -> Langulus::Trait {
-      return mOwners.template SeekTraitAux<SEEK>(aux, meta, offset);
+   auto Part::SeekTagAux(Many const& aux, TMeta meta, Index offset) -> Langulus::Tag {
+      return mOwners.template SeekTagAux<SEEK>(aux, meta, offset);
    }
     
    /// Find a trait by type (and index) from the hierarchy, and attempt       
@@ -87,7 +87,7 @@ namespace Langulus
    ///   @param offset - the number of the matching trait to use              
    ///   @return true if output was rewritten                                 
    template<Seek SEEK> LANGULUS(INLINED)
-   bool Unit::SeekValue(TMeta meta, CT::NotVoid auto& output, Index offset) const {
+   bool Part::SeekValue(TMeta meta, CT::NotVoid auto& output, Index offset) const {
       return mOwners.template SeekValue<SEEK>(meta, output, offset);
    }
   
@@ -102,7 +102,7 @@ namespace Langulus
    ///   @param offset - the number of the matching trait to use              
    ///   @return the trait, which is not empty, if trait was found            
    template<Seek SEEK> LANGULUS(INLINED)
-   bool Unit::SeekValueAux(TMeta meta, const Many& aux, CT::NotVoid auto& output, Index offset) const {
+   bool Part::SeekValueAux(TMeta meta, Many const& aux, CT::NotVoid auto& output, Index offset) const {
       return mOwners.template SeekValueAux<SEEK>(meta, aux, output, offset);
    }
 }

@@ -18,8 +18,8 @@ namespace Langulus::Things
    ///   @param meta - the units to seek for                                  
    ///   @return the gathered units that match the type                       
    template<Seek SEEK>
-   TMany<A::Unit*> Thing::GatherUnits(DMeta meta) {
-      TMany<A::Unit*> result;
+   TMany<Part*> Thing::GatherParts(DMeta meta) {
+      TMany<Part*> result;
 
       if constexpr (SEEK & Seek::Here) {
          // Seek here if requested                                      
@@ -35,7 +35,7 @@ namespace Langulus::Things
          // Seek in parents up to root, if requested                    
          if (mOwner) {
             auto inParents = mOwner->template
-               GatherUnits<Seek::HereAndAbove>(meta);
+               GatherParts<Seek::HereAndAbove>(meta);
             result += Abandon(inParents);
          }
       }
@@ -44,7 +44,7 @@ namespace Langulus::Things
          // Seek children, if requested                                 
          for (auto& child : mChildren) {
             auto inChildren = child->template 
-               GatherUnits<Seek::HereAndBelow>(meta);
+               GatherParts<Seek::HereAndBelow>(meta);
             result += Abandon(inChildren);
          }
       }
@@ -57,20 +57,20 @@ namespace Langulus::Things
    ///   @param trait - the trait to seek for                                 
    ///   @return the gathered traits that match the type                      
    template<Seek SEEK>
-   TMany<Trait> Thing::GatherTraits(TMeta trait) {
-      TMany<Trait> results;
+   TMany<Tag> Thing::GatherTags(TMeta trait) {
+      TMany<Tag> results;
 
       if constexpr (SEEK & Seek::Here) {
          // Handle some predefined traits here                          
-         if (trait->template Is<Traits::Unit>()) {
+         if (trait->template Is<Traits::Part>()) {
             // Gather all units                                         
             for (auto& unit : mUnitsList)
-               results << Traits::Unit {unit};
+               results << Traits::Part {unit};
          }
          else if (trait->template Is<Traits::Child>()) {
             // Gather all children                                      
             for (auto& child : mChildren)
-               results << Traits::Unit {child};
+               results << Traits::Part {child};
          }
          else if (trait->template Is<Traits::Runtime>()) {
             // Get the nearest runtime                                  
@@ -91,7 +91,7 @@ namespace Langulus::Things
             size_t index {};
             auto t = unit->GetMember(trait, index);
             while (t) {
-               results <<= Trait::From(trait, t);
+               results <<= Tag::From(trait, t);
                t = unit->GetMember(trait, ++index);
             }
          }
@@ -101,7 +101,7 @@ namespace Langulus::Things
          // Seek in parents up to root, if requested                    
          if (mOwner) {
             results += mOwner->template
-               GatherTraits<Seek::HereAndAbove>(trait);
+               GatherTags<Seek::HereAndAbove>(trait);
          }
       }
 
@@ -109,7 +109,7 @@ namespace Langulus::Things
          // Seek children, if requested                                 
          for (auto& child : mChildren) {
             results += child->template
-               GatherTraits<Seek::HereAndBelow>(trait);
+               GatherTags<Seek::HereAndBelow>(trait);
          }
       }
 

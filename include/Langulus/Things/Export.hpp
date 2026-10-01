@@ -74,7 +74,7 @@ LANGULUS_DEFINE_TAG(Precedence,
    "Precedence, priority, or other similar properties");
 LANGULUS_DEFINE_TAG(Runtime,
    "Accesses the runtime of a hierarchy of Things");
-LANGULUS_DEFINE_TAG(Unit,
+LANGULUS_DEFINE_TAG(Part,
    "Accesses units (components) of Things");
 LANGULUS_DEFINE_TAG(Mesh,
    "Associated geometry asset");

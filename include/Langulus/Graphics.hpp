@@ -22,8 +22,8 @@ namespace Langulus
    ///                                                                        
    ///   Abstract graphics units                                              
    ///                                                                        
-   struct Graphics : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct Graphics : virtual Part {
+      using CTTI_Bases = Part;
       Graphics() : Resolvable {this} {}
    };
 

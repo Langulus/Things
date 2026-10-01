@@ -41,8 +41,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract file interface                                              
    ///                                                                        
-   struct File : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct File : virtual Part {
+      using CTTI_Bases = Part;
       using CTTI_Producer = FileSystem;
 
    protected:
@@ -112,7 +112,7 @@ namespace Langulus::Things
             : mFile  {f}
             , mAppend{append} {}
 
-         virtual auto Write(const Many&) -> size_t = 0;
+         virtual auto Write(Many const&) -> size_t = 0;
 
          auto GetFile() const noexcept -> const Ref<File>& {
             return mFile;
@@ -127,8 +127,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract folder interface                                            
    ///                                                                        
-   struct Folder : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct Folder : virtual Part {
+      using CTTI_Bases = Part;
       using CTTI_Producer = FileSystem;
 
    protected:

@@ -153,7 +153,7 @@ namespace Langulus::Verbs
    /// Produces a shallow copy of the catenated context and arguments         
    ///   @param context - the block to execute in                             
    ///   @param verb - catenation/splitting verb                              
-   inline bool Catenate::ExecuteDefault(const Many& context, Verb& verb) {
+   inline bool Catenate::ExecuteDefault(Many const& context, Verb& verb) {
       if (verb.IsMissing()) {
          // Don't catenate immediately missing elements                 
          return false;

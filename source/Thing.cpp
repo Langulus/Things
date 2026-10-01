@@ -44,7 +44,7 @@ namespace Langulus::Things
    /// Construct as a child of another thing                                  
    ///   @param parent - the thing that owns this thing                       
    ///   @param descriptor - instructions for creating the thing              
-   Thing::Thing(Thing* parent, const Many& descriptor)
+   Thing::Thing(Thing* parent, Many const& descriptor)
       : Resolvable {this}
       , mOwner     {parent}
    {
@@ -210,7 +210,7 @@ namespace Langulus::Things
       // destroyed upon destroying mUnitsList and mUnitsAmbiguous, if   
       // the Units were created on the stack.                           
       // If they still have owners, they will attempt to Decouple in    
-      // A::Unit::~Unit from already destroyed mUnitsList/Ambiguous     
+      // Part::~Part from already destroyed mUnitsList/Ambiguous     
       mUnitsAmbiguous.Reset();
       for (auto& unit : mUnitsList) {
          THINGS_VERBOSE_SELF(
@@ -358,20 +358,20 @@ namespace Langulus::Things
    ///   @param id - the type of the unit                                     
    ///   @param index - the unit index to seek                                
    ///   @return the unit if found, or nullptr if not                         
-   auto Thing::GetUnitMeta(DMeta id, Index index) -> A::Unit* {
+   auto Thing::GetUnitMeta(DMeta id, Index index) -> Part* {
       if (id) {
          // Search a typed trait                                        
          const auto found = mUnitsAmbiguous.FindIt(id);
          return found
-            ? static_cast<A::Unit*>(found.GetValue()[index])
-            : static_cast<A::Unit*>(nullptr);
+            ? static_cast<Part*>(found.GetValue()[index])
+            : static_cast<Part*>(nullptr);
       }
 
       // Get unit by index only                                         
       return mUnitsList[index];
    }
 
-   auto Thing::GetUnitMeta(DMeta type, Index offset) const -> const A::Unit* {
+   auto Thing::GetUnitMeta(DMeta type, Index offset) const -> Part const* {
       return const_cast<Thing*>(this)->GetUnitMeta(type, offset);
    }
    
@@ -382,7 +382,7 @@ namespace Langulus::Things
    ///   @param what - the desired properties of the unit                     
    ///   @param index - the unit index to seek                                
    ///   @return the unit if found, or nullptr if not                         
-   auto Thing::GetUnitExt(DMeta meta, const Many& what, Index index) -> A::Unit* {
+   auto Thing::GetUnitExt(DMeta meta, Many const& what, Index index) -> Part* {
       if (meta) {
          // Search a typed unit                                         
          const auto found = mUnitsAmbiguous.FindIt(meta);
@@ -415,7 +415,7 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   auto Thing::GetUnitExt(DMeta meta, const Many& what, Index index) const -> const A::Unit* {
+   auto Thing::GetUnitExt(DMeta meta, Many const& what, Index index) const -> Part const* {
       return const_cast<Thing*>(this)->GetUnitExt(meta, what, index);
    }
 
@@ -424,7 +424,7 @@ namespace Langulus::Things
    ///   @param token - the type name of the unit                             
    ///   @param offset - the unit index                                       
    ///   @return the unit if found, or nullptr if not                         
-   auto Thing::GetUnitMeta(const Token& token, Index offset) -> A::Unit* {
+   auto Thing::GetUnitMeta(Token const& token, Index offset) -> Part* {
       return GetUnitMeta(RTTI::DisambiguateMeta(token), offset);
    }
 #endif
@@ -456,7 +456,7 @@ namespace Langulus::Things
    ///   @param name - name to seek                                           
    ///   @param offset - offset to seek                                       
    ///   @return the child entity, or nullptr of none was found               
-   auto Thing::GetNamedChild(const Token& name, Index offset) -> Thing* {
+   auto Thing::GetNamedChild(Token const& name, Index offset) -> Thing* {
       Index matches = 0;
       for (auto& child : mChildren) {
          if (child->GetName() == name) {
@@ -469,7 +469,7 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   auto Thing::GetNamedChild(const Token& name, Index offset) const -> const Thing* {
+   auto Thing::GetNamedChild(Token const& name, Index offset) const -> const Thing* {
       return const_cast<Thing*>(this)->GetNamedChild(name, offset);
    }
 
@@ -563,7 +563,7 @@ namespace Langulus::Things
    ///   @param module - name of the module                                   
    ///   @param descriptor - instructions for module setup                    
    ///   @return the instantiated module interface                            
-   auto Thing::LoadMod(const Token& module, const Many& descriptor) -> A::Module* {
+   auto Thing::LoadMod(Token const& module, Many const& descriptor) -> A::Module* {
       const auto runtime = GetRuntime();
       LglsAssumeUser(runtime,
          "No runtime available for loading a module");
@@ -578,7 +578,7 @@ namespace Langulus::Things
    ///   @param path - relative path to the module                            
    ///   @param descriptor - instructions for module setup                    
    ///   @return the instantiated module interface                            
-   auto Thing::LoadModPath(const Path& path, const Many& descriptor) -> A::Module* {
+   auto Thing::LoadModPath(const Path& path, Many const& descriptor) -> A::Module* {
       const auto runtime = GetRuntime();
       LglsAssumeUser(runtime,
          "No runtime available for loading a module");

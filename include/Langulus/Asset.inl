@@ -39,7 +39,7 @@ namespace Langulus::A
    template<CT::TraitBased T> LANGULUS(INLINED)
    auto Asset::GetData(size_t index) noexcept -> Data* {
       TMeta trait;
-      if constexpr (CT::Trait<T>)
+      if constexpr (CT::Tag<T>)
          trait = MetaTraitOf<T>();
       return GetData(trait, index);
    }
@@ -75,7 +75,7 @@ namespace Langulus::A
    template<CT::TraitBased T> LANGULUS(INLINED)
    auto Asset::GetDataList() noexcept -> DataList* {
       TMeta trait;
-      if constexpr (CT::Trait<T>)
+      if constexpr (CT::Tag<T>)
          trait = MetaTraitOf<T>();
       return GetDataList(trait);
    }
@@ -116,7 +116,7 @@ namespace Langulus::A
    template<CT::TraitBased T> LANGULUS(INLINED)
    void Asset::Commit(auto&& content) {
       TMeta trait;
-      if constexpr (CT::Trait<T>)
+      if constexpr (CT::Tag<T>)
          trait = MetaTraitOf<T>();
 
       using S = IntentOf<decltype(content)>;

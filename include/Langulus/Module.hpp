@@ -17,10 +17,12 @@
 namespace Langulus::Things
 {
    struct Module;
-   class Runtime;
+   struct Runtime;
+
    using MetaList = TSetUnsorted<RTTI::Inner::Definition const*>;
    using TagList  = TMany<Tag>;
    using ModList  = TMany<Module*>;
+
 
    /// Helper function, that reflects and registers a list of any reflection  
    /// primitives, like data, verbs, and traits.                              
@@ -82,7 +84,7 @@ namespace Langulus::Things
       };
 
       using EntryFunction  = void(*)(RTTI::DMeta&, MetaList&);
-      using CreateFunction = Module*(*)(Runtime*, const Many&);
+      using CreateFunction = Module*(*)(Runtime*, Many const&);
       using InfoFunction   = const Info*(*)();
 
       auto GetRuntime() const noexcept -> Runtime* {

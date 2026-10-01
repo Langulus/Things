@@ -26,8 +26,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract physical unit                                               
    ///                                                                        
-   struct Physical : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct Physical : virtual Part {
+      using CTTI_Bases = Part;
       Physical() : Resolvable {this} {}
    };
 

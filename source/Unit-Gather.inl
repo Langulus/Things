@@ -6,7 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include <Langulus/Unit.hpp>
+#include <Langulus/Part.hpp>
 #include "Hierarchy-Gather.inl"
 
 
@@ -17,8 +17,8 @@ namespace Langulus
    ///   @param meta - the units to seek for                                  
    ///   @return the gathered units that match the type                       
    template<Seek SEEK> LANGULUS(INLINED)
-   TMany<Unit*> Unit::GatherUnits(DMeta meta) {
-      return mOwners.template GatherUnits<SEEK>(meta);
+   TMany<Part*> Part::GatherParts(DMeta meta) {
+      return mOwners.template GatherParts<SEEK>(meta);
    }
    
    /// Collects all traits of the given type inside the hierarchy             
@@ -26,8 +26,8 @@ namespace Langulus
    ///   @param trait - the trait to seek for                                 
    ///   @return the gathered traits that match the type                      
    template<Seek SEEK> LANGULUS(INLINED)
-   TraitList Unit::GatherTraits(TMeta trait) {
-      return mOwners.template GatherTraits<SEEK>(trait);
+   TagList Part::GatherTags(TMeta trait) {
+      return mOwners.template GatherTags<SEEK>(trait);
    }
 
    /// Gather all values convertible to a type                                
@@ -35,7 +35,7 @@ namespace Langulus
    ///   @tparam SEEK - where in the hierarchy are we seeking in?             
    ///   @return the gathered values                                          
    template<CT::NotVoid D, Seek SEEK> LANGULUS(INLINED)
-   TMany<D> Unit::GatherValues() const {
+   TMany<D> Part::GatherValues() const {
       return mOwners.template GatherValues<SEEK, D>();
    }
 }

@@ -5,23 +5,23 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
-#include <Langulus/Unit.hpp>
+#include <Langulus/Part.hpp>
 #include "Thing.inl"
-#include "Unit-Gather.inl"
-#include "Unit-Seek.inl"
+#include "Part-Gather.inl"
+#include "Part-Seek.inl"
 
 using namespace Langulus::A;
 
 
-/// Unit destructor decouples unit from all owners                            
-Unit::~Unit() {
+/// Part destructor decouples unit from all owners                            
+Part::~Part() {
    for (auto entity : mOwners)
       Decouple(entity);
 }
 
 /// Default unit selection simply relays to the owner                         
 ///   @param verb - the selection verb                                        
-void Unit::Select(Flow::Verb& verb) {
+void Part::Select(Flow::Verb& verb) {
    for (auto owner : mOwners)
       owner->Select(verb);
 }
@@ -29,13 +29,13 @@ void Unit::Select(Flow::Verb& verb) {
 /// Check if this unit has a given set of properties                          
 ///   @param descriptor - descriptor with required properties                 
 ///   @return true if the unit has the given properties                       
-bool Unit::CompareDescriptor(const Many& descriptor) const {
+bool Part::CompareDescriptor(Many const& descriptor) const {
    // First we compare traits only, all of them must be present         
    bool mismatch = false;
    size_t memberOffset = 0;
-   descriptor.ForEachDeep([&](const Annies::Trait& trait) {
+   descriptor.ForEachDeep([&](const Annies::Tag& trait) {
       if (not GetMember(trait.GetTrait(), memberOffset)
-      .Compare(static_cast<const Many&>(trait))) {
+      .Compare(static_cast<Many const&>(trait))) {
          mismatch = true;
          return Loop::Break;
       }
@@ -47,7 +47,7 @@ bool Unit::CompareDescriptor(const Many& descriptor) const {
    // Then we run another check based on data types, again - all        
    // of them must be present, either as trait or in other form         
    memberOffset = 0;
-   descriptor.ForEachDeep([&](const Many& anythingElse) {
+   descriptor.ForEachDeep([&](Many const& anythingElse) {
       if (not GetMember(TMeta {}, memberOffset).Compare(anythingElse)) {
          mismatch = true;
          return Loop::Break;
@@ -62,18 +62,18 @@ bool Unit::CompareDescriptor(const Many& descriptor) const {
    
 /// Get the list of unit owners                                               
 ///   @return the owners                                                      
-auto Unit::GetOwners() const noexcept -> const Hierarchy& {
+auto Part::GetOwners() const noexcept -> const Hierarchy& {
    return mOwners;
 }
      
 /// Refresh unit on environment change                                        
-void Unit::Refresh() {}
+void Part::Refresh() {}
 
 /// Get the runtime                                                           
 ///   @attention assumes units are correctly coupled and coupling to          
 ///              different runtimes should be explicitly disallowed           
 ///   @return a pointer to the runtime, if available                          
-auto Unit::GetRuntime() const noexcept -> Runtime* {
+auto Part::GetRuntime() const noexcept -> Runtime* {
    if (not mOwners)
       return nullptr;
    return mOwners[0]->GetRuntime().Get();
@@ -83,7 +83,7 @@ auto Unit::GetRuntime() const noexcept -> Runtime* {
 ///   @attention assumes units are correctly coupled and coupling to          
 ///              different flows should be explicitly disallowed              
 ///   @return a pointer to the flow, if available                             
-auto Unit::GetFlow() const noexcept -> Temporal* {
+auto Part::GetFlow() const noexcept -> Temporal* {
    if (not mOwners)
       return nullptr;
    return mOwners[0]->GetFlow().Get();
@@ -97,7 +97,7 @@ auto Unit::GetFlow() const noexcept -> Temporal* {
 ///      This usually comes from the producer's context. For example, if you  
 ///      don't provide a parent for the renderer, it will be instantiated as  
 ///      a child to the graphics module owner (i.e. the runtime owner)        
-void Unit::Couple(const Many& desc, const Thing* fallback) {
+void Part::Couple(Many const& desc, const Thing* fallback) {
    const Thing* owner = nullptr;
    if (not desc.ExtractTrait<Traits::Parent>(owner))
       desc.ExtractData(owner);
@@ -111,7 +111,7 @@ void Unit::Couple(const Many& desc, const Thing* fallback) {
 /// Decouple the component from an entity (always two-sided)                  
 /// This will call refresh to all units in that entity on next frame          
 ///   @param entity - the entity to decouple with                             
-void Unit::Decouple(const Thing* entity) {
+void Part::Decouple(const Thing* entity) {
    if (not entity)
       return;
       
@@ -123,7 +123,7 @@ void Unit::Decouple(const Thing* entity) {
 ///   @attention assumes both pointers are different, and not nullptr         
 ///   @param replaceThis - owner to replace                                   
 ///   @param withThis - entity to replace it with                             
-void Unit::ReplaceOwner(const Thing* replaceThis, const Thing* withThis) {
+void Part::ReplaceOwner(const Thing* replaceThis, const Thing* withThis) {
    LglsAssumeDev(replaceThis != withThis,
       "Pointers are the same");
    LglsAssumeDev(replaceThis and withThis,

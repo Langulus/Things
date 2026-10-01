@@ -23,8 +23,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract input unit                                                  
    ///                                                                        
-   struct Input : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct Input : virtual Part {
+      using CTTI_Bases = Part;
       Input() : Resolvable {this} {}
    };
 

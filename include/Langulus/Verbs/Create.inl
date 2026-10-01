@@ -190,7 +190,7 @@ namespace Langulus::Verbs
       };
 
       // Scan the request                                               
-      verb.ForEachDeep([&](const Many& group) {
+      verb.ForEachDeep([&](Many const& group) {
          if (group.IsMissing()) {
             // Creation of missing stuff is not allowed                 
             return;
@@ -219,20 +219,20 @@ namespace Langulus::Verbs
    ///   @param context - the contexts to analyze                             
    ///   @param data - the data to set to                                     
    ///   @return true if at least one member in one element was set           
-   inline void Create::SetMembers(Many& context, const Many& data) {
+   inline void Create::SetMembers(Many& context, Many const& data) {
       TUnorderedMap<TMeta, size_t> satisfiedTraits;
       TUnorderedMap<DMeta, size_t> satisfiedData;
 
-      data.ForEachDeep([&](const Many& group) {
+      data.ForEachDeep([&](Many const& group) {
          VERBOSE_CREATION("Manually initializing ", context, " with ", Logger::Cyan, group);
 
          // Search for similar data in the current context              
          // in an attempt to overwrite member variables and such        
          for (size_t i = 0; i < group.GetCount(); ++i) {
             Many element = group.GetElementResolved(i);
-            if (element.Is<Trait>()) {
+            if (element.Is<Tag>()) {
                // Search for the trait                                  
-               const auto meta = element.Get<Trait>().GetTrait();
+               const auto meta = element.Get<Tag>().GetTrait();
                const auto sati = satisfiedTraits.Find(meta);
                const auto index = sati
                   ? satisfiedTraits.GetValue(sati)
@@ -248,7 +248,7 @@ namespace Langulus::Verbs
 
                   Verbs::Associate associator {element};
                   if (Verb::GenericExecuteIn(selector.GetOutput(), associator)) {
-                     // Trait was found and overwritten                 
+                     // Tag was found and overwritten                 
                      if (sati)
                         ++satisfiedTraits.GetValue(sati);
                      else
@@ -265,8 +265,8 @@ namespace Langulus::Verbs
             // This is only reached if the trait attempt fails          
             // Failing this is considered critical - context should be  
             // later discarded - it's cosidered ill-formed              
-            auto meta = element.Is<Trait>()
-               ? element.Get<Trait>().GetType()
+            auto meta = element.Is<Tag>()
+               ? element.Get<Tag>().GetType()
                : element.GetType();
 
             if (meta->CastsTo<A::Number>(1)) {

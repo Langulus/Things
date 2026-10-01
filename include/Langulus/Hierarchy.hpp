@@ -7,250 +7,138 @@
 ///                                                                           
 #pragma once
 #include "Module.hpp"
+#include <Langulus/Seek.hpp>
+#include <Langulus/CT/DefineTag.hpp>
 
 
 namespace Langulus::Things
 {
-   struct Unit;
-   class Thing;
+   using Flow::Seek;
+   struct Part;
+   struct Thing;
 
 
    ///                                                                        
-   ///   Seek interface for Hierarchy/Thing/Unit                              
+   /// MARK: Seek interface                                                   
    ///                                                                        
    /// Contains all kinds of variations of seeking/gathering functions, that  
    /// can be used to collect data from hierarchical systems. You can filter  
    /// based on type, contents, seek direction, etc.                          
    ///                                                                        
-   template<class THIS>
    struct SeekInterface {
       ///                                                                     
-      ///   Intentionally left undefined, you have to define them in THIS     
+      /// MARK: Seek parts                                                    
+      template<Seek = Seek::HereAndAbove>
+      auto SeekPart(this auto&&, DMeta, Index = 0) -> Part*;
+      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
+      auto SeekPart(this auto&&, Index = 0) -> Decay<T>*;
+
+      template<Seek = Seek::HereAndAbove>
+      auto SeekPartAux(this auto&&, Many const&, DMeta, Index = 0) -> Part*;
+      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
+      auto SeekPartAux(this auto&&, Many const&, Index = 0) -> Decay<T>*;
+
+      template<Seek = Seek::HereAndAbove>
+      auto SeekPartExt(this auto&&, DMeta, Many const&, Index = 0) -> Part*;
+      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
+      auto SeekPartExt(this auto&&, Many const&, Index = 0) -> Decay<T>*;
+
+      template<Seek = Seek::HereAndAbove>
+      auto SeekPartAuxExt(this auto&&, DMeta, Many const&, Many const&, Index = 0) -> Part*;
+      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
+      auto SeekPartAuxExt(this auto&&, Many const&, Many const&, Index = 0) -> Decay<T>*;
+
       ///                                                                     
-      /// Can't use virtuals, because we want these to be template functions, 
-      /// so that we retain the most of the static optimizations              
-      /// TODO generalize these when deduce-this has been implemented well    
+      /// MARK: Seek tags                                                     
+      template<Seek = Seek::HereAndAbove>
+      auto SeekTag(this auto&&, TMeta = {}, Index = 0) -> Tag;
+      template<CT::DefineTag, Seek = Seek::HereAndAbove>
+      auto SeekTag(this auto&&, Index = 0) -> Tag;
+
+      template<Seek = Seek::HereAndAbove>
+      auto SeekTagAux(this auto&&, Many const&, TMeta = {}, Index = 0) -> Tag;
+      template<CT::DefineTag, Seek = Seek::HereAndAbove>
+      auto SeekTagAux(this auto&&, Many const&, Index = 0) -> Tag;
+
       ///                                                                     
-      /*template<Seek = Seek::HereAndAbove>
-      NOD() Unit* SeekUnit(DMeta, Index = IndexFirst) = delete;
+      /// MARK: Seek data                                                     
       template<Seek = Seek::HereAndAbove>
-      NOD() Unit* SeekUnitAux(const Neat&, DMeta, Index = IndexFirst) = delete;
+      bool SeekValue(this auto const&, TMeta, auto&, Index = 0);
+      template<CT::DefineTag, Seek = Seek::HereAndAbove>
+      bool SeekValue(this auto const&, CT::NotTagged auto&, Index = 0);
       template<Seek = Seek::HereAndAbove>
-      NOD() Unit* SeekUnitExt(DMeta, const Neat&, Index = IndexFirst) = delete;
-      template<Seek = Seek::HereAndAbove>
-      NOD() Unit* SeekUnitAuxExt(DMeta, const Neat&, const Neat&, Index = IndexFirst) = delete;
+      bool SeekValue(this auto const&, CT::Tagged auto&, Index = 0);
 
       template<Seek = Seek::HereAndAbove>
-      NOD() Trait SeekTrait(TMeta, Index = IndexFirst) = delete;
+      bool SeekValueAux(this auto const&, TMeta, Many const&, auto&, Index = 0);
+      template<CT::DefineTag, Seek = Seek::HereAndAbove>
+      bool SeekValueAux(this auto const&, Many const&, CT::NotTagged auto&, Index = 0);
       template<Seek = Seek::HereAndAbove>
-      NOD() Trait SeekTraitAux(const Neat&, TMeta, Index = IndexFirst) = delete;
+      bool SeekValueAux(this auto const&, Many const&, CT::Tagged auto&, Index = 0);
+
+      ///                                                                     
+      /// MARK: Gather parts                                                  
+      template<Seek = Seek::HereAndAbove>
+      auto GatherParts(this auto&&, DMeta) -> TMany<Part*>;
+      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
+      auto GatherParts(this auto&&) -> TMany<T*>;
 
       template<Seek = Seek::HereAndAbove>
-      bool SeekValue(TMeta, CT::NotVoid auto&, Index = IndexFirst) const = delete;
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(TMeta, const Neat&, CT::NotVoid auto&, Index = IndexFirst) const = delete;
+      auto GatherPartsExt(this auto&&, DMeta, Many const&) -> TMany<Part*>;
+      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
+      auto GatherPartsExt(this auto&&, Many const&) -> TMany<T*>;
 
+      ///                                                                     
+      /// MARK: Gather tags                                                   
+      template<Seek = Seek::HereAndAbove>
+      auto GatherTags(this auto&&, TMeta = {}) -> TagList;
+      template<CT::DefineTag, Seek = Seek::HereAndAbove>
+      auto GatherTags(this auto&&) -> TagList;
 
-      template<Seek = Seek::HereAndAbove>
-      NOD() TMany<Unit*> GatherUnits(DMeta) = delete;
-      template<Seek = Seek::HereAndAbove>
-      NOD() TMany<Unit*> GatherUnitsExt(DMeta, const Neat&) = delete;
-
-      template<Seek = Seek::HereAndAbove>
-      NOD() TraitList GatherTraits(TMeta) = delete;
+      template<class D, Seek = Seek::HereAndAbove>
+      auto GatherValues(this auto const&) -> TMany<D>;
       
-      template<CT::NotVoid D, Seek = Seek::HereAndAbove>
-      NOD() TMany<D> GatherValues() const = delete;*/
-
-
-      ///                                                                     
-      /// The rest of these functions are defined for every SeekInterface     
-      /// They all use static_cast<THIS*>(this) as execution context for the  
-      /// above functions, which should be defined in THIS                    
-      /// TODO generalize these when deduce-this has been implemented well    
-      ///                                                                     
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnit(DMeta, Index = 0) const -> const A::Unit*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnit(Index = 0) -> Decay<T>*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnit(Index = 0) const -> const Decay<T>*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAux(const Many&, DMeta, Index = 0) const -> const A::Unit*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnitAux(const Many&, Index = 0) -> Decay<T>*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnitAux(const Many&, Index = 0) const -> const Decay<T>*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitExt(DMeta, const Many&, Index = 0) const -> const A::Unit*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnitExt(const Many&, Index = 0) -> Decay<T>*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnitExt(const Many&, Index = 0) const -> const Decay<T>*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAuxExt(DMeta, const Many&, const Many&, Index = 0) const -> const A::Unit*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnitAuxExt(const Many&, const Many&, Index = 0) -> Decay<T>*;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto SeekUnitAuxExt(const Many&, const Many&, Index = 0) const -> const Decay<T>*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTrait(TMeta, Index = 0) const -> Trait;
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      auto SeekTrait(Index = 0) -> Trait;
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      auto SeekTrait(Index = 0) const -> Trait;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTraitAux(const Many&, TMeta, Index = 0) const -> Trait;
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      auto SeekTraitAux(const Many&, Index = 0) -> Trait;
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      auto SeekTraitAux(const Many&, Index = 0) const -> Trait;
-
-
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      bool SeekValue(CT::NotTagged auto&, Index = IndexFirst) const;
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      bool SeekValueAux(const Many&, CT::NotTagged auto&, Index = 0) const;
-
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValue(CT::Tagged auto&, Index = IndexFirst) const;
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(const Many&, CT::Tagged auto&, Index = 0) const;
-
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherUnits(DMeta) const -> TMany<const A::Unit*> ;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto GatherUnits() -> TMany<T*>;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto GatherUnits() const -> TMany<const T*>;
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherUnitsExt(DMeta, const Many&) const -> TMany<const A::Unit*>;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto GatherUnitsExt(const Many&) -> TMany<T*>;
-      template<CT::NotVoid T = A::Unit, Seek = Seek::HereAndAbove>
-      auto GatherUnitsExt(const Many&) const -> TMany<const T*>;
-
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTraits(TMeta) const -> TraitList;
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      auto GatherTraits() -> TraitList;
-      template<CT::Trait = Trait, Seek = Seek::HereAndAbove>
-      auto GatherTraits() const -> TraitList;
-
-      
+     
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
       ///                                                                     
-      /// Token based interface                                               
+      /// MARK: Token based interface                                         
       /// Available only when managed reflection is enabled                   
       ///                                                                     
       template<Seek = Seek::HereAndAbove>
-      auto SeekUnit(const Token&, Index = 0)       -> A::Unit*;
+      auto SeekPart(this auto&&, Token const&, Index = 0) -> Part*;
       template<Seek = Seek::HereAndAbove>
-      auto SeekUnit(const Token&, Index = 0) const -> A::Unit const*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAux(const Many&, const Token&, Index = 0)       -> A::Unit*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAux(const Many&, const Token&, Index = 0) const -> A::Unit const*;
+      auto SeekPartAux(this auto&&, Many const&, Token const&, Index = 0) -> Part*;
       
       template<Seek = Seek::HereAndAbove>
-      auto SeekTrait(const Token&, Index = 0)       -> Trait;
+      auto SeekTag(this auto&&, Token const&, Index = 0) -> Tag;
       template<Seek = Seek::HereAndAbove>
-      auto SeekTrait(const Token&, Index = 0) const -> Trait;
+      auto SeekTagAux(this auto&&, Many const&, Token const&, Index = 0) -> Tag;
 
       template<Seek = Seek::HereAndAbove>
-      auto SeekTraitAux(const Many&, const Token&, Index = 0)       -> Trait;
+      bool SeekValue(this auto const&, Token const&, CT::NotVoid auto&, Index = 0);
       template<Seek = Seek::HereAndAbove>
-      auto SeekTraitAux(const Many&, const Token&, Index = 0) const -> Trait;
+      bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, Index = 0);
 
       template<Seek = Seek::HereAndAbove>
-      bool SeekValue(const Token&, CT::NotVoid auto&, Index = 0) const;
+      auto GatherParts(this auto&&, Token const&) -> TMany<Part*>;
       template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(const Token&, const Many&, CT::NotVoid auto&, Index = 0) const;
-
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherUnits(const Token&)       -> TMany<A::Unit*>;
-      template<Seek = Seek::HereAndAbove>
-      auto GatherUnits(const Token&) const -> TMany<const A::Unit*>;
-      
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTraits(const Token&)       -> TraitList;
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTraits(const Token&) const -> TraitList;
+      auto GatherTags(this auto&&, Token const&) -> TagList;
    #endif
    };
 
 
    ///                                                                        
-   ///   A hierarchy interface                                                
+   /// MARK: Hierarchy                                                        
    ///                                                                        
    /// Simply a container of Things, with various quality-of-life             
-   /// functions related to hierarchical retrieval of things, units & traits  
+   /// functions related to hierarchical retrieval of things, parts and tags. 
    ///                                                                        
-   struct Hierarchy : TMany<Thing*>, SeekInterface<Hierarchy> {
+   struct Hierarchy : TMany<Thing*>, SeekInterface {
       using Base = TMany<Thing*>;
       LANGULUS_BASES(Base);
 
       using Base::TMany;
       using Base::operator =;
       using Base::operator ==;
-
-      ///                                                                     
-      ///   Seek                                                              
-      ///                                                                     
-      using SeekInterface::SeekUnit;
-      using SeekInterface::SeekUnitAux;
-      using SeekInterface::SeekUnitExt;
-      using SeekInterface::SeekUnitAuxExt;
-      using SeekInterface::SeekTrait;
-      using SeekInterface::SeekTraitAux;
-      using SeekInterface::SeekValue;
-      using SeekInterface::SeekValueAux;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnit(DMeta, Index = 0) -> A::Unit*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAux(const Many&, DMeta, Index = 0) -> A::Unit*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitExt(DMeta, const Many&, Index = 0) -> A::Unit*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekUnitAuxExt(DMeta, const Many&, const Many&, Index = 0) -> A::Unit*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTrait(TMeta, Index = 0) -> Trait;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTraitAux(const Many&, TMeta, Index = 0) -> Trait;
-
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValue(TMeta, CT::NotVoid auto&, Index = 0) const;
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(TMeta, const Many&, CT::NotVoid auto&, Index = 0) const;
-
-      ///                                                                     
-      ///   Gather                                                            
-      ///                                                                     
-      using SeekInterface::GatherUnits;
-      using SeekInterface::GatherUnitsExt;
-      using SeekInterface::GatherTraits;
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherUnitsExt(DMeta, const Many&) -> TMany<A::Unit*>;
-      template<Seek = Seek::HereAndAbove>
-      auto GatherUnits(DMeta) -> TMany<A::Unit*>;
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTraits(TMeta) -> TraitList;
-
-      template<CT::NotVoid D, Seek = Seek::HereAndAbove>
-      auto GatherValues() const -> TMany<D>;
    };
 }

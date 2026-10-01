@@ -17,23 +17,23 @@ namespace Langulus::Things
    ///   @param trait - trait id                                              
    ///   @param offset - offset of result to use                              
    ///   @return a filled trait if fount, empty if not                        
-   auto Thing::GetTrait(TMeta trait, Index offset) const -> Trait {
-      return GetTrait(Trait::FromMeta(trait, nullptr), offset);
+   auto Thing::GetTrait(TMeta trait, Index offset) const -> Tag {
+      return GetTrait(Tag::FromMeta(trait, nullptr), offset);
    }
 
    /// Get a trait by type                                                    
    ///   @param trait - trait id                                              
    ///   @param offset - offset of result to use                              
    ///   @return a filled trait if fount, empty if not                        
-   auto Thing::GetTrait(TMeta trait, Index offset) -> Trait {
-      return GetTrait(Trait::FromMeta(trait, nullptr), offset);
+   auto Thing::GetTrait(TMeta trait, Index offset) -> Tag {
+      return GetTrait(Tag::FromMeta(trait, nullptr), offset);
    }
 
    /// Get a trait from this entity's trait list                              
    ///   @param id - the trait to search for                                  
    ///   @param index - the index of the trait we seek                        
    ///   @return a pointer to the trait, or nullptr if not found              
-   auto Thing::GetLocalTrait(TMeta id, Index index) -> Trait* {
+   auto Thing::GetLocalTrait(TMeta id, Index index) -> Tag* {
       if (id) {
          // Search a typed trait                                        
          const auto found = mTraits.FindIt(id);
@@ -43,10 +43,10 @@ namespace Langulus::Things
       }
 
       // Search trait by index                                          
-      Trait* found {};
+      Tag* found {};
       if (index.IsArithmetic()) {
          auto offset = index.GetOffsetUnsafe();
-         mTraits.ForEachValue([&](TMany<Trait>& list) noexcept {
+         mTraits.ForEachValue([&](TMany<Tag>& list) noexcept {
             if (offset < list.GetCount()) {
                found = &list[offset];
                return Loop::Break;
@@ -64,7 +64,7 @@ namespace Langulus::Things
    ///   @param id - the trait to search for                                  
    ///   @param offset - the index of the trait we seek                       
    ///   @return a pointer to the trait, or nullptr if not found              
-   auto Thing::GetLocalTrait(TMeta id, Index offset) const -> const Trait* {
+   auto Thing::GetLocalTrait(TMeta id, Index offset) const -> const Tag* {
       return const_cast<Thing&>(*this).GetLocalTrait(id, offset);
    }
 
@@ -72,14 +72,14 @@ namespace Langulus::Things
    ///   @param id - trait to match                                           
    ///   @param index - offset of result to use                               
    ///   @return a non-empty trait, if found                                  
-   auto Thing::GetTrait(const Trait& id, Index index) -> Trait {
+   auto Thing::GetTrait(const Tag& id, Index index) -> Tag {
       if (id.GetTrait()) {
          // Handle some predefined traits here                          
-         if (id.template IsTrait<Traits::Unit>()) {
+         if (id.template IsTrait<Traits::Part>()) {
             // Get a component                                          
             auto unit = GetUnitMeta(DMeta {}, index);
             if (unit)
-               return Traits::Unit {unit};
+               return Traits::Part {unit};
             return {};
          }
          else if (id.template IsTrait<Traits::Child>()) {
@@ -112,14 +112,14 @@ namespace Langulus::Things
    ///   @param id - trait to match                                           
    ///   @param index - offset of result to use                               
    ///   @return a non-empty trait, if found                                  
-   auto Thing::GetTrait(const Trait& id, Index index) const -> Trait {
+   auto Thing::GetTrait(const Tag& id, Index index) const -> Tag {
       return const_cast<Thing*>(this)->GetTrait(id, index);
    }
 
    /// Add a new trait to the thing                                           
    ///   @param trait - trait to shallow copy                                 
    ///   @return the new trait instance                                       
-   auto Thing::AddTrait(Trait trait) -> Trait* {
+   auto Thing::AddTrait(Tag trait) -> Tag* {
       const auto tmeta = trait.GetTrait();
       auto found = mTraits.FindIt(tmeta);
       if (found) {
@@ -152,7 +152,7 @@ namespace Langulus::Things
    /// Remove an exact-matching trait from this entity                        
    ///   @param trait - type and value to remove                              
    ///   @return the number of removed traits                                 
-   auto Thing::RemoveTrait(Trait trait) -> size_t {
+   auto Thing::RemoveTrait(Tag trait) -> size_t {
       const auto found = mTraits.FindIt(trait.GetTrait());
       if (found) {
          const auto removed = found.GetValue().Remove(trait);
@@ -177,7 +177,7 @@ namespace Langulus::Things
    /// A fast check whether traits of the given type and value are inside     
    ///   @param trait - trait to search for                                   
    ///   @return the number of matching traits                                
-   auto Thing::HasTraits(const Trait& trait) const -> size_t {
+   auto Thing::HasTraits(const Tag& trait) const -> size_t {
       const auto found = mTraits.FindIt(trait.GetTrait());
       if (not found)
          return 0;

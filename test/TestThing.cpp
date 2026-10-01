@@ -15,7 +15,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
    static Allocator::State memoryState;
 
    static_assert(CT::Complete<Things::Hierarchy>);
-   static_assert(CT::Complete<A::Unit>);
+   static_assert(CT::Complete<Part>);
    static_assert(CT::Complete<Temporal>);
    static_assert(CT::Complete<Thing>);
    static_assert(CT::Complete<Runtime>);
@@ -419,17 +419,17 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
 
       WHEN("Gather units of a specific type") {
-         auto found1 = root.GatherUnits<TestUnit1>();
+         auto found1 = root.GatherParts<TestUnit1>();
 
          REQUIRE(found1.GetCount() == 1);
       }
 
       /*WHEN("Seek a unit by index") {
-         auto unit = root.SeekUnit(0);
+         auto unit = root.SeekPart(0);
       }
 
       WHEN("Seek a unit by type and index") {
-         auto unit = root.SeekUnit<Unit>(0);
+         auto unit = root.SeekPart<Part>(0);
       }
 
       WHEN("Get a static/unit/dynamic trait by index") {
@@ -441,11 +441,11 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
 
       WHEN("Seek a trait in the hierarchy by index") {
-         auto trait = root.SeekTrait(0);
+         auto trait = root.SeekTag(0);
       }
 
       WHEN("Seek a trait in the hierarchy by type index") {
-         auto child = root.SeekTrait<Traits::Name>();
+         auto child = root.SeekTag<Traits::Name>();
       }*/
    }
 

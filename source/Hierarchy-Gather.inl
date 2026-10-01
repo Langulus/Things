@@ -7,7 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
-#include <Langulus/Unit.hpp>
+#include <Langulus/Part.hpp>
 
 #define TEMPLATE()   template<class THIS>
 #define TME()        SeekInterface<THIS>
@@ -21,21 +21,21 @@ namespace Langulus::Things
    ///   @param meta - the units to seek for                                  
    ///   @return the gathered units that match the type                       
    TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   TMany<const A::Unit*> TME()::GatherUnits(DMeta meta) const {
+   TMany<Part const*> TME()::GatherParts(DMeta meta) const {
       return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template GatherUnits<SEEK>(meta);
+         ->template GatherParts<SEEK>(meta);
    }
 
    TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   TMany<T*> TME()::GatherUnits() {
+   TMany<T*> TME()::GatherParts() {
       return static_cast<THIS*>(this)
-         ->template GatherUnits<SEEK>(MetaDataOf<Decay<T>>());
+         ->template GatherParts<SEEK>(MetaDataOf<Decay<T>>());
    }
 
    TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   TMany<const T*> TME()::GatherUnits() const {
+   TMany<const T*> TME()::GatherParts() const {
       return const_cast<TME()*>(this)
-         ->template GatherUnits<T, SEEK>();
+         ->template GatherParts<T, SEEK>();
    }
 
    /// Collects all traits of the given type inside the hierarchy             
@@ -43,46 +43,46 @@ namespace Langulus::Things
    ///   @param trait - the trait to seek for                                 
    ///   @return the gathered traits that match the type                      
    TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   TraitList TME()::GatherTraits(TMeta trait) const {
+   TagList TME()::GatherTags(TMeta trait) const {
       return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template GatherTraits<SEEK>(trait);
+         ->template GatherTags<SEEK>(trait);
    }
 
-   TEMPLATE() template<CT::Trait T, Seek SEEK> LANGULUS(INLINED)
-   TraitList TME()::GatherTraits() {
+   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
+   TagList TME()::GatherTags() {
       return static_cast<THIS*>(this)
-         ->template GatherTraits<SEEK>(T::GetTrait());
+         ->template GatherTags<SEEK>(T::GetTrait());
    }
 
-   TEMPLATE() template<CT::Trait T, Seek SEEK> LANGULUS(INLINED)
-   TraitList TME()::GatherTraits() const {
+   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
+   TagList TME()::GatherTags() const {
       return const_cast<TME()*>(this)
-         ->template GatherTraits<T, SEEK>();
+         ->template GatherTags<T, SEEK>();
    }
 
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
       TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      TMany<A::Unit*> TME()::GatherUnits(const Token& token) {
+      TMany<Part*> TME()::GatherParts(Token const& token) {
          return static_cast<THIS*>(this)
-            ->template GatherUnits<SEEK>(RTTI::GetMetaData(token));
+            ->template GatherParts<SEEK>(RTTI::GetMetaData(token));
       }
 
       TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      TMany<const A::Unit*> TME()::GatherUnits(const Token& token) const {
+      TMany<Part const*> TME()::GatherParts(Token const& token) const {
          return static_cast<THIS*>(this)
-            ->template GatherUnits<SEEK>(RTTI::GetMetaData(token));
+            ->template GatherParts<SEEK>(RTTI::GetMetaData(token));
       }
       
       TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      TraitList TME()::GatherTraits(const Token& token) {
+      TagList TME()::GatherTags(Token const& token) {
          return static_cast<THIS*>(this)
-            ->template GatherTraits<SEEK>(RTTI::GetMetaTrait(token));
+            ->template GatherTags<SEEK>(RTTI::GetMetaTrait(token));
       }
 
       TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      TraitList TME()::GatherTraits(const Token& token) const {
+      TagList TME()::GatherTags(Token const& token) const {
          return static_cast<THIS*>(this)
-            ->template GatherTraits<SEEK>(RTTI::GetMetaTrait(token));
+            ->template GatherTags<SEEK>(RTTI::GetMetaTrait(token));
       }
    #endif
 
@@ -99,10 +99,10 @@ namespace Langulus::Things
    ///   @param meta - the units to seek for                                  
    ///   @return the gathered units that match the type                       
    template<Seek SEEK> LANGULUS(INLINED)
-   TMany<A::Unit*> Hierarchy::GatherUnits(DMeta meta) {
-      TMany<A::Unit*> result;
+   TMany<Part*> Hierarchy::GatherParts(DMeta meta) {
+      TMany<Part*> result;
       for (auto owner : *this)
-         result += owner->template GatherUnits<SEEK>(meta);
+         result += owner->template GatherParts<SEEK>(meta);
       return Abandon(result);
    }
       
@@ -111,10 +111,10 @@ namespace Langulus::Things
    ///   @param trait - the trait to seek for                                 
    ///   @return the gathered traits that match the type                      
    template<Seek SEEK> LANGULUS(INLINED)
-   TMany<Trait> Hierarchy::GatherTraits(TMeta trait) {
-      TMany<Trait> result;
+   TMany<Tag> Hierarchy::GatherTags(TMeta trait) {
+      TMany<Tag> result;
       for (auto owner : *this)
-         result += owner->template GatherTraits<SEEK>(trait);
+         result += owner->template GatherTags<SEEK>(trait);
       return Abandon(result);
    }
 

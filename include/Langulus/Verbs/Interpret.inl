@@ -65,7 +65,7 @@ namespace Langulus::Verbs
    ///   @param context - the context to execute in                           
    ///   @param verb - the verb instance to execute                           
    ///   @return true if execution was a success                              
-   inline bool Interpret::ExecuteDefault(const Many& context, Verb& verb) {
+   inline bool Interpret::ExecuteDefault(Many const& context, Verb& verb) {
       verb.ForEach([&](RTTI::DMeta to) {
          auto result = Many::Typed(to);
          if (context.ConvertTo(result))
@@ -89,7 +89,7 @@ namespace Langulus::Verbs
    ///   @param verb - the verb instance to execute                           
    ///   @return true if execution was a success                              
    template<CT::NotVoid TO>
-   bool InterpretAs<TO>::ExecuteDefault(const Many& context, Verb& verb) {
+   bool InterpretAs<TO>::ExecuteDefault(Many const& context, Verb& verb) {
       if constexpr (CT::Serial<TO>) {
          // Serialze                                                    
          TO serialized;

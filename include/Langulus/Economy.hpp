@@ -31,8 +31,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract economy unit                                                
    ///                                                                        
-   struct EconomyUnit : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct EconomyUnit : virtual Part {
+      using CTTI_Bases = Part;
       using CTTI_Producer = Economy;
 
       EconomyUnit() : Resolvable {this} {}

@@ -66,11 +66,11 @@ namespace Langulus::Things
 
       virtual auto GetLOD(const Math::LOD&) const -> Ref<Material> = 0;
 
-      auto GetInputs(RefreshRate)  const -> const TraitList&;
-      auto GetInputs(size_t)       const -> const TraitList&;
+      auto GetInputs(RefreshRate)  const -> const TagList&;
+      auto GetInputs(size_t)       const -> const TagList&;
 
-      auto GetOutputs(RefreshRate) const -> const TraitList&;
-      auto GetOutputs(size_t)      const -> const TraitList&;
+      auto GetOutputs(RefreshRate) const -> const TagList&;
+      auto GetOutputs(size_t)      const -> const TagList&;
 
    protected:
       mutable TagList mInputs[RefreshRate::InputCount];

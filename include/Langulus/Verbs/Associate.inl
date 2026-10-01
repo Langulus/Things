@@ -100,7 +100,7 @@ namespace Langulus::CTTI
       using Can = Verbs::Associate;
 
       static bool Default(Many& lhs, Verb& verb) {
-         const Many& rhs = verb.GetArgument();
+         Many const& rhs = verb.GetArgument();
    
          if (lhs.IsConstant() or lhs.GetCount() != rhs.GetCount())
             // Can't overwrite a constant context                       

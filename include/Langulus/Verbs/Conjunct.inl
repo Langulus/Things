@@ -56,7 +56,7 @@ namespace Langulus::Verbs
    /// Produces a shallow copy of the provided context and arguments          
    ///   @param context - the block to execute in                             
    ///   @param verb - conjunction/disjunction verb                           
-   inline bool Conjunct::ExecuteDefault(const Many&, Verb& verb) {
+   inline bool Conjunct::ExecuteDefault(Many const&, Verb& verb) {
       Many joined;
       if (verb.GetMass() < 0) {
          joined.SmartPush(IndexBack, verb.GetSource(), DataState::Or);

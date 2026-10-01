@@ -23,8 +23,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract artificial intelligence unit                                
    ///                                                                        
-   struct AIUnit : virtual Unit {
-      using CTTI_Bases     = Unit;
+   struct AIUnit : virtual Part {
+      using CTTI_Bases     = Part;
       using CTTI_Producer  = AIModule;
       AIUnit() : Resolvable {this} {}
    };

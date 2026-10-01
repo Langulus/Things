@@ -22,7 +22,7 @@ namespace Langulus::Things
          return {};
 
       // Get minds from the current context                             
-      auto minds = GatherUnits<A::Mind, Seek::HereAndAbove>();
+      auto minds = GatherParts<A::Mind, Seek::HereAndAbove>();
       if (not minds) {
          Logger::Error(this, ": No minds - can't interpret message: ", text);
          return {};
@@ -90,8 +90,8 @@ namespace Langulus::Things
    ///   @param verb - the selection verb                                     
    void Thing::Select(Verb& verb) {
       // Probe every part of the argument and check if it matches       
-      TMany<Trait>    selectedTraits;
-      TMany<A::Unit*> selectedUnits;
+      TMany<Tag>    selectedTraits;
+      TMany<Part*> selectedUnits;
       TMany<Thing*>   selectedEntities;
       bool mismatch = false;
 
@@ -131,19 +131,19 @@ namespace Langulus::Things
                return Loop::Continue;
             }
          }
-         else if (recipe.CastsTo<Things::Unit>()) {
+         else if (recipe.CastsTo<Things::Part>()) {
             // Find a unit containing construct arguments               
             if (not selectUnit(recipe.GetTarget()))
                return Loop::Break;
 
             // selectedComponents has been populated with results       
             // Filter them additionally by construct arguments          
-            TMany<Things::Unit*> filteredSelectedComponents;
+            TMany<Things::Part*> filteredSelectedComponents;
             for (auto& unit : selectedUnits) {
                bool localMismatch = false;
                auto unitBlock = unit->GetBlock();
                recipe->ForEach(
-                  [&](const Many& part) {
+                  [&](Many const& part) {
                      for (size_t i = 0; i < part.GetCount(); ++i) {
                         auto element = part.GetElementResolved(i);
                         Verbs::Select selector {element};
@@ -175,7 +175,7 @@ namespace Langulus::Things
          [&](const Recipe& recipe) {
             return selectConstruct(recipe);
          },
-         [&](const Trait& trait) {
+         [&](const Tag& trait) {
             return selectTrait(trait.GetTrait());
          },
          [&](const TMeta& trait) {
@@ -190,13 +190,13 @@ namespace Langulus::Things
          // We're not seeking an entity, but components/traits          
          if (selectedTraits) {
             THINGS_SELECTION_VERBOSE_SELF(Logger::Green,
-               "Trait(s) selected: ", selectedTraits);
+               "Tag(s) selected: ", selectedTraits);
             verb << selectedTraits;
          }
 
          if (selectedUnits) {
             THINGS_SELECTION_VERBOSE_SELF(Logger::Green,
-               "Unit(s) selected: ", selectedUnits);
+               "Part(s) selected: ", selectedUnits);
             verb << selectedUnits;
          }
 

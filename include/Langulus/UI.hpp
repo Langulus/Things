@@ -23,8 +23,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract UI unit                                                     
    ///                                                                        
-   struct UIUnit : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct UIUnit : virtual Part {
+      using CTTI_Bases = Part;
       using CTTI_Producer = UIModule;
       UIUnit() : Resolvable {this} {}
    };

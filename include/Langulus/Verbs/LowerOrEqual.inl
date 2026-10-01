@@ -65,13 +65,13 @@ namespace Langulus::Verbs
    ///   @param context - the context to execute in                           
    ///   @param verb - the verb instance to execute                           
    ///   @return true if execution was a success                              
-   inline bool LowerOrEqual::ExecuteDefault(const Many& context, Verb& verb) {
+   inline bool LowerOrEqual::ExecuteDefault(Many const& context, Verb& verb) {
       if (verb.IsMissing() or not context or context.IsMissing())
          return false;
 
       // Scan verb argument for elements interpretable as the context   
       // Consider the hierarchy                                         
-      verb.ForEach([&](const Many&) {
+      verb.ForEach([&](Many const&) {
          TODO(); //compare
       });
 

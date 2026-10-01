@@ -25,9 +25,9 @@ SCENARIO("Testing Event", "[event]") {
          " Event(Keys::A, EventState::Begin, Data(X(666),   Y(999))),"
          " Event(Keys::D, EventState::End,   Data(X(666+1), Y(999+1))))";
 
-      const Many required = Verbs::Create { Many::Wrap<Event>(
-         Keys::A {EventState::Begin, Many::Wrap<Trait>(Traits::X {666_real}, Traits::Y { 999_real})},
-         Keys::D {EventState::End,   Many::Wrap<Trait>(Traits::X {667_real}, Traits::Y {1000_real})}
+      Many const required = Verbs::Create { Many::Wrap<Event>(
+         Keys::A {EventState::Begin, Many::Wrap<Tag>(Traits::X {666_real}, Traits::Y { 999_real})},
+         Keys::D {EventState::End,   Many::Wrap<Tag>(Traits::X {667_real}, Traits::Y {1000_real})}
       )};
 
       WHEN("Parsed") {
@@ -44,9 +44,9 @@ SCENARIO("Testing Event", "[event]") {
          " A(EventState::Begin, Data(X(666),   Y(999))),"
          " D(EventState::End,   Data(X(666+1), Y(999+1))))";
 
-      const Many required = Verbs::Create {
-         Keys::A {EventState::Begin, Many::Wrap<Trait>(Traits::X {666_real}, Traits::Y { 999_real})},
-         Keys::D {EventState::End,   Many::Wrap<Trait>(Traits::X {667_real}, Traits::Y {1000_real})}
+      Many const required = Verbs::Create {
+         Keys::A {EventState::Begin, Many::Wrap<Tag>(Traits::X {666_real}, Traits::Y { 999_real})},
+         Keys::D {EventState::End,   Many::Wrap<Tag>(Traits::X {667_real}, Traits::Y {1000_real})}
       };
 
       WHEN("Parsed") {

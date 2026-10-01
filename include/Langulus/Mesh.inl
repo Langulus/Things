@@ -191,7 +191,7 @@ namespace Langulus::Things
       return {};
    }
 
-   template<CT::Trait T>
+   template<CT::Tag T>
    Many Mesh::GetPointTrait(size_t) const {
       TODO();
       return {};
@@ -307,7 +307,7 @@ namespace Langulus::Things
    ///   @tparam T - the trait to retrieve                                    
    ///   @param lineIndex - the line index                                    
    ///   @return data for the specific line                                   
-   template<CT::Trait T>
+   template<CT::Tag T>
    Many Mesh::GetLineTrait(size_t lineIndex) const {
       const auto indices = GetLineIndices(lineIndex);
       const auto soughtt = GetData<T>(0);
@@ -398,7 +398,7 @@ namespace Langulus::Things
    ///   @tparam T - the trait to retrieve                                    
    ///   @param triangleIndex - the triangle index                            
    ///   @return data for the specific triangle                               
-   template<CT::Trait T>
+   template<CT::Tag T>
    Many Mesh::GetTriangleTrait(size_t triangleIndex) const {
       const auto indices = GetTriangleIndices(triangleIndex);
       const auto soughtt = GetData<T>(0);
@@ -441,7 +441,7 @@ namespace Langulus::Things
    ///   @return the number of executions of 'call'                           
    template<bool INDEXED, class...T>
    size_t Mesh::ForEachVertexInner(Types<T...>, auto&& call) const {
-      static_assert(CT::Trait<Decay<T>...>,
+      static_assert(CT::Tag<Decay<T>...>,
          "All iterator arguments must be traits, like Traits::Place, "
          "Traits::Aim, Traits::Color, etc.");
 
@@ -565,7 +565,7 @@ namespace Langulus::Things
    /// Prepare a trait block, that will be offsetted while iterating          
    ///   @tparam T - the trait to interface                                   
    ///   @return a disowned trait block                                       
-   template<CT::Trait T>
+   template<CT::Tag T>
    T Mesh::ForEachVertex_PrepareStream() const {
       const auto found = GetData<T>(0);
       if (not found or not *found) {
@@ -593,7 +593,7 @@ namespace Langulus::Things
    /// Prepare an index block, that will be offsetted while iterating         
    ///   @tparam T - the trait to interface                                   
    ///   @return a disowned trait block                                       
-   template<CT::Trait T>
+   template<CT::Tag T>
    T Mesh::ForEachVertex_PrepareIndexStream() const {
       const auto indices = GetDataList<Traits::Index>();
       if (not indices or not *indices)
@@ -637,7 +637,7 @@ namespace Langulus::Things
    ///   @param indices - the index stream                                    
    ///   @return the selected element                                         
    template<CT::Topology T>
-   auto Mesh::PickVertex(size_t i, const CT::Trait auto& stream, const CT::Trait auto& indices) const {
+   auto Mesh::PickVertex(size_t i, const CT::Tag auto& stream, const CT::Tag auto& indices) const {
       LglsAssumeDev(mView.mIndexCount,
          "PickVertex can be used only on indexed geometry");
 

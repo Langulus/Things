@@ -8,27 +8,31 @@
 #pragma once
 #include "Module.hpp"
 #include <Langulus/TMap.hpp>
+#include <Langulus/TRef.hpp>
+#include <Langulus/Text.hpp>
+#include <Langulus/HashOf.hpp>
 
 
 namespace Langulus::Things
 {
-   class Thing;
+   struct Thing;
    struct File;
    struct Folder;
-   using Path = Annies::Text;
+   using  Path = Annies::Text;
 
    ///                                                                        
-   ///   Runtime                                                              
+   /// MARK: Runtime                                                          
    ///                                                                        
    ///   Handles loading and unloading of modules, dispatches verbs to        
-   /// modules, handles overall system state and console input. Overall, it   
-   /// takes care of the minimally required OS aspect of running a program.   
+   /// modules, handles system state and console input. Overall, it takes     
+   /// care of the minimally required OS aspect of running a program.         
    ///   You can view a Runtime as a single process inside Langulus. You can  
    /// create infinite nested subprocesses in any Thing. Each new runtime     
    /// will act as the environment for that Thing, as well as all of its      
    /// children, modules, units, etc.                                         
    ///                                                                        
-   class Runtime final {
+   struct Runtime final {
+   private:
       using DMeta = RTTI::DMeta;
 
       ///                                                                     
@@ -78,7 +82,7 @@ namespace Langulus::Things
 
          /// Hashing for to being able to contain it in a map                 
          constexpr Hash GetHash() const noexcept {
-            return HashBytes(&mHandle, static_cast<int>(sizeof(mHandle)));
+            return HashOf(mHandle);
          }
       };
       
@@ -95,7 +99,7 @@ namespace Langulus::Things
 
       LANGULUS_API(THINGS)
       auto LoadSharedLibraryPath(Path) -> SharedLibrary;
-      auto LoadSharedLibrary(const Token&) -> SharedLibrary;
+      auto LoadSharedLibrary(Token const&) -> SharedLibrary;
       bool UnloadSharedLibrary(const SharedLibrary&);
 
    public:
@@ -108,13 +112,13 @@ namespace Langulus::Things
       auto GetOwner() const noexcept { return mOwner; }
 
       LANGULUS_API(THINGS)
-      auto InstantiateModulePath(const Path&, const Many& = {}) -> Module*;
+      auto InstantiateModulePath(const Path&, Many const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
-      auto InstantiateModule(const Token&, const Many& = {}) -> Module*;
+      auto InstantiateModule(Token const&, Many const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
-      auto InstantiateModule(const SharedLibrary&, const Many& = {}) -> Module*;
+      auto InstantiateModule(const SharedLibrary&, Many const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
       auto GetDependency(DMeta) const noexcept -> SharedLibrary;
@@ -129,10 +133,10 @@ namespace Langulus::Things
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          LANGULUS_API(THINGS)
-         auto GetDependencyToken(const Token&) const noexcept -> SharedLibrary;
+         auto GetDependencyToken(Token const&) const noexcept -> SharedLibrary;
 
          LANGULUS_API(THINGS)
-         auto GetModulesToken(const Token&) const noexcept -> const ModList&;
+         auto GetModulesToken(Token const&) const noexcept -> const ModList&;
       #endif
 
       LANGULUS_API(THINGS)

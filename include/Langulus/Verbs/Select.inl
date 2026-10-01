@@ -84,7 +84,7 @@ namespace Langulus::CTTI
          bool containsOnlyIndices = not indices.IsEmpty();
 
          // Scan verb argument for anything but indices                 
-         verb.ForEachDeep([&](const Many& group) {
+         verb.ForEachDeep([&](Many const& group) {
             group.ForEach(
                [&](const Construct& construct) {
                   VERBOSE_SELECT("Selecting construct: ", construct.GetDescriptor());
@@ -191,7 +191,7 @@ namespace Langulus::Verbs
    ///   @param context - the context to execute in                           
    ///   @param verb - the verb instance to execute                           
    ///   @return true if execution was a success                              
-   /*inline bool Select::ExecuteDefault(const Many& context, Verb& verb) {
+   /*inline bool Select::ExecuteDefault(Many const& context, Verb& verb) {
       return DefaultSelect<false>(const_cast<Many&>(context), verb);
    }
 
@@ -217,7 +217,7 @@ namespace Langulus::Verbs
    template<bool MUTABLE>
    bool Select::PerIndex(
       Many& context,
-      TMany<Trait>& selectedTraits,
+      TMany<Tag>& selectedTraits,
       TMeta resultingTrait,
       CT::Meta auto meta,
       const TMany<Index>& indices
@@ -249,7 +249,7 @@ namespace Langulus::Verbs
                variable.MakeConst();
 
             if (variable.IsAllocated()) {
-               selectedTraits << Trait::From(resultingTrait, variable);
+               selectedTraits << Tag::From(resultingTrait, variable);
                done = true;
             }
          }
@@ -274,7 +274,7 @@ namespace Langulus::Verbs
       const TMany<Index>& indices,
       DMeta id,
       Many& context,
-      TMany<Trait>& selectedTraits,
+      TMany<Tag>& selectedTraits,
       TMany<const RTTI::Ability*>& selectedVerbs
    ) {
       const auto type = context.GetType();

@@ -23,8 +23,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract user unit                                                   
    ///                                                                        
-   struct User : virtual Unit {
-      using CTTI_Bases = Unit;
+   struct User : virtual Part {
+      using CTTI_Bases = Part;
       using CTTI_Producer = UserModule;
       User() : Resolvable {this} {}
    };

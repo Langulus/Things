@@ -13,10 +13,10 @@
 
 
 /// A unit implementation for testing                                         
-class TestUnit1 final : public A::Unit {
+class TestUnit1 final : public Part {
 public:
    LANGULUS(ABSTRACT) false;
-   LANGULUS_BASES(Unit);
+   LANGULUS_BASES(Part);
    LANGULUS(POOL_TACTIC) RTTI::PoolTactic::Type;
 
    TestUnit1() : Resolvable {this} {}
@@ -34,10 +34,10 @@ public:
 };
 
 /// A unit implementation for testing                                         
-class TestUnit2 final : public A::Unit {
+class TestUnit2 final : public Part {
 public:
    LANGULUS(ABSTRACT) false;
-   LANGULUS_BASES(Unit);
+   LANGULUS_BASES(Part);
    LANGULUS(POOL_TACTIC) RTTI::PoolTactic::Type;
 
    TestUnit2() : Resolvable {this} {}

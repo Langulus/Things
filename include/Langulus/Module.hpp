@@ -49,7 +49,6 @@ namespace Langulus::Things
    ///   External module interface                                            
    ///                                                                        
    struct Module : public virtual Resolvable {
-   public:
       using CTTI_Producer = Runtime;
       using CTTI_Bases    = Resolvable;
 
@@ -59,8 +58,8 @@ namespace Langulus::Things
 
    public:
       Module(Runtime* runtime) assumptious
-         : Resolvable {this}
-         , mRuntime   {runtime} {}
+         : /*Resolvable {this}
+         ,*/ mRuntime   {runtime} {}
 
       Module() noexcept = delete;
       Module(const Module&) = delete;
@@ -128,8 +127,6 @@ namespace Langulus::CT
 ///   @param cat - module category, i.e. some abstract type                   
 ///   @param ... - a type list to reflect upon module load                    
 #define LANGULUS_DEFINE_MODULE(m, prio, name, info, depo, cat, ...) \
-   LANGULUS_RTTI_BOUNDARY(name) \
-   \
    extern "C" { \
       LANGULUS_EXPORT() \
       void LANGULUS_MODULE_ENTRY() (::Langulus::DMeta& meta, ::Langulus::MetaList& list) { \

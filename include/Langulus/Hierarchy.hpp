@@ -9,6 +9,8 @@
 #include "Module.hpp"
 #include <Langulus/Seek.hpp>
 #include <Langulus/CT/DefineTag.hpp>
+#include <Langulus/CT/Index.hpp>
+#include <Langulus/CT/Tagged.hpp>
 
 
 namespace Langulus::Things
@@ -24,57 +26,59 @@ namespace Langulus::Things
    /// Contains all kinds of variations of seeking/gathering functions, that  
    /// can be used to collect data from hierarchical systems. You can filter  
    /// based on type, contents, seek direction, etc.                          
-   ///                                                                        
    struct SeekInterface {
+      using DMeta = RTTI::DMeta;
+      using TMeta = RTTI::TMeta;
+
       ///                                                                     
       /// MARK: Seek parts                                                    
       template<Seek = Seek::HereAndAbove>
-      auto SeekPart(this auto&&, DMeta, Index = 0) -> Part*;
+      auto SeekPart(this auto&&, DMeta, CT::Index auto&& = 0) -> Part*;
       template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPart(this auto&&, Index = 0) -> Decay<T>*;
+      auto SeekPart(this auto&&, CT::Index auto&& = 0) -> Decay<T>*;
 
       template<Seek = Seek::HereAndAbove>
-      auto SeekPartAux(this auto&&, Many const&, DMeta, Index = 0) -> Part*;
+      auto SeekPartAux(this auto&&, Many const&, DMeta, CT::Index auto&& = 0) -> Part*;
       template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPartAux(this auto&&, Many const&, Index = 0) -> Decay<T>*;
+      auto SeekPartAux(this auto&&, Many const&, CT::Index auto&& = 0) -> Decay<T>*;
 
       template<Seek = Seek::HereAndAbove>
-      auto SeekPartExt(this auto&&, DMeta, Many const&, Index = 0) -> Part*;
+      auto SeekPartExt(this auto&&, DMeta, Many const&, CT::Index auto&& = 0) -> Part*;
       template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPartExt(this auto&&, Many const&, Index = 0) -> Decay<T>*;
+      auto SeekPartExt(this auto&&, Many const&, CT::Index auto&& = 0) -> Decay<T>*;
 
       template<Seek = Seek::HereAndAbove>
-      auto SeekPartAuxExt(this auto&&, DMeta, Many const&, Many const&, Index = 0) -> Part*;
+      auto SeekPartAuxExt(this auto&&, DMeta, Many const&, Many const&, CT::Index auto&& = 0) -> Part*;
       template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPartAuxExt(this auto&&, Many const&, Many const&, Index = 0) -> Decay<T>*;
+      auto SeekPartAuxExt(this auto&&, Many const&, Many const&, CT::Index auto&& = 0) -> Decay<T>*;
 
       ///                                                                     
       /// MARK: Seek tags                                                     
       template<Seek = Seek::HereAndAbove>
-      auto SeekTag(this auto&&, TMeta = {}, Index = 0) -> Tag;
+      auto SeekTag(this auto&&, TMeta = {}, CT::Index auto&& = 0) -> Tag;
       template<CT::DefineTag, Seek = Seek::HereAndAbove>
-      auto SeekTag(this auto&&, Index = 0) -> Tag;
+      auto SeekTag(this auto&&, CT::Index auto&& = 0) -> Tag;
 
       template<Seek = Seek::HereAndAbove>
-      auto SeekTagAux(this auto&&, Many const&, TMeta = {}, Index = 0) -> Tag;
+      auto SeekTagAux(this auto&&, Many const&, TMeta = {}, CT::Index auto&& = 0) -> Tag;
       template<CT::DefineTag, Seek = Seek::HereAndAbove>
-      auto SeekTagAux(this auto&&, Many const&, Index = 0) -> Tag;
+      auto SeekTagAux(this auto&&, Many const&, CT::Index auto&& = 0) -> Tag;
 
       ///                                                                     
       /// MARK: Seek data                                                     
       template<Seek = Seek::HereAndAbove>
-      bool SeekValue(this auto const&, TMeta, auto&, Index = 0);
+      bool SeekValue(this auto const&, TMeta, auto&, CT::Index auto&& = 0);
       template<CT::DefineTag, Seek = Seek::HereAndAbove>
-      bool SeekValue(this auto const&, CT::NotTagged auto&, Index = 0);
+      bool SeekValue(this auto const&, CT::NotTagged auto&, CT::Index auto&& = 0);
       template<Seek = Seek::HereAndAbove>
-      bool SeekValue(this auto const&, CT::Tagged auto&, Index = 0);
+      bool SeekValue(this auto const&, CT::Tagged auto&, CT::Index auto&& = 0);
 
       template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(this auto const&, TMeta, Many const&, auto&, Index = 0);
+      bool SeekValueAux(this auto const&, TMeta, Many const&, auto&, CT::Index auto&& = 0);
       template<CT::DefineTag, Seek = Seek::HereAndAbove>
-      bool SeekValueAux(this auto const&, Many const&, CT::NotTagged auto&, Index = 0);
+      bool SeekValueAux(this auto const&, Many const&, CT::NotTagged auto&, CT::Index auto&& = 0);
       template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(this auto const&, Many const&, CT::Tagged auto&, Index = 0);
+      bool SeekValueAux(this auto const&, Many const&, CT::Tagged auto&, CT::Index auto&& = 0);
 
       ///                                                                     
       /// MARK: Gather parts                                                  
@@ -105,19 +109,19 @@ namespace Langulus::Things
       /// Available only when managed reflection is enabled                   
       ///                                                                     
       template<Seek = Seek::HereAndAbove>
-      auto SeekPart(this auto&&, Token const&, Index = 0) -> Part*;
+      auto SeekPart(this auto&&, Token const&, CT::Index auto&& = 0) -> Part*;
       template<Seek = Seek::HereAndAbove>
-      auto SeekPartAux(this auto&&, Many const&, Token const&, Index = 0) -> Part*;
+      auto SeekPartAux(this auto&&, Many const&, Token const&, CT::Index auto&& = 0) -> Part*;
       
       template<Seek = Seek::HereAndAbove>
-      auto SeekTag(this auto&&, Token const&, Index = 0) -> Tag;
+      auto SeekTag(this auto&&, Token const&, CT::Index auto&& = 0) -> Tag;
       template<Seek = Seek::HereAndAbove>
-      auto SeekTagAux(this auto&&, Many const&, Token const&, Index = 0) -> Tag;
+      auto SeekTagAux(this auto&&, Many const&, Token const&, CT::Index auto&& = 0) -> Tag;
 
       template<Seek = Seek::HereAndAbove>
-      bool SeekValue(this auto const&, Token const&, CT::NotVoid auto&, Index = 0);
+      bool SeekValue(this auto const&, Token const&, CT::NotVoid auto&, CT::Index auto&& = 0);
       template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, Index = 0);
+      bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, CT::Index auto&& = 0);
 
       template<Seek = Seek::HereAndAbove>
       auto GatherParts(this auto&&, Token const&) -> TMany<Part*>;

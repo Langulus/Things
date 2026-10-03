@@ -12,40 +12,30 @@
 namespace Langulus::Things
 {
    ///                                                                        
-   ///   An abstract unit                                                     
+   ///   An abstract part                                                     
    ///                                                                        
    ///   Part is a shorter name for a component, or extension. It's used for  
-   /// composing Things' behavior. Units are usually produced from factories  
-   /// inside external, dynamically loaded modules. There are units for       
+   /// composing Things' behavior. Parts are usually produced from factories  
+   /// inside external, dynamically loaded modules. There are parts for       
    /// graphics, input, AI, content, and whatever extensions you make.        
    ///                                                                        
    struct LANGULUS_API(THINGS) Part
       : virtual Resolvable
-      #if LANGULUS_COMPILER(MSVC)
-      #pragma warning(suppress: 4275)
       , virtual Referenced
-      #else
-      , virtual Referenced
-      #endif
-      , Things::SeekInterface<Part>
+      , Things::SeekInterface
    {
       using CTTI_Bases = Resolvable;
 
    protected:
-      friend class Thing;
+      friend struct Thing;
 
       // Things that are coupled with this unit                         
-      // Owners act as an environment for the unit's context, providing 
-      // additional traits and other units for interoperability         
-      #if LANGULUS_COMPILER(MSVC)
-         #pragma warning(suppress: 4251)
-         Hierarchy mOwners;
-      #else
-         Hierarchy mOwners;
-      #endif
+      // Owners act as an environment for the part's context, providing 
+      // additional tags and other parts for interoperability           
+      Hierarchy mOwners;
 
    public:
-      Part() noexcept : Resolvable {this} {}
+      Part() noexcept /*: Resolvable {this}*/ {}
       Part(Part const&) = delete;
       Part(Part&&) noexcept = delete;
       virtual ~Part();
@@ -53,7 +43,7 @@ namespace Langulus::Things
       Part& operator = (Part const&) = delete;
       Part& operator = (Part&&) noexcept = delete;
 
-      void Select(Flow::Verb&);
+      void Select(Verb&);
 
       virtual void Refresh();
 
@@ -65,13 +55,13 @@ namespace Langulus::Things
       ///                                                                     
       ///   Flow                                                              
       ///                                                                     
-      template<Seek = Seek::HereAndAbove, CT::VerbBased V>
+      template<Seek = Seek::HereAndAbove, CT::Executable V>
       V& RunIn(V&);
 
       ///                                                                     
       ///   Seek                                                              
       ///                                                                     
-      using SeekInterface::SeekPart;
+      /*using SeekInterface::SeekPart;
       using SeekInterface::SeekPartAux;
       using SeekInterface::SeekPartExt;
       using SeekInterface::SeekPartAuxExt;
@@ -97,12 +87,12 @@ namespace Langulus::Things
       template<Seek = Seek::HereAndAbove>
       bool SeekValue(TMeta, CT::NotVoid auto&, Index = 0) const;
       template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(TMeta, Many const&, CT::NotVoid auto&, Index = 0) const;
+      bool SeekValueAux(TMeta, Many const&, CT::NotVoid auto&, Index = 0) const;*/
 
       ///                                                                     
       ///   Gather                                                            
       ///                                                                     
-      using SeekInterface::GatherParts;
+      /*using SeekInterface::GatherParts;
       using SeekInterface::GatherPartsExt;
       using SeekInterface::GatherTags;
 
@@ -115,7 +105,7 @@ namespace Langulus::Things
       auto GatherTags(TMeta) -> TagList;
 
       template<CT::NotVoid D, Seek = Seek::HereAndAbove>
-      auto GatherValues() const -> TMany<D>;
+      auto GatherValues() const -> TMany<D>;*/
 
    protected:
       void Couple(Many const&, const Thing* = nullptr);

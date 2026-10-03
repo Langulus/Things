@@ -138,8 +138,8 @@ namespace Langulus::Things
    /// functions related to hierarchical retrieval of things, parts and tags. 
    ///                                                                        
    struct Hierarchy : TMany<Thing*>, SeekInterface {
-      using Base = TMany<Thing*>;
-      LANGULUS_BASES(Base);
+      using Base        = TMany<Thing*>;
+      using CTTI_Bases  = Base;
 
       using Base::TMany;
       using Base::operator =;

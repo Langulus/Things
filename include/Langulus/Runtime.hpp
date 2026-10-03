@@ -39,8 +39,8 @@ namespace Langulus::Things
       ///   Library handle                                                    
       ///                                                                     
       class SharedLibrary {
-      friend class Runtime;
-      protected:
+      //friend struct Runtime;
+      //protected:
          // Library handle, returned by dlopen or LoadLibrary           
          uintptr_t mHandle {};
          // Exported entry function, that registers library types       

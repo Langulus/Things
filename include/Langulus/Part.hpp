@@ -11,6 +11,8 @@
 
 namespace Langulus::Things
 {
+   struct Temporal;
+
    ///                                                                        
    ///   An abstract part                                                     
    ///                                                                        
@@ -49,7 +51,7 @@ namespace Langulus::Things
 
       auto GetRuntime() const noexcept -> Runtime*;
       auto GetFlow() const noexcept -> Temporal*;
-      auto GetOwners() const noexcept -> const Hierarchy&;
+      auto GetOwners() const noexcept -> Hierarchy const&;
       bool CompareDescriptor(Many const&) const;
       
       ///                                                                     

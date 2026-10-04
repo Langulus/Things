@@ -105,3 +105,14 @@ namespace Langulus
 {   
    LANGULUS_API(THINGS) extern void RegisterEvents();
 }
+
+namespace Langulus::Things
+{
+   struct Runtime;
+   struct Module;
+   struct Thing;
+   struct Part;
+   struct File;
+   struct Folder;
+   struct Temporal;
+}

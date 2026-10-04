@@ -6,53 +6,42 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Thing.hpp"
-#include <Langulus/Vectors/TScale.hpp>
+#include <Langulus/Thing.hpp>
 
 
 namespace Langulus::Things
 {
-   struct Image; // If undefined, include <Langulus/Image.hpp>          
-
-
    ///                                                                        
-   ///   Abstract platform module                                             
+   ///   Abstract life module                                                 
    ///                                                                        
-   struct PlatformModule : virtual Module {
+   struct Life : virtual Module {
       using CTTI_Bases = Module;
-      PlatformModule() : Resolvable {this}, Module {nullptr} {}
+      Life() : Resolvable {this}, Module {nullptr} {}
    };
 
    ///                                                                        
-   ///   Abstract platform unit                                               
+   ///   Abstract life unit                                                   
    ///                                                                        
-   struct Platform : virtual Part {
+   struct LifeUnit : virtual Part {
       using CTTI_Bases = Part;
-      Platform() : Resolvable {this} {}
+      using CTTI_Producer = Life;
+      LifeUnit() : Resolvable {this} {}
+   };
+
+   ///                                                                        
+   ///   Abstract ecosystem                                                   
+   ///                                                                        
+   struct Ecosystem : virtual LifeUnit {
+      using CTTI_Bases = LifeUnit;
+      Ecosystem() : Resolvable {this} {}
    };
    
    ///                                                                        
-   ///   Abstract platform window                                             
+   ///   Abstract organism                                                    
    ///                                                                        
-   struct Window : virtual Platform {
-      using CTTI_Bases = Platform;
-      using CTTI_Producer = PlatformModule;
-      using Platform::Platform;
-
-      using Scale2 = Math::Scale2;
-
-      virtual void* GetNativeHandle() const noexcept = 0;
-      virtual auto GetSize() const noexcept -> Scale2 = 0;
-      virtual bool IsMinimized() const noexcept = 0;
-      virtual bool Draw(const Ref<Image>&) const { return false; }
-   };
-   
-   ///                                                                        
-   ///   Abstract platform cursor                                             
-   ///                                                                        
-   struct Cursor : virtual Platform {
-      using CTTI_Producer = PlatformModule;
-      using CTTI_Bases = Platform;
-      using Platform::Platform;
+   struct Organism : virtual LifeUnit {
+      using CTTI_Bases = LifeUnit;
+      using CTTI_Producer = Ecosystem;
+      Organism() : Resolvable {this} {}
    };
 }

@@ -563,7 +563,7 @@ namespace Langulus::Things
    ///   @param module - name of the module                                   
    ///   @param descriptor - instructions for module setup                    
    ///   @return the instantiated module interface                            
-   auto Thing::LoadMod(Token const& module, Many const& descriptor) -> A::Module* {
+   auto Thing::LoadMod(Token const& module, Many const& descriptor) -> Things::Module* {
       const auto runtime = GetRuntime();
       LglsAssumeUser(runtime,
          "No runtime available for loading a module");
@@ -578,7 +578,7 @@ namespace Langulus::Things
    ///   @param path - relative path to the module                            
    ///   @param descriptor - instructions for module setup                    
    ///   @return the instantiated module interface                            
-   auto Thing::LoadModPath(const Path& path, Many const& descriptor) -> A::Module* {
+   auto Thing::LoadModPath(const Path& path, Many const& descriptor) -> Things::Module* {
       const auto runtime = GetRuntime();
       LglsAssumeUser(runtime,
          "No runtime available for loading a module");

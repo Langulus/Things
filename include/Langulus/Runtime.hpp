@@ -15,10 +15,7 @@
 
 namespace Langulus::Things
 {
-   struct Thing;
-   struct File;
-   struct Folder;
-   using  Path = Annies::Text;
+   using Path = Annies::Text;
 
    ///                                                                        
    /// MARK: Runtime                                                          

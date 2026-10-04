@@ -15,7 +15,7 @@
 /// A unit implementation for testing                                         
 class TestUnit1 final : public Part {
 public:
-   LANGULUS(ABSTRACT) false;
+   using CTTI_Abstract = No;
    LANGULUS_BASES(Part);
    LANGULUS(POOL_TACTIC) RTTI::PoolTactic::Type;
 
@@ -36,7 +36,7 @@ public:
 /// A unit implementation for testing                                         
 class TestUnit2 final : public Part {
 public:
-   LANGULUS(ABSTRACT) false;
+   using CTTI_Abstract = No;
    LANGULUS_BASES(Part);
    LANGULUS(POOL_TACTIC) RTTI::PoolTactic::Type;
 

@@ -79,7 +79,7 @@ namespace Langulus::Things
             // Instantiate a temporal flow                              
             verb << CreateFlow();
          }
-         else if (stuff->template CastsTo<A::Module>()) {
+         else if (stuff->template CastsTo<Things::Module>()) {
             // Instantiate a module from the runtime                    
             auto runtime = GetRuntime();
             auto dependency = runtime->GetDependency(stuff);
@@ -111,7 +111,7 @@ namespace Langulus::Things
                // Instantiate a temporal flow                           
                verb << CreateFlow();
             }
-            else if (stuff.template CastsTo<A::Module>()) {
+            else if (stuff.template CastsTo<Things::Module>()) {
                // Instantiate a module from the runtime                 
                auto runtime = GetRuntime();
                auto dependency = runtime->GetDependency(stuff.GetType());
@@ -522,8 +522,8 @@ namespace Langulus::Things
    #endif
 
    template<CT::TraitBased T> LANGULUS(INLINED)
-   Tag Thing::GetTrait(Index offset) {
-      return GetTrait(MetaTraitOf<T>(), offset);
+   Tag Thing::GetTag(Index offset) {
+      return GetTag(MetaTraitOf<T>(), offset);
    }
 
    /// Get local trait by static type and offset                              
@@ -531,8 +531,8 @@ namespace Langulus::Things
    ///   @param offset - the offset of the trait to return (optional)         
    ///   @return the trait or nullptr if none found                           
    template<CT::TraitBased T> LANGULUS(INLINED)
-   Tag* Thing::GetLocalTrait(Index offset) {
-      return GetLocalTrait(MetaTraitOf<T>(), offset);
+   Tag* Thing::GetLocalTag(Index offset) {
+      return GetLocalTag(MetaTraitOf<T>(), offset);
    }
 
    /// Get local trait by static type and offset                              
@@ -540,8 +540,8 @@ namespace Langulus::Things
    ///   @param offset - the offset of the trait to return                    
    ///   @return the trait or nullptr if none found                           
    template<CT::TraitBased T> LANGULUS(INLINED)
-   const Tag* Thing::GetLocalTrait(Index offset) const {
-      return const_cast<Thing&>(*this).template GetLocalTrait<T>(offset);
+   const Tag* Thing::GetLocalTag(Index offset) const {
+      return const_cast<Thing&>(*this).template GetLocalTag<T>(offset);
    }
 
    /// Produce constructs (including units) from the hierarchy                
@@ -603,7 +603,7 @@ namespace Langulus::Things
                ": ", descriptor
             );
          }
-         else if (producer->template CastsTo<A::Module>()) {
+         else if (producer->template CastsTo<Things::Module>()) {
             // Data is producible from a module                         
             auto producers = GetRuntime()->GetModules(producer);
             LANGULUS_ASSERT(producers, Construct,

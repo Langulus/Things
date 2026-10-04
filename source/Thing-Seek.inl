@@ -159,7 +159,7 @@ namespace Langulus::Things
    auto Thing::SeekTag(TMeta meta, Index offset) -> Tag {
       if constexpr (SEEK & Seek::Here) {
          // Seek here if requested                                      
-         auto output = GetTrait(meta, offset);
+         auto output = GetTag(meta, offset);
          if (output)
             return Abandon(output);
       }
@@ -235,7 +235,7 @@ namespace Langulus::Things
 
       if constexpr (SEEK & Seek::Here) {
          // Seek here if requested                                      
-         auto temp = GetTrait(meta, offset);
+         auto temp = GetTag(meta, offset);
          if (temp) {
             try {
                if (CT::Pinnable<D> and temp.Is<TypeOf<D>>())

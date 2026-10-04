@@ -16,8 +16,6 @@
 namespace Langulus::Things
 {
    using Flow::Seek;
-   struct Part;
-   struct Thing;
 
 
    ///                                                                        

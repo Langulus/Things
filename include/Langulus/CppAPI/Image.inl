@@ -108,7 +108,7 @@ namespace Langulus::A
    ///   @return the number of pixels that were iterated                      
    template<class F>
    auto Image::ForEachPixel(F&& call) const {
-      auto pixels = GetData<Traits::Color>();
+      auto pixels = GetData<Tags::Color>();
 
       LglsAssumeDev(pixels and *pixels,
          "No color data", " in ", Self());
@@ -164,15 +164,15 @@ namespace Langulus::A
 
       // Reset data and commit the new one                              
       mDataListMap.Reset();
-      Commit<Traits::Color>(data.Forward());
+      Commit<Tags::Color>(data.Forward());
    }
 
    LANGULUS(INLINED)
    auto Image::begin() noexcept -> Iterator<true> {
       return {
          this,
-         reinterpret_cast<const Byte*>(GetData<Traits::Color>()->GetRaw()),
-         reinterpret_cast<const Byte*>(GetData<Traits::Color>()->GetRawEnd())
+         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRaw()),
+         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRawEnd())
       };
    }
 
@@ -180,8 +180,8 @@ namespace Langulus::A
    auto Image::begin() const noexcept -> Iterator<false> {
       return {
          const_cast<Image*>(this),
-         reinterpret_cast<const Byte*>(GetData<Traits::Color>()->GetRaw()),
-         reinterpret_cast<const Byte*>(GetData<Traits::Color>()->GetRawEnd())
+         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRaw()),
+         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRawEnd())
       };
    }
 

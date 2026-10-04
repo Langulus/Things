@@ -16,9 +16,6 @@
 
 namespace Langulus::Things
 {
-   struct Module;
-   struct Runtime;
-
    using MetaList = TSetUnsorted<RTTI::Inner::Definition const*>;
    using TagList  = TMany<Tag>;
    using ModList  = TMany<Module*>;

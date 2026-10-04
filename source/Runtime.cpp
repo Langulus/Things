@@ -6,22 +6,22 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/Thing.hpp>
-#include <Langulus/Runtime.hpp>
-#include <Langulus/Asset.hpp>
-#include <Langulus/Graphics.hpp>
-#include <Langulus/Image.hpp>
-#include <Langulus/IO.hpp>
-#include <Langulus/Material.hpp>
-#include <Langulus/Mesh.hpp>
-#include <Langulus/Physical.hpp>
-#include <Langulus/Platform.hpp>
-#include <Langulus/UI.hpp>
-#include <Langulus/AI.hpp>
-#include <Langulus/Input.hpp>
-#include <Langulus/Life.hpp>
-#include <Langulus/Network.hpp>
-#include <Langulus/User.hpp>
-#include <Langulus/Economy.hpp>
+
+#include <Langulus/CppAPI/Asset.hpp>
+#include <Langulus/CppAPI/Graphics.hpp>
+#include <Langulus/CppAPI/Image.hpp>
+#include <Langulus/CppAPI/IO.hpp>
+#include <Langulus/CppAPI/Material.hpp>
+#include <Langulus/CppAPI/Mesh.hpp>
+#include <Langulus/CppAPI/Physical.hpp>
+#include <Langulus/CppAPI/Platform.hpp>
+#include <Langulus/CppAPI/UI.hpp>
+#include <Langulus/CppAPI/AI.hpp>
+#include <Langulus/CppAPI/Input.hpp>
+#include <Langulus/CppAPI/Life.hpp>
+#include <Langulus/CppAPI/Network.hpp>
+#include <Langulus/CppAPI/User.hpp>
+#include <Langulus/CppAPI/Economy.hpp>
 
 #if LANGULUS_OS(WINDOWS)
    #include <Windows.h>
@@ -56,7 +56,6 @@
 
 namespace Langulus::Things
 {
-
    TUnorderedMap<Path, Runtime::SharedLibrary> Runtime::mLibraries;
 
    /// Close a shared library handle, unloading it                            
@@ -99,13 +98,13 @@ namespace Langulus::Things
 
       (void)MetaDataOf<A::PlatformModule>();
       (void)MetaDataOf<A::Platform>();
-      (void)MetaDataOf<A::Window>();
+      (void)MetaDataOf<Things::Window>();
       (void)MetaDataOf<A::Cursor>();
 
       (void)MetaDataOf<A::PhysicalModule>();
       (void)MetaDataOf<A::Physical>();
       (void)MetaDataOf<A::World>();
-      (void)MetaDataOf<A::Instance>();
+      (void)MetaDataOf<Things::Instance>();
 
       (void)MetaDataOf<A::UIModule>();
       (void)MetaDataOf<A::UIUnit>();
@@ -120,27 +119,27 @@ namespace Langulus::Things
 
       (void)MetaDataOf<A::GraphicsModule>();
       (void)MetaDataOf<A::Graphics>();
-      (void)MetaDataOf<A::Renderer>();
-      (void)MetaDataOf<A::Layer>();
-      (void)MetaDataOf<A::Camera>();
-      (void)MetaDataOf<A::Renderable>();
-      (void)MetaDataOf<A::Light>();
+      (void)MetaDataOf<Things::Renderer>();
+      (void)MetaDataOf<Things::Layer>();
+      (void)MetaDataOf<Things::Camera>();
+      (void)MetaDataOf<Things::Renderable>();
+      (void)MetaDataOf<Things::Light>();
 
       (void)MetaDataOf<A::AssetModule>();
       (void)MetaDataOf<A::Asset>();
-      (void)MetaDataOf<A::Image>();
+      (void)MetaDataOf<Things::Image>();
       (void)MetaDataOf<A::Font>();
       (void)MetaDataOf<A::Material>();
-      (void)MetaDataOf<A::Mesh>();
+      (void)MetaDataOf<Things::Mesh>();
 
       (void)MetaDataOf<A::AIModule>();
-      (void)MetaDataOf<A::AIUnit>();
-      (void)MetaDataOf<A::Mind>();
+      (void)MetaDataOf<Things::AIUnit>();
+      (void)MetaDataOf<Things::Mind>();
 
       (void)MetaDataOf<A::InputModule>();
       (void)MetaDataOf<A::Input>();
-      (void)MetaDataOf<A::InputGatherer>();
-      (void)MetaDataOf<A::InputListener>();
+      (void)MetaDataOf<Things::InputGatherer>();
+      (void)MetaDataOf<Things::InputListener>();
 
       (void)MetaDataOf<A::Life>();
       (void)MetaDataOf<A::LifeUnit>();
@@ -211,7 +210,7 @@ namespace Langulus::Things
    ///   @param path - explicit relative path                                 
    ///   @param descriptor - module initialization descriptor                 
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModulePath(const Path& path, Many const& descriptor) -> A::Module* {
+   auto Runtime::InstantiateModulePath(const Path& path, Many const& descriptor) -> Things::Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibraryPath(path);
 
@@ -233,7 +232,7 @@ namespace Langulus::Things
    ///   @param name - module name                                            
    ///   @param descriptor - module initialization descriptor                 
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(Token const& name, Many const& descriptor) -> A::Module* {
+   auto Runtime::InstantiateModule(Token const& name, Many const& descriptor) -> Things::Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibrary(name);
 
@@ -255,7 +254,7 @@ namespace Langulus::Things
    ///   @param map - [in/out] the map to fill                                
    ///   @param module - the module instance to push                          
    ///   @param type - the type to unregister the module as                   
-   void RegisterAllBases(TUnorderedMap<DMeta, ModuleList>& map, A::Module* module, DMeta type) {
+   void RegisterAllBases(TUnorderedMap<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
       VERBOSE("Registering `", type, '`');
       auto found = map.FindIt(type);
       if (found)
@@ -282,7 +281,7 @@ namespace Langulus::Things
    ///   @param map - [in/out] the map to unregister from                     
    ///   @param module - the module instance to push                          
    ///   @param type - the type to register the module as                     
-   void UnregisterAllBases(TUnorderedMap<DMeta, ModuleList>& map, A::Module* module, DMeta type) {
+   void UnregisterAllBases(TUnorderedMap<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
       for (auto& base : type->mBases) {
          if (base.mType->IsExact<Resolvable>())
             break;
@@ -305,13 +304,13 @@ namespace Langulus::Things
    ///   @param library - the library handle                                  
    ///   @param descriptor - module initialization descriptor                 
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(const SharedLibrary& library, Many const& descriptor) -> A::Module* {
+   auto Runtime::InstantiateModule(const SharedLibrary& library, Many const& descriptor) -> Things::Module* {
       if (not library.IsValid())
          return nullptr;
 
       // Use the creation point of the library to instantiate module    
       const auto info = library.mInfo();
-      A::Module* module {};
+      Things::Module* module {};
 
       try { module = library.mCreator(this, descriptor); }
       catch (...) {
@@ -398,18 +397,18 @@ namespace Langulus::Things
 
       // Get entry, creator, info and exit points from the library      
       #if LANGULUS_OS(WINDOWS)
-         library.mEntry = reinterpret_cast<A::Module::EntryFunction>(
+         library.mEntry = reinterpret_cast<Things::Module::EntryFunction>(
             GetProcAddress(dll, LANGULUS_MODULE_ENTRY_TOKEN()));
-         library.mCreator = reinterpret_cast<A::Module::CreateFunction>(
+         library.mCreator = reinterpret_cast<Things::Module::CreateFunction>(
             GetProcAddress(dll, LANGULUS_MODULE_CREATE_TOKEN()));
-         library.mInfo = reinterpret_cast<A::Module::InfoFunction>(
+         library.mInfo = reinterpret_cast<Things::Module::InfoFunction>(
             GetProcAddress(dll, LANGULUS_MODULE_INFO_TOKEN()));
       #else
-         library.mEntry = reinterpret_cast<A::Module::EntryFunction>(
+         library.mEntry = reinterpret_cast<Things::Module::EntryFunction>(
             dlsym(dll, LANGULUS_MODULE_ENTRY_TOKEN()));
-         library.mCreator = reinterpret_cast<A::Module::CreateFunction>(
+         library.mCreator = reinterpret_cast<Things::Module::CreateFunction>(
             dlsym(dll, LANGULUS_MODULE_CREATE_TOKEN()));
-         library.mInfo = reinterpret_cast<A::Module::InfoFunction>(
+         library.mInfo = reinterpret_cast<Things::Module::InfoFunction>(
             dlsym(dll, LANGULUS_MODULE_INFO_TOKEN()));
       #endif   
 
@@ -706,5 +705,4 @@ namespace Langulus::Things
          "Can't retrieve data path", " - no file system module available");
       return fileSystems.template As<A::FileSystem*>()->GetDataPath();
    }
-
-} // namespace Langulus::Things
+}

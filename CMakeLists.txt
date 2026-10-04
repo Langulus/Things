@@ -45,7 +45,7 @@ target_include_directories(LangulusThings
 
 target_link_libraries(LangulusThings
    PUBLIC   LangulusCore
-            $<$<BOOL:${LANGULUS_OPTION_LOGGING}>:fmt>
+            $<TARGET_PROPERTY:LangulusLogger,INTERFACE_LINK_LIBRARIES>
    #PRIVATE $<$<NOT:$<BOOL:${MSVC}>>:dl>
 )
 

@@ -7,31 +7,31 @@
 ///                                                                           
 #include <Langulus/Thing.hpp>
 #include <Langulus/Verbs/Conjunct.hpp>
-#include <Langulus/AI.hpp>
+#include <Langulus/CppAPI/AI.hpp>
 #include "Thing.inl"
 
 
 namespace Langulus::Things
 {
-   /// Interpret and execute a natural message wherever possible in the       
-   /// current context                                                        
-   ///   @param text - text to execute                                        
+   /// Interpret and execute a natural language prompt wherever possible in   
+   /// the current context.                                                   
+   ///   @param text text to execute                                          
    ///   @return the results of the execution                                 
-   Many Thing::Say(const Text& text) {
+   Many Thing::Say(Text const& text) {
       if (not text)
          return {};
 
       // Get minds from the current context                             
-      auto minds = GatherParts<A::Mind, Seek::HereAndAbove>();
+      auto minds = GatherParts<Things::Mind, Seek::HereAndAbove>();
       if (not minds) {
-         Logger::Error(this, ": No minds - can't interpret message: ", text);
+         Logger::Error(this, ": No minds - can't interpret prompt: ", text);
          return {};
       }
 
       // Get a flow for executing the interpreted messages              
       auto flow = GetFlow();
-      if (not flow) {
-         Logger::Error(this, ": No flow - can't execute message: ", text);
+      if (not *flow) {
+         Logger::Error(this, ": No flow - can't execute prompt: ", text);
          return {};
       }
 
@@ -47,9 +47,9 @@ namespace Langulus::Things
    }
    
    /// Executes a piece of code in the current context                        
-   ///   @param code - code to execute                                        
+   ///   @param code code to execute                                          
    ///   @return the results of the execution, if any                         
-   Many Thing::Run(const Code& code) {
+   Many Thing::Run(Code const& code) {
       if (not code)
          return {};
 
@@ -65,7 +65,7 @@ namespace Langulus::Things
          return {};
       }
 
-      return flow->Push(Verbs::Do::In(this, Abandon(parsed)));
+      return flow->Push(Verbs::Do(Abandon(parsed)).In(this));
    }
 
    /// Custom dispatcher, reflected via CT::Dispatcher                        
@@ -96,7 +96,7 @@ namespace Langulus::Things
       bool mismatch = false;
 
       const auto selectTrait = [&](const TMeta& trait) {
-         auto found = GetTrait(trait);
+         auto found = GetTag(trait);
          if (not found) {
             mismatch = true;
             return Loop::Break;
@@ -176,7 +176,7 @@ namespace Langulus::Things
             return selectConstruct(recipe);
          },
          [&](const Tag& trait) {
-            return selectTrait(trait.GetTrait());
+            return selectTrait(trait.GetTag());
          },
          [&](const TMeta& trait) {
             return selectTrait(trait);

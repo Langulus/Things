@@ -7,8 +7,8 @@
 ///                                                                           
 #pragma once
 #include "Asset.hpp"
-#include <Langulus/Colors/TColor.hpp>
-#include <Langulus/Vectors/TScale.hpp>
+#include <Langulus/Color.hpp>
+#include <Langulus/Math/Scale.hpp>
 
 
 
@@ -83,7 +83,7 @@ namespace Langulus::Things
    template<bool MUTABLE>
    struct Image::Iterator : A::Iterator {
       static constexpr bool Mutable = MUTABLE;
-      LANGULUS(ABSTRACT) false;
+      using CTTI_Abstract = No;
 
    protected:
       friend struct Image;

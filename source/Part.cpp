@@ -34,7 +34,7 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    bool mismatch = false;
    size_t memberOffset = 0;
    descriptor.ForEachDeep([&](const Annies::Tag& trait) {
-      if (not GetMember(trait.GetTrait(), memberOffset)
+      if (not GetMember(trait.GetTag(), memberOffset)
       .Compare(static_cast<Many const&>(trait))) {
          mismatch = true;
          return Loop::Break;

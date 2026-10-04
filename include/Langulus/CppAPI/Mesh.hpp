@@ -116,7 +116,7 @@ namespace Langulus::CT
 {
    /// A concept for any kind of geometric content unit                       
    template<class T>
-   concept Mesh = DerivedFrom<T, A::Mesh>;
+   concept Mesh = DerivedFrom<T, Things::Mesh>;
 }
 
 #include "Mesh.inl"

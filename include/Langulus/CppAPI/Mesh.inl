@@ -443,7 +443,7 @@ namespace Langulus::Things
    size_t Mesh::ForEachVertexInner(Types<T...>, auto&& call) const {
       static_assert(CT::Tag<Decay<T>...>,
          "All iterator arguments must be traits, like Traits::Place, "
-         "Traits::Aim, Traits::Color, etc.");
+         "Traits::Aim, Tags::Color, etc.");
 
       // Represent iterator arguments as a tuple of disowned Blocks     
       using Tuple = std::tuple<Decay<T>...>;

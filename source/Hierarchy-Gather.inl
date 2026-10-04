@@ -51,7 +51,7 @@ namespace Langulus::Things
    TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
    TagList TME()::GatherTags() {
       return static_cast<THIS*>(this)
-         ->template GatherTags<SEEK>(T::GetTrait());
+         ->template GatherTags<SEEK>(T::GetTag());
    }
 
    TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)

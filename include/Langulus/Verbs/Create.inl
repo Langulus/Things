@@ -232,7 +232,7 @@ namespace Langulus::Verbs
             Many element = group.GetElementResolved(i);
             if (element.Is<Tag>()) {
                // Search for the trait                                  
-               const auto meta = element.Get<Tag>().GetTrait();
+               const auto meta = element.Get<Tag>().GetTag();
                const auto sati = satisfiedTraits.Find(meta);
                const auto index = sati
                   ? satisfiedTraits.GetValue(sati)

@@ -433,11 +433,11 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
 
       WHEN("Get a static/unit/dynamic trait by index") {
-         auto child = root.GetTrait(0);
+         auto child = root.GetTag(0);
       }
 
       WHEN("Get a static/unit/dynamic trait by type and index") {
-         auto child = root.GetTrait<Traits::Name>();
+         auto child = root.GetTag<Traits::Name>();
       }
 
       WHEN("Seek a trait in the hierarchy by index") {

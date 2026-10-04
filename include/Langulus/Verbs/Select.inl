@@ -101,7 +101,7 @@ namespace Langulus::CTTI
 
                   VERBOSE_SELECT("Selecting trait: ", trait);
                   containsOnlyIndices = false;
-                  auto tmeta = trait.GetTrait();
+                  auto tmeta = trait.GetTag();
                   if (tmeta)
                      PerIndex<MUTABLE>(context, selectedTraits, tmeta, tmeta, indices);
                   else

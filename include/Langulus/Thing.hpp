@@ -8,16 +8,16 @@
 #pragma once
 #include "Runtime.hpp"
 #include "Hierarchy.hpp"
-//#include "Part.hpp"
+#include <Langulus/Verbs/Do.hpp>
 #include <Langulus/Verbs/Create.hpp>
 #include <Langulus/Verbs/Select.hpp>
 #include <Langulus/TPin.hpp>
 
+
 namespace Langulus::Things
 {
-   struct Part;
-   using UnitList = TMany<Part*>;
-   using UnitMap  = TMapUnsorted<RTTI::DMeta, TMany<Part*>>;
+   using PartList = TMany<Part*>;
+   using PartMap  = TMapUnsorted<RTTI::DMeta, TMany<Part*>>;
    using TagMap   = TMapUnsorted<RTTI::TMeta, TagList>;
 
 
@@ -28,17 +28,13 @@ namespace Langulus::Things
    /// and children/owner's units. The Thing is an aggregate of traits,       
    /// units, and subthings.                                                  
    ///                                                                        
-   class Thing final
-      : public Resolvable
-      , public Referenced
-      , public SeekInterface<Thing>
-   {
-      LANGULUS(NAME) "Thing";
-      LANGULUS(ABSTRACT) false;
-      LANGULUS(PRODUCER) Thing;
-      LANGULUS(POOL_TACTIC) RTTI::PoolTactic::Type;
-      LANGULUS_BASES(Resolvable);
-      LANGULUS_VERBS(Verbs::Create, Verbs::Select);
+   struct Thing final : Resolvable, Referenced, SeekInterface {
+      using CTTI_Named     = Yes<"Thing">;
+      using CTTI_Abstract  = No;
+      using CTTI_Producer  = Thing;
+      using CTTI_Pooled    = PooledByType<>;
+      using CTTI_Ability   = Types<Verbs::Do, Verbs::Create, Verbs::Select>;
+      //using CTTI_Bases     = Resolvable; //auto-detected?
 
    protected:
       LANGULUS_API(THINGS) void ResetRuntime(Runtime*);
@@ -52,39 +48,41 @@ namespace Langulus::Things
       Pin<Ref<Temporal>> mFlow;
       // Hierarchy                                                      
       Hierarchy mChildren;
-      // Units indexed by concrete type, in order of addition           
-      UnitList mUnitsList;
-      // Units indexed by all their relevant reflected bases            
-      UnitMap mUnitsAmbiguous;
-      // Traits                                                         
+      // Parts indexed by concrete type, in order of addition           
+      PartList mPartsList;
+      // Parts indexed by all their relevant reflected bases            
+      PartMap mPartsAmbiguous;
+      // Tags                                                           
       TagMap mTags;
       // Hierarchy requires an update                                   
-      bool mRefreshRequired {};
+      bool mRefreshRequired = false;
       // The entity's parent                                            
       Ref<Thing> mOwner;
 
       template<Seek = Seek::HereAndAbove>
-      Many CreateData(const Construct&);
+      Many CreateData(const Recipe&);
 
       template<class T>
       void CreateInner(Verb&, const T&);
 
    public:
+      using Code = Flow::Code;
+
       LANGULUS_API(THINGS) Thing();
       LANGULUS_API(THINGS) Thing(Describe&&);
       LANGULUS_API(THINGS) Thing(Thing*, Many const& = {});
+                           Thing(Thing const&) = delete;
       LANGULUS_API(THINGS) Thing(Thing&&) noexcept;
-      LANGULUS_API(THINGS) Thing(Cloned<Thing>&&);
-      LANGULUS_API(THINGS) Thing(Abandoned<Thing>&&);
+      LANGULUS_API(THINGS) Thing(Move<Thing>&&);
+      LANGULUS_API(THINGS) Thing(Clone<Thing>&&);
+      LANGULUS_API(THINGS) Thing(Abandon<Thing>&&);
       LANGULUS_API(THINGS)~Thing();
 
-      template<bool CREATE_FLOW = true>
-      static Thing Root(CT::String auto&&...);
-
-      // Shallow copy is disabled, you should be able only to clone,    
-      // move, or abandon                                               
-      Thing(const Thing&) = delete;
+      // Assignment is disabled                                         
       auto operator = (auto) = delete;
+
+      template<bool CREATE_FLOW = true>
+      static Thing Root(CT::Text auto&&...);
 
       LANGULUS_API(THINGS)
       bool RequiresRefresh() const noexcept;
@@ -99,13 +97,13 @@ namespace Langulus::Things
       LANGULUS_API(THINGS) void Select(Verb&);
       LANGULUS_API(THINGS) void Create(Verb&);
 
-      template<Seek = Seek::HereAndAbove, CT::VerbBased V>
+      template<Seek = Seek::HereAndAbove, CT::Executable V>
       V& RunIn(V&);
-      template<CT::VerbBased V>
+      template<CT::Executable V>
       V& Run(V&);
 
-      LANGULUS_API(THINGS) Many Say(const Text&);
-      LANGULUS_API(THINGS) Many Run(const Code&);
+      LANGULUS_API(THINGS) Many Say(Text const&);
+      LANGULUS_API(THINGS) Many Run(Code const&);
 
       LANGULUS_API(THINGS) bool Update(Time);
       LANGULUS_API(THINGS) void Refresh(bool force = false);
@@ -117,7 +115,7 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       explicit operator Text() const;
 
-   public:
+
       ///                                                                     
       ///   Hierarchy management                                              
       ///                                                                     
@@ -136,9 +134,9 @@ namespace Langulus::Things
       size_t RemoveChild(Thing*);
 
       LANGULUS_API(THINGS)
-      auto LoadMod(Token const&, Many const& = {}) -> A::Module*;
+      auto LoadMod(Token const&, Many const& = {}) -> Module*;
       LANGULUS_API(THINGS)
-      auto LoadModPath(const Path&, Many const& = {}) -> A::Module*;
+      auto LoadModPath(const Path&, Many const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
       auto GetOwner() const noexcept -> const Ref<Thing>&;
@@ -147,170 +145,121 @@ namespace Langulus::Things
       auto GetChildren() const noexcept -> const Hierarchy&;
 
       LANGULUS_API(THINGS)
-      auto GetChild(Index = 0) -> Thing*;
+      auto GetChild(CT::Index auto&& = 0) -> Thing*;
 
       LANGULUS_API(THINGS)
-      auto GetChild(Index = 0) const -> const Thing*;
+      auto GetChild(CT::Index auto&& = 0) const -> const Thing*;
 
       LANGULUS_API(THINGS)
-      auto GetNamedChild(Token const&, Index = 0) -> Thing*;
+      auto GetNamedChild(Token const&, CT::Index auto&& = 0) -> Thing*;
 
       LANGULUS_API(THINGS)
-      auto GetNamedChild(Token const&, Index = 0) const -> const Thing*;
+      auto GetNamedChild(Token const&, CT::Index auto&& = 0) const -> const Thing*;
 
       LANGULUS_API(THINGS)
       void DumpHierarchy() const;
 
-   public:
+
       ///                                                                     
       ///   Part management                                                   
       ///                                                                     
       template<bool TWOSIDED = true>
-      size_t AddUnit(Part*);
+      size_t AddPart(Part*);
       template<bool TWOSIDED = true>
-      size_t RemoveUnit(Part*);
+      size_t RemovePart(Part*);
 
       template<CT::Part, class...A>
-      Many CreateUnit(A&&...);
+      Many CreatePart(A&&...);
       template<CT::Part...>
-      Many CreateUnits();
+      Many CreateParts();
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          template<class...A>
-         Many CreateUnitToken(Token const&, A&&...);
+         Many CreatePartToken(Token const&, A&&...);
       #endif
 
       template<CT::Part = Part, bool TWOSIDED = true>
-      size_t RemoveUnits();
+      size_t RemoveParts();
 
       LANGULUS_API(THINGS)
-      auto HasUnits(DMeta) const -> size_t;
+      auto HasParts(DMeta) const -> size_t;
       template<CT::Part>
-      auto HasUnits() const -> size_t;
+      auto HasParts() const -> size_t;
 
       LANGULUS_API(THINGS)
-      auto GetUnits() const noexcept -> const UnitList&;
+      auto GetParts() const noexcept -> const PartList&;
       LANGULUS_API(THINGS)
-      auto GetUnitsMap() const noexcept -> const UnitMap&;
+      auto GetPartsMap() const noexcept -> const PartMap&;
 
       LANGULUS_API(THINGS)
-      auto GetUnitMeta(DMeta, Index = 0)       -> Part*;
+      auto GetPartMeta(DMeta, CT::Index auto&& = 0)       -> Part*;
       LANGULUS_API(THINGS)
-      auto GetUnitMeta(DMeta, Index = 0) const -> Part const*;
+      auto GetPartMeta(DMeta, CT::Index auto&& = 0) const -> Part const*;
 
       LANGULUS_API(THINGS)
-      auto GetUnitExt(DMeta, Many const&, Index = 0)       -> Part*;
+      auto GetPartExt(DMeta, Many const&, CT::Index auto&& = 0)       -> Part*;
       LANGULUS_API(THINGS)
-      auto GetUnitExt(DMeta, Many const&, Index = 0) const -> Part const*;
+      auto GetPartExt(DMeta, Many const&, CT::Index auto&& = 0) const -> Part const*;
 
       template<CT::Part T = Part>
-      auto GetUnit(Index = 0)       -> Decay<T>*;
+      auto GetPart(CT::Index auto&& = 0)       -> Decay<T>*;
       template<CT::Part T = Part>
-      auto GetUnit(Index = 0) const -> Decay<T> const*;
+      auto GetPart(CT::Index auto&& = 0) const -> Decay<T> const*;
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          LANGULUS_API(THINGS)
-         auto GetUnitMeta(Token const&, Index = 0) const -> Part const*;
+         auto GetPartMeta(Token const&, Index = 0) const -> Part const*;
          LANGULUS_API(THINGS)
-         auto GetUnitMeta(Token const&, Index = 0)       -> Part*;
+         auto GetPartMeta(Token const&, Index = 0)       -> Part*;
 
          template<CT::Part T>
-         auto GetUnitAs(Token const&, Index = 0) -> Decay<T>*;
+         auto GetPartAs(Token const&, Index = 0) -> Decay<T>*;
       #endif
 
    private:
-      LANGULUS_API(THINGS) void AddUnitBases(Part*, DMeta);
-      LANGULUS_API(THINGS) void RemoveUnitBases(Part*, DMeta);
+      LANGULUS_API(THINGS) void AddPartBases(Part*, DMeta);
+      LANGULUS_API(THINGS) void RemovePartBases(Part*, DMeta);
 
    public:
       ///                                                                     
-      ///   Tag management                                                  
+      ///   Tag management                                                    
       ///                                                                     
-      LANGULUS_API(THINGS) auto AddTrait(Tag) -> Tag*;
+      LANGULUS_API(THINGS) auto AddTag(Tag) -> Tag*;
 
-      LANGULUS_API(THINGS) size_t RemoveTrait(TMeta);
-      LANGULUS_API(THINGS) size_t RemoveTrait(Tag);
-
-      LANGULUS_API(THINGS)
-      size_t HasTraits(TMeta) const;
-      LANGULUS_API(THINGS)
-      size_t HasTraits(const Tag&) const;
+      LANGULUS_API(THINGS) size_t RemoveTag(TMeta);
+      LANGULUS_API(THINGS) size_t RemoveTag(Tag);
 
       LANGULUS_API(THINGS)
-      auto GetTraits() const noexcept -> const TraitMap&;
+      size_t HasTags(TMeta) const;
       LANGULUS_API(THINGS)
-      auto GetTrait(TMeta, Index = 0) const -> Tag;
+      size_t HasTags(const Tag&) const;
+
       LANGULUS_API(THINGS)
-      auto GetTrait(TMeta, Index = 0)       -> Tag;
+      auto GetTags() const noexcept -> const TagMap&;
       LANGULUS_API(THINGS)
-      auto GetTrait(const Tag&, Index = 0) const -> Tag;
+      auto GetTag(TMeta, Index = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTrait(const Tag&, Index = 0)       -> Tag;
+      auto GetTag(TMeta, Index = 0)       -> Tag;
+      LANGULUS_API(THINGS)
+      auto GetTag(const Tag&, Index = 0) const -> Tag;
+      LANGULUS_API(THINGS)
+      auto GetTag(const Tag&, Index = 0)       -> Tag;
       template<CT::TraitBased = Tag>
-      auto GetTrait(Index = 0) -> Tag;
+      auto GetTag(Index = 0) -> Tag;
 
       LANGULUS_API(THINGS)
-      auto GetLocalTrait(TMeta, Index = 0) const -> Tag const*;
+      auto GetLocalTag(TMeta, Index = 0) const -> Tag const*;
       LANGULUS_API(THINGS)
-      auto GetLocalTrait(TMeta, Index = 0)       -> Tag*;
+      auto GetLocalTag(TMeta, Index = 0)       -> Tag*;
       template<CT::TraitBased = Tag>
-      auto GetLocalTrait(Index = 0)       -> Tag*;
+      auto GetLocalTag(Index = 0)       -> Tag*;
       template<CT::TraitBased = Tag>
-      auto GetLocalTrait(Index = 0) const -> Tag const*;
+      auto GetLocalTag(Index = 0) const -> Tag const*;
 
       LANGULUS_API(THINGS)
-      void SetName(const Text&);
+      void SetName(Text const&);
 
       LANGULUS_API(THINGS)
       Text GetName() const;
-
-      ///                                                                     
-      ///   Seek                                                              
-      ///                                                                     
-      using SeekInterface::SeekPart;
-      using SeekInterface::SeekPartAux;
-      using SeekInterface::SeekPartExt;
-      using SeekInterface::SeekPartAuxExt;
-      using SeekInterface::SeekTag;
-      using SeekInterface::SeekTagAux;
-      using SeekInterface::SeekValue;
-      using SeekInterface::SeekValueAux;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPart(DMeta, Index = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartAux(Many const&, DMeta, Index = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartExt(DMeta, Many const&, Index = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartAuxExt(DMeta, Many const&, Many const&, Index = 0) -> Part*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTag(TMeta, Index = 0) -> Tag;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTagAux(Many const&, TMeta, Index = 0) -> Tag;
-
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValue(TMeta, CT::NotVoid auto&, Index = 0) const;
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(TMeta, Many const&, CT::NotVoid auto&, Index = 0) const;
-
-      ///                                                                     
-      ///   Gather                                                            
-      ///                                                                     
-      using SeekInterface::GatherParts;
-      using SeekInterface::GatherPartsExt;
-      using SeekInterface::GatherTags;
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherParts(DMeta) -> TMany<Part*>;
-      template<Seek = Seek::HereAndAbove>
-      auto GatherPartsExt(DMeta, Many const&) -> TMany<Part*>;
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTags(TMeta) -> TagList;
-
-      template<CT::NotVoid D, Seek = Seek::HereAndAbove>
-      auto GatherValues() const -> TMany<D>;
    };
 }

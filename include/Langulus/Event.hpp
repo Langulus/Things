@@ -140,7 +140,7 @@ namespace Langulus
 
       constexpr Event() noexcept {
          this->ConstructDefault();
-         *Com::Stack<TimePoint, 3>::Get() = SteadyClock::Now();
+         *Stack<TimePoint, 3>::Get() = SteadyClock::Now();
       }
       constexpr Event(Event const& other) {
          this->Absorb(Refer(other));
@@ -170,27 +170,27 @@ namespace Langulus
 
       /// Set what this event is                                              
       void SetEvent(DMeta event) noexcept {
-         *Annies::Com::Stack<DMeta, 1>::Get() = event;
+         *Stack<DMeta, 1>::Get() = event;
       }
 
       /// What is happening in that event?                                    
       DMeta GetEvent() const noexcept {
-         return *Annies::Com::Stack<DMeta, 1>::Get();
+         return *Stack<DMeta, 1>::Get();
       }
    
       /// Set event state                                                     
       void SetEventState(EventState state) noexcept {
-         *Annies::Com::Stack<EventState, 2>::Get() = state;
+         *Stack<EventState, 2>::Get() = state;
       }
 
       /// What is this event's state?                                         
       EventState GetEventState() const noexcept {
-         return *Annies::Com::Stack<EventState, 2>::Get();
+         return *Stack<EventState, 2>::Get();
       }
 
       /// What is this a recipe for?                                          
       TimePoint GetTimestamp() const noexcept {
-         return *Annies::Com::Stack<TimePoint, 3>::Get();
+         return *Stack<TimePoint, 3>::Get();
       }
    
       /// Get the payload of the event                                        
@@ -266,13 +266,13 @@ namespace Langulus
          else return this->Assign(LglsFwd(argument));
       }
 
-      using Annies::Com::Comparison<>::operator <=>;
-      using Annies::Com::Comparison<>::operator ==;
+      using Comparison<>::operator <=>;
+      using Comparison<>::operator ==;
 
    private:
       /// Set timestamp at which the event was generated                      
       void SetTimestamp(TimePoint t) noexcept {
-         *Annies::Com::Stack<TimePoint, 3>::Get() = t;
+         *Stack<TimePoint, 3>::Get() = t;
       }
    };
 
@@ -284,14 +284,14 @@ namespace Langulus
    #define LANGULUS_DEFINE_EVENT(EVENT, INFOSTRING) \
       namespace Langulus::Events { \
          struct EVENT : Event { \
-            using CTTI_ReflectAs = Event; \
-            using CTTI_Info = Yes<INFOSTRING>; \
-            using CTTI_Bases = Event; \
-            using CTTI_DefineEvent = Yes<#EVENT>; \
+            using CTTI_ReflectAs    = Event; \
+            using CTTI_Info         = Yes<INFOSTRING>; \
+            using CTTI_Bases        = Event; \
+            using CTTI_DefineEvent  = Yes<#EVENT>; \
             EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
             EVENT(Describe descriptor) { \
                SetEvent(MetaDataOf<EVENT>()); \
-               descriptor.ExtractData(*Annies::Com::Stack<EventState, 2>::Get()); \
+               descriptor.ExtractData(*Stack<EventState, 2>::Get()); \
                descriptor.ExtractTag<Tags::Data>(*this); \
             } \
             EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \
@@ -307,14 +307,14 @@ namespace Langulus
    #define LANGULUS_DEFINE_KEY(EVENT, INFOSTRING) \
       namespace Langulus::Keys { \
          struct EVENT : Event { \
-            using CTTI_ReflectAs = Event; \
-            using CTTI_Info = Yes<INFOSTRING>; \
-            using CTTI_Bases = Event; \
-            using CTTI_DefineEvent = Yes<#EVENT>; \
+            using CTTI_ReflectAs    = Event; \
+            using CTTI_Info         = Yes<INFOSTRING>; \
+            using CTTI_Bases        = Event; \
+            using CTTI_DefineEvent  = Yes<#EVENT>; \
             EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
             EVENT(Describe descriptor) { \
                SetEvent(MetaDataOf<EVENT>()); \
-               descriptor.ExtractData(*Annies::Com::Stack<EventState, 2>::Get()); \
+               descriptor.ExtractData(*Stack<EventState, 2>::Get()); \
                descriptor.ExtractTag<Tags::Data>(*this); \
             } \
             EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \

@@ -120,7 +120,7 @@ namespace Langulus::Things
          return Loop::Continue;
       };
 
-      const auto selectConstruct = [&](const Recipe& recipe) {
+      const auto selectConstruct = [&](Recipe const& recipe) {
          if (recipe.Is<Thing>()) {
             // Find an entity containing construct arguments            
             // Start with this one                                      
@@ -172,10 +172,10 @@ namespace Langulus::Things
       };
 
       verb.ForEachDeep(
-         [&](const Recipe& recipe) {
+         [&](Recipe const& recipe) {
             return selectConstruct(recipe);
          },
-         [&](const Tag& trait) {
+         [&](Tag const& trait) {
             return selectTrait(trait.GetTag());
          },
          [&](const TMeta& trait) {

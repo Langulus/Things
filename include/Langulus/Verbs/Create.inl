@@ -71,7 +71,7 @@ namespace Langulus::Verbs
    ///   @return true if verb was satisfied                                   
    inline bool Create::ExecuteDefault(Many&, Verb& verb) {
       // Attempt creating/destroying constructs                         
-      verb.ForEachDeep([&](const Recipe& recipe) {
+      verb.ForEachDeep([&](Recipe const& recipe) {
          if (recipe.GetProducer()) {
             // Creation of customly produced type hit default creation, 
             // and that should not be allowed - you probably forgot to  
@@ -133,7 +133,7 @@ namespace Langulus::Verbs
       if (not verb or verb.GetMass() <= 0)
          return false;
 
-      const auto createInner = [&](const Recipe& recipe) {
+      const auto createInner = [&](Recipe const& recipe) {
          if (recipe.GetTarget()->mProducerRetriever
          or  recipe->IsMissingDeep()) {
             // Creation of missing/runtime stuff is not allowed         
@@ -197,7 +197,7 @@ namespace Langulus::Verbs
          }
 
          group.ForEach(
-            [&](const Construct& construct) {
+            [&](Recipe const& construct) {
                if (construct.GetTarget() and construct.GetCharge().mMass > 0) {
                   VERBOSE_CREATION("Creating: ", Logger::Yellow, construct);
                   createInner(construct);
@@ -206,7 +206,7 @@ namespace Langulus::Verbs
             [&](const DMeta& type) {
                if (type) {
                   VERBOSE_CREATION("Creating: ", Logger::Yellow, type);
-                  createInner(Construct {type});
+                  createInner(Recipe {type});
                }
             }
          );

@@ -196,7 +196,7 @@ namespace Langulus::Things
    auto Thing::SeekTagAux(Many const& aux, TMeta meta, Index offset) -> Tag {
       // Scan descriptor                                                
       Tag result;
-      aux.ForEachDeep([&](const Tag& trait) {
+      aux.ForEachDeep([&](Tag const& trait) {
          if (trait.IsTrait(meta)) {
             // Found match                                              
             result = trait;
@@ -298,7 +298,7 @@ namespace Langulus::Things
       // Scan descriptor                                                
       bool done = false;
       if (meta) {
-         aux.ForEachDeep([&](const Tag& trait) {
+         aux.ForEachDeep([&](Tag const& trait) {
             if (trait.IsTrait(meta)) {
                // Found match                                           
                try {

@@ -222,18 +222,18 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          Logger::Special("Start: Creating a Thing by descriptor");
          TestType descriptor {
             Traits::Name {"Root"},
-            Construct::From<Runtime>(),
-            Construct::From<Temporal>(),
-            Construct::From<TestUnit1>(),
-            Construct::From<TestUnit2>(),
-            Construct::From<Thing>(
+            Recipe::From<Runtime>(),
+            Recipe::From<Temporal>(),
+            Recipe::From<TestUnit1>(),
+            Recipe::From<TestUnit2>(),
+            Recipe::From<Thing>(
                Traits::Name {"Child1"},
-               Construct::From<TestUnit1>(),
-               Construct::From<TestUnit2>(),
-               Construct::From<Thing>(Traits::Name {"GrandChild1"}),
-               Construct::From<Thing>(Traits::Name {"GrandChild2"})
+               Recipe::From<TestUnit1>(),
+               Recipe::From<TestUnit2>(),
+               Recipe::From<Thing>(Traits::Name {"GrandChild1"}),
+               Recipe::From<Thing>(Traits::Name {"GrandChild2"})
             ),
-            Construct::From<Thing>(Traits::Name {"Child2"})
+            Recipe::From<Thing>(Traits::Name {"Child2"})
          };
 
          Thing root {Describe(descriptor)};
@@ -318,25 +318,25 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
    GIVEN("A complex hierarchy with runtime, flow, units, and traits") {
       TestType descriptor {
          Traits::Name {"Root"},
-         Construct::From<Runtime>(),
-         Construct::From<Temporal>(),
-         Construct::From<TestUnit1>(),
-         Construct::From<TestUnit2>(),
-         Construct::From<Thing>(
+         Recipe::From<Runtime>(),
+         Recipe::From<Temporal>(),
+         Recipe::From<TestUnit1>(),
+         Recipe::From<TestUnit2>(),
+         Recipe::From<Thing>(
             Traits::Name {"Child1"},
-            Construct::From<TestUnit1>(),
-            Construct::From<TestUnit2>(),
-            Construct::From<Thing>(
+            Recipe::From<TestUnit1>(),
+            Recipe::From<TestUnit2>(),
+            Recipe::From<Thing>(
                Traits::Name {"GrandChild1"}
             ),
-            Construct::From<Thing>(
+            Recipe::From<Thing>(
                Traits::Name {"GrandChild2"}
             )
          ),
-         Construct::From<Thing>(
+         Recipe::From<Thing>(
             Traits::Name {"Child2"}
          ),
-         Construct::From<Thing>(
+         Recipe::From<Thing>(
             Traits::Name {"Child2"}
          )
       };

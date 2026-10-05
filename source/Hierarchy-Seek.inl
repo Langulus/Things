@@ -423,7 +423,7 @@ namespace Langulus::Things
    auto Hierarchy::SeekTagAux(Many const& aux, TMeta meta, Index offset) -> Tag {
       // Scan descriptor                                                
       Tag result;
-      aux.ForEachDeep([&](const Tag& trait) {
+      aux.ForEachDeep([&](Tag const& trait) {
          if (trait.IsTrait(meta)) {
             if (offset == 0) {
                // Match found                                           
@@ -499,7 +499,7 @@ namespace Langulus::Things
       if constexpr (SEEK & Seek::Here) {
          bool done = false;
          if (meta) {
-            aux.ForEachDeep([&](const Tag& trait) -> LoopControl {
+            aux.ForEachDeep([&](Tag const& trait) -> LoopControl {
                if (trait.IsTrait(meta)) {
                   // Found match                                        
                   try {

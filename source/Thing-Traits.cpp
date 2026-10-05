@@ -72,7 +72,7 @@ namespace Langulus::Things
    ///   @param id - trait to match                                           
    ///   @param index - offset of result to use                               
    ///   @return a non-empty trait, if found                                  
-   auto Thing::GetTag(const Tag& id, Index index) -> Tag {
+   auto Thing::GetTag(Tag const& id, Index index) -> Tag {
       if (id.GetTag()) {
          // Handle some predefined traits here                          
          if (id.template IsTrait<Traits::Part>()) {
@@ -112,7 +112,7 @@ namespace Langulus::Things
    ///   @param id - trait to match                                           
    ///   @param index - offset of result to use                               
    ///   @return a non-empty trait, if found                                  
-   auto Thing::GetTag(const Tag& id, Index index) const -> Tag {
+   auto Thing::GetTag(Tag const& id, Index index) const -> Tag {
       return const_cast<Thing*>(this)->GetTag(id, index);
    }
 
@@ -177,7 +177,7 @@ namespace Langulus::Things
    /// A fast check whether traits of the given type and value are inside     
    ///   @param trait - trait to search for                                   
    ///   @return the number of matching traits                                
-   auto Thing::HasTraits(const Tag& trait) const -> size_t {
+   auto Thing::HasTraits(Tag const& trait) const -> size_t {
       const auto found = mTraits.FindIt(trait.GetTag());
       if (not found)
          return 0;

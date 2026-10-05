@@ -60,7 +60,7 @@ namespace Langulus::Things
       Ref<Thing> mOwner;
 
       template<Seek = Seek::HereAndAbove>
-      Many CreateData(const Recipe&);
+      Many CreateData(Recipe const&);
 
       template<class T>
       void CreateInner(Verb&, const T&);
@@ -232,7 +232,7 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       size_t HasTags(TMeta) const;
       LANGULUS_API(THINGS)
-      size_t HasTags(const Tag&) const;
+      size_t HasTags(Tag const&) const;
 
       LANGULUS_API(THINGS)
       auto GetTags() const noexcept -> const TagMap&;
@@ -241,9 +241,9 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       auto GetTag(TMeta, Index = 0)       -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(const Tag&, Index = 0) const -> Tag;
+      auto GetTag(Tag const&, Index = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(const Tag&, Index = 0)       -> Tag;
+      auto GetTag(Tag const&, Index = 0)       -> Tag;
       template<CT::TraitBased = Tag>
       auto GetTag(Index = 0) -> Tag;
 

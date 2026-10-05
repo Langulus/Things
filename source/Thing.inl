@@ -51,10 +51,10 @@ namespace Langulus::Things
       if constexpr (CT::Deep<T> or CT::Neat<T>) {
          // Nest if deep/neat                                           
          stuff.ForEachDeep(
-            [this, &verb](const Tag& trait) {
+            [this, &verb](Tag const& trait) {
                verb << AddTrait(trait);
             },
-            [this, &verb](const Construct& construct) {
+            [this, &verb](Recipe const& construct) {
                CreateInner(verb, construct);
             },
             [this, &verb](const Neat& neat) {
@@ -87,10 +87,10 @@ namespace Langulus::Things
          }
          else {
             // Instantiate anything else                                
-            verb << CreateData(Construct {stuff});
+            verb << CreateData(Recipe {stuff});
          }
       }
-      else if constexpr (CT::Construct<T>) {
+      else if constexpr (CT::Recipe<T>) {
          // Instantiate a type, with charge and arguments               
          const auto count = static_cast<int>(std::ceil(stuff.GetCharge().mMass));
          for (int i = 0; i < count; ++i) {
@@ -433,7 +433,7 @@ namespace Langulus::Things
    template<CT::Part T, class...A> LANGULUS(INLINED)
    Many Thing::CreateUnit(A&&...arguments) {
       return CreateData(
-         Construct::From<Decay<T>>(Forward<A>(arguments)...)
+         Recipe::From<Decay<T>>(Forward<A>(arguments)...)
       );
    }
 
@@ -457,7 +457,7 @@ namespace Langulus::Things
    template<class... A> LANGULUS(INLINED)
    Many Thing::CreateUnitToken(Token const& token, A&&...arguments) {
       return CreateData(
-         Construct::FromToken(token, Forward<A>(arguments)...)
+         Recipe::FromToken(token, Forward<A>(arguments)...)
       );
    }
 #endif
@@ -550,7 +550,7 @@ namespace Langulus::Things
    ///   @param construct - instructions for the creation of the data         
    ///   @return created data                                                 
    template<Seek SEEK>
-   Many Thing::CreateData(const Recipe& recipe) {
+   Many Thing::CreateData(Recipe const& recipe) {
       LglsAssumeUser(recipe.GetTarget(),
          "Invalid construct type");
 

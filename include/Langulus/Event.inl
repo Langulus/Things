@@ -45,7 +45,7 @@ namespace Langulus
    Event::Event(T1&& t1, TN&&...tn) : Event {} {
       if constexpr (sizeof...(TN) == 0 and not CT::Array<T1>) {
          using S = IntentOf<decltype(t1)>;
-         using T = TypeOf<S>;
+         using T = Deint<S>;
 
          if constexpr (CT::EventBased<T>) {
             mType = DeintCast(t1).mType;
@@ -83,7 +83,7 @@ namespace Langulus
    LANGULUS(INLINED)
    Event& Event::operator = (CT::UnfoldInsertable auto&& rhs) {
       using S = IntentOf<decltype(rhs)>;
-      using T = TypeOf<S>;
+      using T = Deint<S>;
 
       if constexpr (CT::EventBased<T>) {
          mType = DeintCast(rhs).mType;

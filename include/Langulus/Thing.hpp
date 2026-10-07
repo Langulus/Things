@@ -63,7 +63,7 @@ namespace Langulus::Things
       Many CreateData(Recipe const&);
 
       template<class T>
-      void CreateInner(Verb&, const T&);
+      void CreateInner(Verb&, T const&);
 
    public:
       using Code = Flow::Code;

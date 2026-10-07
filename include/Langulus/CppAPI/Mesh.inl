@@ -607,7 +607,7 @@ namespace Langulus::Things
       // Multiple index sequences for different streams                 
       // Each sequence should be kept in a corresponding trait          
       T result;
-      indices->ForEachDeep([&result](const T& trait) noexcept {
+      indices->ForEachDeep([&result](T const& trait) noexcept {
          result = trait;
          return Loop::Break;
       });

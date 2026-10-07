@@ -17,16 +17,16 @@ namespace Langulus::Verbs
    /*template<CT::Dense T, CT::NotVoid...A>
    constexpr bool Greater::AvailableFor() noexcept {
       if constexpr (sizeof...(A) == 0) {
-         return requires (const T& t, Verb& v) { t.Compare(v); }
-             or requires (const T& t, Verb& v) { t.Greater(v); }
-             or requires (const T& t) { {t > t} -> CT::Bool; }
-             or requires (const T& t) { t <=> t; };
+         return requires (T const& t, Verb& v) { t.Compare(v); }
+             or requires (T const& t, Verb& v) { t.Greater(v); }
+             or requires (T const& t) { {t > t} -> CT::Bool; }
+             or requires (T const& t) { t <=> t; };
       }
       else {
-         return requires (const T& t, Verb& v, A... a) { t.Compare(v, a...); }
-             or requires (const T& t, Verb& v, A... a) { t.Greater(v, a...); }
-             or requires (const T& t, A... a) { {((t > a) and ...)} -> CT::Bool; }
-             or requires (const T& t, A... a) { ((t <=> a) == ...); };
+         return requires (T const& t, Verb& v, A... a) { t.Compare(v, a...); }
+             or requires (T const& t, Verb& v, A... a) { t.Greater(v, a...); }
+             or requires (T const& t, A... a) { {((t > a) and ...)} -> CT::Bool; }
+             or requires (T const& t, A... a) { ((t <=> a) == ...); };
       }
    }
 

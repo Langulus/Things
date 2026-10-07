@@ -97,7 +97,7 @@ namespace Langulus
    ///   @param rhs - right number                                            
    ///   @return the concatenation of the two numbers                         
    template<CT::Number T> LANGULUS(INLINED)
-   T ConcatenateNumbers(const T& lhs, const T& rhs) {
+   T ConcatenateNumbers(T const& lhs, T const& rhs) {
       T result {lhs};
       result *= ::std::pow(T {10}, static_cast<T>(CountDigits(rhs)));
       result += rhs;

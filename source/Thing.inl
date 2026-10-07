@@ -47,7 +47,7 @@ namespace Langulus::Things
    ///   @param verb - original create verb to output to                      
    ///   @param stuff - creation instructions                                 
    template<class T>
-   void Thing::CreateInner(Verb& verb, const T& stuff) {
+   void Thing::CreateInner(Verb& verb, T const& stuff) {
       if constexpr (CT::Deep<T> or CT::Neat<T>) {
          // Nest if deep/neat                                           
          stuff.ForEachDeep(

@@ -5,12 +5,11 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
-#include <Langulus/Event.inl>
+#include <Langulus/Event.hpp>
 
 
 namespace Langulus
 {
-
    /// Log an event                                                           
    Event::operator Text() const {
       if (mState) {
@@ -196,5 +195,4 @@ namespace Langulus
       (void) MetaDataOf<Keys::Joystick15>();
       (void) MetaDataOf<Keys::Joystick16>();
    }
-
-} // namespace Langulus
+}

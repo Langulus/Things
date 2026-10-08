@@ -140,7 +140,7 @@ namespace Langulus
 
       constexpr Event() noexcept {
          this->ConstructDefault();
-         *Stack<TimePoint, 3>::Get() = SteadyClock::Now();
+         SetTimestamp(SteadyClock::Now());
       }
       constexpr Event(Event const& other) {
          this->Absorb(Refer(other));
@@ -148,6 +148,14 @@ namespace Langulus
       constexpr Event(Event&& other) noexcept  {
          this->Absorb(Move(other));
       }
+
+      /// Descriptor-construction                                             
+      Event(Describe describe) : Event {} {
+         LglsAssert(describe.ExtractData(*Stack<DMeta, 1>::Get()), "Invalid event");
+         describe.ExtractData(*Stack<EventState, 2>::Get());
+         describe.ExtractTag<Tags::Data>(*this);
+      }
+
       constexpr ~Event() noexcept {
          this->Destroy();
       }

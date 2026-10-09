@@ -11,7 +11,7 @@
 namespace Langulus
 {
    /// Log an event                                                           
-   Event::operator Text() const {
+   /*Event::operator Text() const {
       if (mState) {
          if (mPayload)
             return Text::TemplateRt("{}({}, {})", mType, mState, Traits::Data {mPayload});
@@ -24,7 +24,7 @@ namespace Langulus
          else
             return Text::TemplateRt("{}()", mType);
       }
-   }
+   }*/
 
    /// Register all commonly used event types                                 
    void RegisterEvents() {

@@ -513,13 +513,13 @@ namespace Langulus::Things
 
    /// Get the current runtime                                                
    ///   @return the pointer to the runtime                                   
-   auto Thing::GetRuntime() const noexcept -> const Pin<Ref<Runtime>>& {
+   auto Thing::GetRuntime() const noexcept -> Pin<Ref<Runtime>> const& {
       return mRuntime;
    }
 
    /// Get the current temporal flow                                          
    ///   @return the pointer to the flow                                      
-   auto Thing::GetFlow() const noexcept -> const Pin<Ref<Temporal>>& {
+   auto Thing::GetFlow() const noexcept -> Pin<Ref<Temporal>> const& {
       return mFlow;
    }
 

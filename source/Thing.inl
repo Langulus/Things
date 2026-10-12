@@ -8,18 +8,17 @@
 #pragma once
 #include <Langulus/Thing.hpp>
 #include <Langulus/Part.hpp>
-#include "Thing-Seek.inl"
+#include <Langulus/Neat.hpp>
 
 
 namespace Langulus::Things
 {
-   
    /// Create a root thing (convenience function)                             
-   ///   @tparam CREATE_FLOW - should a temporal flow be created in the root? 
-   ///   @param modules... - names of modules to load                         
+   ///   @tparam CREATE_FLOW should a temporal flow be created in the root?   
+   ///   @param modules... names of modules to load                           
    ///   @return a root thing, with a runtime, a flow, and a name "ROOT"      
    template<bool CREATE_FLOW>
-   Thing Thing::Root(CT::String auto&&...modules) {
+   Thing Thing::Root(CT::Text auto&&...modules) {
       Thing root;
       root.SetName("ROOT");
       root.CreateRuntime();
@@ -31,21 +30,21 @@ namespace Langulus::Things
    }
 
    /// Create a child Thing with the provided arguments                       
-   ///   @param arguments - instructions for the entity's creation            
+   ///   @param arguments instructions for the thing's creation               
    ///   @return the new child instance                                       
    template<class...T>
    Ref<Thing> Thing::CreateChild(T&&...arguments) {
       THINGS_VERBOSE_SELF_TAB(
          "Producing child (at ", GetReferences(), " references): ");
       Ref<Thing> newThing;
-      newThing.New(this, Many {Forward<T>(arguments)...});
+      newThing.Emplace(this, Many {LglsFwd(arguments)...});
       return Abandon(newThing);
    }
 
    /// Inner creation routine                                                 
-   ///   @tparam T - type of instructions for creation                        
-   ///   @param verb - original create verb to output to                      
-   ///   @param stuff - creation instructions                                 
+   ///   @tparam T type of instructions for creation                          
+   ///   @param verb original create verb to output to                        
+   ///   @param stuff creation instructions                                   
    template<class T>
    void Thing::CreateInner(Verb& verb, T const& stuff) {
       if constexpr (CT::Deep<T> or CT::Neat<T>) {
@@ -57,15 +56,15 @@ namespace Langulus::Things
             [this, &verb](Recipe const& construct) {
                CreateInner(verb, construct);
             },
-            [this, &verb](const Neat& neat) {
+            [this, &verb](Neat const& neat) {
                CreateInner(verb, neat);
             },
-            [this, &verb](const DMeta& type) {
+            [this, &verb](DMeta const& type) {
                CreateInner(verb, type);
             }
          );
       }
-      else if constexpr (CT::Exact<T, DMeta>) {
+      else if constexpr (Exact<T, DMeta>) {
          // Instantiate a type without any arguments                    
          if (stuff->template Is<Thing>()) {
             // Instantiate a child Thing                                
@@ -81,7 +80,7 @@ namespace Langulus::Things
          }
          else if (stuff->template CastsTo<Things::Module>()) {
             // Instantiate a module from the runtime                    
-            auto runtime = GetRuntime();
+            auto& runtime = GetRuntime();
             auto dependency = runtime->GetDependency(stuff);
             verb << runtime->InstantiateModule(dependency);
          }
@@ -113,7 +112,7 @@ namespace Langulus::Things
             }
             else if (stuff.template CastsTo<Things::Module>()) {
                // Instantiate a module from the runtime                 
-               auto runtime = GetRuntime();
+               auto& runtime = GetRuntime();
                auto dependency = runtime->GetDependency(stuff.GetType());
                verb << runtime->InstantiateModule(dependency, stuff.GetDescriptor());
             }
@@ -128,15 +127,15 @@ namespace Langulus::Things
 
    /// Add a child                                                            
    ///   @attention assumes entity is a valid pointer                         
-   ///   @tparam TWOSIDED - true to also set the entity's owner;              
-   ///                      used mainly internally to avoid endless loops     
-   ///   @param entity - entity instance to add as child                      
+   ///   @tparam TWOSIDED true to also set the entity's owner;                
+   ///      used mainly internally to avoid endless loops                     
+   ///   @param entity instance to add as child                               
    ///   @return the number of added children                                 
    template<bool TWOSIDED>
    size_t Thing::AddChild(Thing* entity) {
       LglsAssumeUser(entity, "Bad entity pointer");
 
-      const auto added = mChildren.Merge(IndexBack, entity);
+      const auto added = mChildren.Merge(entity);
       if constexpr (TWOSIDED) {
          if (added) {
             if (entity->mOwner != this) {
@@ -157,15 +156,15 @@ namespace Langulus::Things
       
    /// Remove a child that matches pointer                                    
    ///   @attention assumes entity is a valid pointer                         
-   ///   @tparam TWOSIDED - true to also remove entity's owner;               
-   ///                      used mainly internally to avoid endless loops     
-   ///   @param entity - entity instance to remove from children              
+   ///   @tparam TWOSIDED true to also remove entity's owner;                 
+   ///      used mainly internally to avoid endless loops                     
+   ///   @param entity instance to remove from children                       
    ///   @return the number of removed children                               
    template<bool TWOSIDED>
    size_t Thing::RemoveChild(Thing* entity) {
       LglsAssumeUser(entity, "Bad entity pointer");
       
-      const auto removed = mChildren.Remove(entity);
+      const auto removed = mChildren.Erase(entity);
       if constexpr (TWOSIDED) {
          if (removed) {
             if (entity->mOwner == this) {
@@ -183,10 +182,10 @@ namespace Langulus::Things
 
    /// Execute verb in the hierarchy, searching for valid context in the      
    /// given direction                                                        
-   ///   @tparam SEEK - the direction in which to seek a valid context        
-   ///   @param verb - the verb to execute                                    
+   ///   @tparam SEEK the direction in which to seek a valid context          
+   ///   @param verb the verb to execute                                      
    ///   @return verb output                                                  
-   template<Seek SEEK, CT::VerbBased V>
+   template<Seek SEEK, CT::Executable V>
    V& Thing::RunIn(V& verb) {
       if constexpr (SEEK & Seek::Here) {
          // Execute here                                                
@@ -215,9 +214,9 @@ namespace Langulus::Things
    }
 
    /// Execute verb in this thing only, scanning units for required verbs     
-   ///   @param verb - the verb to execute                                    
+   ///   @param verb the verb to execute                                      
    ///   @return verb output                                                  
-   template<CT::VerbBased V>
+   template<CT::Executable V>
    V& Thing::Run(V& verb) {
       try {
          // Dispatch to entity first, using reflected and default verbs,
@@ -250,64 +249,65 @@ namespace Langulus::Things
       return verb;
    }
    
-   /// Register unit by all its bases in mUnitsAmbiguous                      
-   ///   @param unit - the unit instance to register                          
-   ///   @param type - the type to register the unit as                       
-   inline void Thing::AddUnitBases(Part* unit, DMeta type) {
-      const auto found = mUnitsAmbiguous.FindIt(type);
+   /// Register part by all its bases in mPartsAmbiguous                      
+   ///   @param part the part instance to register                            
+   ///   @param type type to register the part as                             
+   inline void Thing::AddPartBases(Part* part, DMeta type) {
+      const auto found = mPartsAmbiguous.Find(type);
       if (found)
-         found.GetValue() << unit;
+         found.GetVal() << part;
       else
-         mUnitsAmbiguous.Insert(type, unit);
+         mPartsAmbiguous.Merge(type, part);
 
       for (auto& base : type->mBases) {
          if (base.mType->IsExact<Part>())
             break;
 
-         AddUnitBases(unit, base.mType);
+         AddPartBases(part, base.mType);
       }
    }
 
-   /// Unregister unit by all its bases in mUnitsAmbiguous                    
-   ///   @param unit - the unit instance to unregister                        
-   ///   @param type - the type to unregister the unit as                     
-   inline void Thing::RemoveUnitBases(Part* unit, DMeta type) {
-      const auto found = mUnitsAmbiguous.FindIt(type);
+   /// Unregister part by all its bases in mPartsAmbiguous                    
+   ///   @param part the part instance to unregister                          
+   ///   @param type the type to unregister the part as                       
+   inline void Thing::RemovePartBases(Part* part, DMeta type) {
+      const auto found = mPartsAmbiguous.Find(type);
       if (found) {
-         auto& set = found.GetValue();
-         if (set.Remove(unit) and not set)
-            mUnitsAmbiguous.RemoveIt(found);
+         auto& set = found.GetVal();
+         if (set.Erase(part) and not set)
+            mPartsAmbiguous.Erase(found);
       }
 
       for (auto& base : type->mBases) {
          if (base.mType->IsExact<Part>())
             break;
 
-         RemoveUnitBases(unit, base.mType);
+         RemoveUnitBases(part, base.mType);
       }
    }
 
-   /// Add a new unit to the entity                                           
-   /// Adding units coupled with different runtimes is not allowed            
-   /// You can only duplicate units, if they're unique instances memorywise   
-   ///   @tparam TWOSIDED - if true, will both add unit to thing, and add     
-   ///                      the thing as an owner for the unit;               
-   ///                      used mainly internally to avoid endless loops     
-   ///   @param unit - the unit to add                                        
-   ///   @return 1 if unit has been added                                     
+   /// Add a new part to the thing.                                           
+   /// Adding parts coupled with different runtimes is not allowed.           
+   /// You can only duplicate parts, if they're unique instances memorywise.  
+   ///   @tparam TWOSIDED if true, will both add part to thing, and add       
+   ///      the thing as an owner for the part; used mainly internally to     
+   ///      avoid endless loops                                               
+   ///   @param part part to add                                              
+   ///   @return 1 if part has been added                                     
    template<bool TWOSIDED>
-   size_t Thing::AddUnit(Part* unit) {
+   size_t Thing::AddPart(Part* part) {
       // Check if the unit instance is already registered here          
-      const auto meta = unit->GetType();
-      const auto found = mUnitsAmbiguous.FindIt(meta);
-      if (found and found.GetValue().Find(unit))
+      const auto meta = part->GetType();
+      const auto found = mPartsAmbiguous.Find(meta);
+      if (found and found.GetVal().Find(part))
          return 0;
 
       // We must guarantee, that no unit is coupled to entities with    
       // different runtimes!                                            
-      for (const auto& owners : unit->mOwners) {
-         LANGULUS_ASSERT(owners->GetRuntime() == GetRuntime(), Access,
-            "Coupling a unit to multiple runtimes is not allowed");
+      for (const auto& owners : part->mOwners) {
+         LglsAssert(owners->GetRuntime() == GetRuntime(),
+            "Coupling a part to multiple runtimes is not allowed"
+         );
       }
 
       // Log self before unit being added, it might change name         
@@ -315,245 +315,205 @@ namespace Langulus::Things
 
       if constexpr (TWOSIDED) {
          #if LANGULUS(SAFE)
-            unit->mOwners <<= this;
+            part->mOwners <<= this;
          #else
-            unit->mOwners << this;
+            part->mOwners << this;
          #endif
       }
 
-      mUnitsList << unit;
-      AddUnitBases(unit, meta);
+      mPartsList << part;
+      AddPartBases(part, meta);
       mRefreshRequired = true;
 
       THINGS_VERBOSE(
-         unit, " added as unit (now at ", GetReferences(), " references)");
+         part, " added as part (now at ", GetReferences(), " references)");
       return 1;
    }
 
-   /// Remove an unit instance from the thing                                 
-   ///   @tparam TWOSIDED - if true, will both remove unit from thing, and    
-   ///                      then remove the thing from unit's owners;         
-   ///                      used mainly internally to avoid endless loops     
-   ///   @param unit - unit to remove from the entity                         
-   ///   @return 1 if unit has been removed                                   
+   /// Remove part instance from the thing                                    
+   ///   @tparam TWOSIDED if true, will both remove part from thing, and      
+   ///      then remove the thing from part's owners; used mainly internally  
+   ///      to avoid endless loops                                            
+   ///   @param part part to remove from the entity                           
+   ///   @return 1 if part has been removed                                   
    template<bool TWOSIDED>
-   size_t Thing::RemoveUnit(Part* unit) {
-      const auto meta = unit->GetType();
-      const auto foundType = mUnitsAmbiguous.FindIt(meta);
+   size_t Thing::RemovePart(Part* part) {
+      const auto meta = part->GetType();
+      const auto foundType = mPartsAmbiguous.Find(meta);
       if (not foundType)
          return 0;
 
-      const auto unitIndex = foundType.GetValue().Find(unit);
-      if (unitIndex) {
-         // Decouple before unit is destroyed                           
+      const auto partIndex = foundType.GetVal().Find(part);
+      if (partIndex) {
+         // Decouple before part is destroyed                           
          if constexpr (TWOSIDED)
-            unit->mOwners.Remove(this);
+            part->mOwners.Remove(this);
 
-         // Notify all other units about the environment change         
+         // Notify all other parts about the environment change         
          mRefreshRequired = true;
-         THINGS_VERBOSE_SELF(unit, " removed from units");
+         THINGS_VERBOSE_SELF(part, " removed from parts");
 
-         // Dereference (and eventually destroy) unit                   
-         RemoveUnitBases(unit, meta);
-         mUnitsList.Remove(unit);
+         // Dereference (and eventually destroy) part                   
+         RemovePartBases(part, meta);
+         mPartsList.Remove(part);
          return 1;
       }
 
       return 0;
    }
 
-   /// Remove all units that are derived from the provided type               
-   ///   @tparam T - the type of units to remove, use Part for all            
-   ///   @tparam TWOSIDED - if true, will both remove unit from thing, and    
-   ///                      then remove the thing from unit's owners;         
-   ///                      used mainly internally to avoid endless loops     
-   ///   @return the number of removed units                                  
+   /// Remove all parts that are derived from the provided type               
+   ///   @tparam T the type of parts to remove, use Part for all              
+   ///   @tparam TWOSIDED if true, will both remove part from thing, and      
+   ///      then remove the thing from part's owners; used mainly internally  
+   ///      to avoid endless loops                                            
+   ///   @return the number of removed parts                                  
    template<CT::Part T, bool TWOSIDED>
-   size_t Thing::RemoveUnits() {
+   size_t Thing::RemoveParts() {
       if constexpr (CT::Same<T, Part>) {
-         // Remove all units                                            
-         const auto removed = mUnitsList.GetCount();
+         // Remove all parts                                            
+         const auto removed = mPartsList.GetCount();
          if constexpr (TWOSIDED) {
-            // Decouple before units are (potentially) destroyed        
-            for (auto& unit : mUnitsList)
-               unit->mOwners.Remove(this);
+            // Decouple before parts are (potentially) destroyed        
+            for (auto& part : mPartsList)
+               part->mOwners.Remove(this);
          }
 
-         mUnitsList.Reset();
-         mUnitsAmbiguous.Reset();
+         mPartsList.Reset();
+         mPartsAmbiguous.Reset();
          mRefreshRequired = true;
-         THINGS_VERBOSE_SELF("All ", removed, " units were removed");
+         THINGS_VERBOSE_SELF("All ", removed, " parts were removed");
          return removed;
       }
       else {
          // Remove units of a specific type                             
          const auto meta = MetaOf<Decay<T>>();
-         const auto found = mUnitsAmbiguous.Find(meta);
+         const auto found = mPartsAmbiguous.Find(meta);
          if (not found)
             return 0;
 
          // List intentionally shallow-copied, its memory will diverge  
-         // upon RemoveUnit                                             
-         auto list = mUnitsAmbiguous.GetValue(found);
+         // upon RemovePart                                             
+         auto list = found.GetVal();
          size_t removed {};
-         for (auto& unit : list)
-            removed += RemoveUnit(unit);
+         for (auto& part : list)
+            removed += RemovePart(part);
          return removed;
       }
    }
 
-   /// size_t the number of matching units in this entity                      
-   ///   @tparam T - the type of units to seach for, use Part for all         
-   ///   @return the number of matching units                                 
-   template<CT::Part T> LANGULUS(INLINED)
-   size_t Thing::HasUnits() const {
-      return HasUnits(MetaOf<Decay<T>>());
+   /// Count the number of matching parts in this entity                      
+   ///   @tparam T the type of parts to seach for, use Part for all           
+   ///   @return the number of matching parts                                 
+   template<CT::Part T>
+   size_t Thing::HasParts() const {
+      return HasParts(MetaOf<Decay<T>>());
    }
 
-   /// Get the list of units, in order of addition                            
-   ///   @return a reference to the list of units                             
-   LANGULUS(INLINED)
-   auto Thing::GetUnits() const noexcept -> const UnitList& {
-      return mUnitsList;
+   /// Get the list of parts, in order of addition                            
+   ///   @return a reference to the list of parts                             
+   inline auto Thing::GetParts() const noexcept -> PartList const& {
+      return mPartsList;
    }
 
-   /// Get the ambiguous map of units                                         
-   ///   @return a reference to the map of units                              
-   LANGULUS(INLINED)
-   auto Thing::GetUnitsMap() const noexcept -> const UnitMap& {
-      return mUnitsAmbiguous;
+   /// Get the ambiguous map of parts                                         
+   ///   @return a reference to the map of parts                              
+   inlineauto Thing::GetPartsMap() const noexcept -> PartMap const& {
+      return mPartsAmbiguous;
    }
 
-   /// Create a unit by static type and arguments, relying on producers       
+   /// Create a part by static type and arguments, relying on producers       
    /// in the hierarchy                                                       
-   ///   @tparam T - the unit to create                                       
-   ///   @tparam A... - arguments for the unit's creation                     
-   ///   @param arguments... - the arguments to provide for construct         
-   ///   @return the created unit(s)                                          
-   template<CT::Part T, class...A> LANGULUS(INLINED)
-   Many Thing::CreateUnit(A&&...arguments) {
-      return CreateData(
-         Recipe::From<Decay<T>>(Forward<A>(arguments)...)
-      );
+   ///   @tparam T the part to create                                         
+   ///   @tparam A... arguments for the part's creation                       
+   ///   @param arguments... the arguments to provide for construct           
+   ///   @return the created part(s)                                          
+   template<CT::Part T, class...A>
+   Many Thing::CreatePart(A&&...arguments) {
+      return CreateData(Recipe::From<Decay<T>>(LglsFwd(arguments)...));
    }
 
-   /// Create default-initialized instances of each unit type                 
-   ///   @tparam T... - the unit types to instantiate                         
-   ///   @return the created unit(s)                                          
-   template<CT::Part...T> LANGULUS(INLINED)
-   Many Thing::CreateUnits() {
+   /// Create default-initialized instances of each part type                 
+   ///   @tparam T... the part types to instantiate                           
+   ///   @return the created part(s)                                          
+   template<CT::Part...T>
+   Many Thing::CreateParts() {
       Many result;
-      (result.SmartPush(IndexBack, CreateUnit<T>()), ...);
+      (result.Compose(CreatePart<T>()), ...);
       return result;
    }
 
 #if LANGULUS_FEATURE(MANAGED_REFLECTION)
-   /// Create a unit by type token and arguments, relying on producers        
+   /// Create a part by type token and arguments, relying on producers        
    /// in the hierarchy                                                       
-   ///   @tparam A... - arguments for the unit's creation                     
-   ///   @param token - the unit type token                                   
-   ///   @param arguments... - the arguments to provide for construct         
-   ///   @return the created unit(s)                                          
-   template<class... A> LANGULUS(INLINED)
-   Many Thing::CreateUnitToken(Token const& token, A&&...arguments) {
-      return CreateData(
-         Recipe::FromToken(token, Forward<A>(arguments)...)
-      );
+   ///   @tparam A... arguments for the part's creation                       
+   ///   @param token the part type token                                     
+   ///   @param arguments... the arguments to provide for construct           
+   ///   @return the created part(s)                                          
+   template<class... A>
+   Many Thing::CreatePartToken(Token const& token, A&&...arguments) {
+      return CreateData(Recipe::FromToken(token, LglsFwd(arguments)...));
    }
 #endif
 
-   /// Get a unit by a static type and an optional offset                     
-   ///   @tparam T - the type of unit we're searching for                     
-   ///   @param offset - optional offset (Nth match)                          
-   ///   @return the unit if found, or nullptr if not                         
-   template<CT::Part T> LANGULUS(INLINED)
-   Decay<T>* Thing::GetUnit(Index offset) {
-      if constexpr (not CT::Same<T, Part>) {
+   /// Get a part by a static type and an optional offset                     
+   ///   @tparam T the type of part we're searching for                       
+   ///   @param offset optional offset (Nth match)                            
+   ///   @return the part if found, or nullptr if not                         
+   template<CT::Part T, class SELF>
+   auto Thing::GetPart(this SELF&& self, Index offset) -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
+      if constexpr (not Same<T, Part>) {
          return static_cast<Decay<T>*>(
-            GetUnitMeta(MetaOf<Decay<T>>(), offset)
+            GetPartMeta(MetaOf<Decay<T>>(), offset)
          );
       }
-      else {
-         return static_cast<Decay<T>*>(
-            GetUnitMeta(DMeta {}, offset)
-         );
-      }
-   }
-
-   /// Get a unit by a static type and an optional offset (const)             
-   ///   @tparam T - the type of unit we're searching for                     
-   ///   @param offset - optional offset (Nth match)                          
-   ///   @return the unit if found, or nullptr if not                         
-   template<CT::Part T> LANGULUS(INLINED)
-   const Decay<T>* Thing::GetUnit(Index offset) const {
-      if constexpr (not CT::Same<T, Part>) {
-         return static_cast<const Decay<T>*>(
-            GetUnitMeta(MetaOf<Decay<T>>(), offset)
-         );
-      }
-      else {
-         return static_cast<const Decay<T>*>(
-            GetUnitMeta(DMeta {}, offset)
-         );
-      }
+      else return static_cast<Decay<T>*>(GetPartMeta(DMeta {}, offset));
    }
 
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
-      /// Get a unit by a token, and an optional offset (const)               
+      /// Get a part by a token, and an optional offset (const)               
       /// This is available only if managed reflection feature is enabled     
-      ///   @param token - unit type token                                    
-      ///   @param offset - optional offset (Nth match)                       
-      ///   @return the unit if found, or nullptr if not                      
-      LANGULUS(INLINED)
-      Part const* Thing::GetUnitMeta(Token const& token, Index offset) const {
-         return const_cast<Thing*>(this)->GetUnitMeta(token, offset);
+      ///   @param token part type token                                      
+      ///   @param offset optional offset (Nth match)                         
+      ///   @return the part if found, or nullptr if not                      
+      Part const* Thing::GetPartMeta(Token const& token, Index offset) const {
+         return const_cast<Thing*>(this)->GetPartMeta(token, offset);
       }
 
-      /// Get a unit by a token, and an optional offset, then dynamic_cast it 
+      /// Get a part by a token, and an optional offset, then dynamic_cast it 
       /// This is available only if managed reflection feature is enabled     
-      ///   @tparam T - the type of unit we're casting to                     
-      ///   @param token - unit type token                                    
-      ///   @param offset - optional offset (Nth match)                       
-      ///   @return the unit if found, or nullptr if not                      
-      template<CT::Part T> LANGULUS(INLINED)
-      Decay<T>* Thing::GetUnitAs(Token const& token, Index offset) {
-         return dynamic_cast<Decay<T>*>(GetUnitMeta(token, offset));
+      ///   @tparam T the type of part we're casting to                       
+      ///   @param token part type token                                      
+      ///   @param offset optional offset (Nth match)                         
+      ///   @return the part if found, or nullptr if not                      
+      template<CT::Part T>
+      Decay<T>* Thing::GetPartAs(Token const& token, Index offset) {
+         return dynamic_cast<Decay<T>*>(GetPartMeta(token, offset));
       }
    #endif
 
-   template<CT::TraitBased T> LANGULUS(INLINED)
+   template<CT::DefineTag T>
    Tag Thing::GetTag(Index offset) {
-      return GetTag(MetaTraitOf<T>(), offset);
+      return GetTag(MetaTagOf<T>(), offset);
    }
 
-   /// Get local trait by static type and offset                              
-   ///   @tparam T - the trait to search for                                  
-   ///   @param offset - the offset of the trait to return (optional)         
-   ///   @return the trait or nullptr if none found                           
-   template<CT::TraitBased T> LANGULUS(INLINED)
-   Tag* Thing::GetLocalTag(Index offset) {
-      return GetLocalTag(MetaTraitOf<T>(), offset);
+   /// Get local tag by static type and offset                                
+   ///   @tparam T the tag to search for                                      
+   ///   @param offset the offset of the tag to return (optional)             
+   ///   @return the tag or nullptr if none found                             
+   template<CT::DefineTag T>
+   Tag* Thing::GetLocalTag(this auto&& self, Index offset) {
+      return self.GetLocalTag(MetaTagOf<T>(), offset);
    }
 
-   /// Get local trait by static type and offset                              
-   ///   @tparam T - the trait to search for                                  
-   ///   @param offset - the offset of the trait to return                    
-   ///   @return the trait or nullptr if none found                           
-   template<CT::TraitBased T> LANGULUS(INLINED)
-   const Tag* Thing::GetLocalTag(Index offset) const {
-      return const_cast<Thing&>(*this).template GetLocalTag<T>(offset);
-   }
-
-   /// Produce constructs (including units) from the hierarchy                
+   /// Produce constructs (including parts) from the hierarchy                
    ///   @attention assumes construct has a valid type                        
-   ///   @tparam SEEK - what part of the hierarchy to use for the creation    
-   ///   @param construct - instructions for the creation of the data         
+   ///   @tparam SEEK what part of the hierarchy to use for the creation      
+   ///   @param construct instructions for the creation of the data           
    ///   @return created data                                                 
    template<Seek SEEK>
    Many Thing::CreateData(Recipe const& recipe) {
-      LglsAssumeUser(recipe.GetTarget(),
-         "Invalid construct type");
-
+      LglsAssumeUser(recipe.GetTarget(), "Invalid construct type");
       const auto type = recipe.GetTarget();
       const auto producer = type and type->mProducerRetriever
          ? type->mProducerRetriever() : nullptr;
@@ -564,16 +524,16 @@ namespace Langulus::Things
          type, "` (at ", GetReferences(), " references)"
       );
 
-      // Implicitly add a parent trait to descriptor, if one isn't      
+      // Implicitly add a parent tag to descriptor, if one isn't        
       // already added - it will be stripped later, when normalizing    
       // the descriptor when producing the item from a factory          
-      Traits::Parent parent;
-      if (not descriptor->ExtractTrait<Traits::Parent>(parent)) {
+      Tags::Parent parent;
+      if (not descriptor->ExtractTrait<Tags::Parent>(parent)) {
          parent = this;
          parent.MakeMissing();
          descriptor << parent;
          THINGS_VERBOSE_SELF(
-            "Referenced as Traits::Parent (now at ",
+            "Referenced as Tags::Parent (now at ",
             GetReferences(), " references)"
          );
       }
@@ -665,11 +625,6 @@ namespace Langulus::Things
       return {};
    }
 
-} // namespace Langulus::Things
-
-namespace Langulus::A
-{
-
    /// Execute verb in all owners, seeking valid context in the specified     
    /// seek direction                                                         
    ///   @tparam SEEK - direction to seek valid execution context in          
@@ -691,5 +646,4 @@ namespace Langulus::A
 
       return verb;
    }
-
-} // namespace Langulus::A
+}

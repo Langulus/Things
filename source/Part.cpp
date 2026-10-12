@@ -7,34 +7,32 @@
 ///                                                                           
 #include <Langulus/Part.hpp>
 #include "Thing.inl"
-#include "Part-Seek.inl"
 
 using namespace Langulus::Things;
 
 
-/// Part destructor decouples unit from all owners                            
+/// Part destructor decouples part from all owners                            
 Part::~Part() {
    for (auto entity : mOwners)
       Decouple(entity);
 }
 
-/// Default unit selection simply relays to the owner                         
-///   @param verb - the selection verb                                        
-void Part::Select(Flow::Verb& verb) {
+/// Default part selection simply relays to the owner                         
+///   @param verb the selection verb                                          
+void Part::Select(Verb& verb) {
    for (auto owner : mOwners)
       owner->Select(verb);
 }
    
-/// Check if this unit has a given set of properties                          
-///   @param descriptor - descriptor with required properties                 
-///   @return true if the unit has the given properties                       
+/// Check if this part has a given set of properties                          
+///   @param descriptor descriptor with required properties                   
+///   @return true if the part has the given properties                       
 bool Part::CompareDescriptor(Many const& descriptor) const {
-   // First we compare traits only, all of them must be present         
+   // First we compare tags only, all of them must be present           
    bool mismatch = false;
    size_t memberOffset = 0;
-   descriptor.ForEachDeep([&](const Annies::Tag& trait) {
-      if (not GetMember(trait.GetTag(), memberOffset)
-      .Compare(static_cast<Many const&>(trait))) {
+   descriptor.ForEachDeep([&](const Annies::Tag& tag) {
+      if (not GetMember(tag.GetTag(), memberOffset).Compare(tag.GetData())) {
          mismatch = true;
          return Loop::Break;
       }
@@ -44,7 +42,7 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    });
 
    // Then we run another check based on data types, again - all        
-   // of them must be present, either as trait or in other form         
+   // of them must be present, either as tags or in other form          
    memberOffset = 0;
    descriptor.ForEachDeep([&](Many const& anythingElse) {
       if (not GetMember(TMeta {}, memberOffset).Compare(anythingElse)) {
@@ -59,18 +57,18 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    return not mismatch;
 }
    
-/// Get the list of unit owners                                               
+/// Get the list of part owners                                               
 ///   @return the owners                                                      
-auto Part::GetOwners() const noexcept -> const Hierarchy& {
+auto Part::GetOwners() const noexcept -> Hierarchy const& {
    return mOwners;
 }
      
-/// Refresh unit on environment change                                        
+/// Refresh part on environment change                                        
 void Part::Refresh() {}
 
 /// Get the runtime                                                           
-///   @attention assumes units are correctly coupled and coupling to          
-///              different runtimes should be explicitly disallowed           
+///   @attention assumes parts are correctly coupled and coupling to          
+///      different runtimes should be explicitly disallowed.                  
 ///   @return a pointer to the runtime, if available                          
 auto Part::GetRuntime() const noexcept -> Runtime* {
    if (not mOwners)
@@ -79,8 +77,8 @@ auto Part::GetRuntime() const noexcept -> Runtime* {
 }
 
 /// Get the temporal flow                                                     
-///   @attention assumes units are correctly coupled and coupling to          
-///              different flows should be explicitly disallowed              
+///   @attention assumes parts are correctly coupled and coupling to          
+///      different flows should be explicitly disallowed.                     
 ///   @return a pointer to the flow, if available                             
 auto Part::GetFlow() const noexcept -> Temporal* {
    if (not mOwners)
@@ -88,47 +86,47 @@ auto Part::GetFlow() const noexcept -> Temporal* {
    return mOwners[0]->GetFlow().Get();
 }
 
-/// Couple the component with an entity, extracted from a descriptor's        
-/// Traits::Parent, if any was defined (always two-sided)                     
-/// This will call refresh to all units in that entity on next tick           
-///   @param desc - the descriptor to scan for parents                        
-///   @param fallback - a fallback Thing to couple to (optional)              
+/// Couple the component with a Thing, extracted from a descriptor's          
+/// Tags::Parent, if any was defined (always two-sided).                      
+/// This will call refresh to all parts in that Thing on next tick            
+///   @param desc the descriptor to scan for parents                          
+///   @param fallback a fallback Thing to couple to (optional)                
 ///      This usually comes from the producer's context. For example, if you  
 ///      don't provide a parent for the renderer, it will be instantiated as  
 ///      a child to the graphics module owner (i.e. the runtime owner)        
 void Part::Couple(Many const& desc, const Thing* fallback) {
    const Thing* owner = nullptr;
-   if (not desc.ExtractTrait<Traits::Parent>(owner))
+   if (not desc.ExtractTag<Tags::Parent>(owner))
       desc.ExtractData(owner);
 
-   if (owner and mOwners.Merge(IndexBack, const_cast<Thing*>(owner)))
-      const_cast<Thing*>(owner)->AddUnit<false>(this);
+   if (owner and mOwners.Merge(const_cast<Thing*>(owner)))
+      const_cast<Thing*>(owner)->AddPart<false>(this);
    else if (fallback)
-      const_cast<Thing*>(fallback)->AddUnit<false>(this);
+      const_cast<Thing*>(fallback)->AddPart<false>(this);
 }
 
-/// Decouple the component from an entity (always two-sided)                  
-/// This will call refresh to all units in that entity on next frame          
-///   @param entity - the entity to decouple with                             
+/// Decouple the component from a Thing (always two-sided)                    
+/// This will call refresh to all parts in that entity on next frame          
+///   @param entity the entity to decouple with                               
 void Part::Decouple(const Thing* entity) {
    if (not entity)
       return;
       
-   if (mOwners.Remove(entity))
-      const_cast<Thing*>(entity)->RemoveUnit<false>(this);
+   if (mOwners.Erase(entity))
+      const_cast<Thing*>(entity)->RemovePart<false>(this);
 }
 
 /// Replace one owner instance with another (used when moving things)         
 ///   @attention assumes both pointers are different, and not nullptr         
-///   @param replaceThis - owner to replace                                   
-///   @param withThis - entity to replace it with                             
+///   @param replaceThis owner to replace                                     
+///   @param withThis entity to replace it with                               
 void Part::ReplaceOwner(const Thing* replaceThis, const Thing* withThis) {
    LglsAssumeDev(replaceThis != withThis,
       "Pointers are the same");
    LglsAssumeDev(replaceThis and withThis,
       "Nullptr not allowed");
 
-   const auto found = mOwners.Find(replaceThis);
+   auto found = mOwners.Find(replaceThis);
    if (found)
-      mOwners[found] = const_cast<Thing*>(withThis);
+      found.Assign(const_cast<Thing*>(withThis));
 }

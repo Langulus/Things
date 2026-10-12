@@ -6,6 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/Event.hpp>
+#include <Langulus/SerializeText.hpp>
 
 
 namespace Langulus

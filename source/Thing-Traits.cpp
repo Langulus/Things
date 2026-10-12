@@ -7,36 +7,26 @@
 ///                                                                           
 #include <Langulus/Thing.hpp>
 #include "Thing.inl"
-#include "Thing-Seek.inl"
 
 
 namespace Langulus::Things
 {
-
-   /// Get a trait by type (const)                                            
-   ///   @param trait - trait id                                              
-   ///   @param offset - offset of result to use                              
-   ///   @return a filled trait if fount, empty if not                        
-   auto Thing::GetTag(TMeta trait, Index offset) const -> Tag {
-      return GetTag(Tag::FromMeta(trait, nullptr), offset);
+   /// Get a tag by type                                                      
+   ///   @param tag tag id                                                    
+   ///   @param offset Nth result to use                                      
+   ///   @return a filled tag if found, empty if not                          
+   auto Thing::GetTag(this auto&& self, TMeta tag, CT::Index auto&& offset) -> Tag {
+      return self.GetTag(Tag::FromMeta(tag, nullptr), LglsFwd(offset));
    }
 
-   /// Get a trait by type                                                    
-   ///   @param trait - trait id                                              
-   ///   @param offset - offset of result to use                              
-   ///   @return a filled trait if fount, empty if not                        
-   auto Thing::GetTag(TMeta trait, Index offset) -> Tag {
-      return GetTag(Tag::FromMeta(trait, nullptr), offset);
-   }
-
-   /// Get a trait from this entity's trait list                              
-   ///   @param id - the trait to search for                                  
-   ///   @param index - the index of the trait we seek                        
-   ///   @return a pointer to the trait, or nullptr if not found              
-   auto Thing::GetLocalTag(TMeta id, Index index) -> Tag* {
+   /// Get a tag from this entity's tag list                                  
+   ///   @param id the tag to search for                                      
+   ///   @param index the index of the tag we seek                            
+   ///   @return a pointer to the tag, or nullptr if not found                
+   auto Thing::GetLocalTag(this auto&& self, TMeta id, CT::Index auto&& index) -> Tag* {
       if (id) {
          // Search a typed trait                                        
-         const auto found = mTraits.FindIt(id);
+         const auto found = self.mTags.Find(id);
          if (found)
             return &(found.GetValue()[index]);
          return nullptr;
@@ -46,7 +36,7 @@ namespace Langulus::Things
       Tag* found {};
       if (index.IsArithmetic()) {
          auto offset = index.GetOffsetUnsafe();
-         mTraits.ForEachValue([&](TMany<Tag>& list) noexcept {
+         self.mTags.ForEachValue([&](TMany<Tag>& list) noexcept {
             if (offset < list.GetCount()) {
                found = &list[offset];
                return Loop::Break;
@@ -60,88 +50,72 @@ namespace Langulus::Things
       return found;
    }
 
-   /// Get a trait from the entity's trait list   (const)                     
-   ///   @param id - the trait to search for                                  
-   ///   @param offset - the index of the trait we seek                       
-   ///   @return a pointer to the trait, or nullptr if not found              
-   auto Thing::GetLocalTag(TMeta id, Index offset) const -> const Tag* {
-      return const_cast<Thing&>(*this).GetLocalTag(id, offset);
-   }
-
-   /// Get a trait by type and contents                                       
-   ///   @param id - trait to match                                           
-   ///   @param index - offset of result to use                               
-   ///   @return a non-empty trait, if found                                  
-   auto Thing::GetTag(Tag const& id, Index index) -> Tag {
+   /// Get a tag by type and contents                                         
+   ///   @param id tag to match                                               
+   ///   @param index offset of result to use                                 
+   ///   @return a non-empty tag, if found                                    
+   auto Thing::GetTag(this auto&& self, Tag const& id, CT::Index auto&& index) -> Tag {
       if (id.GetTag()) {
          // Handle some predefined traits here                          
-         if (id.template IsTrait<Traits::Part>()) {
+         if (id.template IsTag<Tags::Part>()) {
             // Get a component                                          
-            auto unit = GetUnitMeta(DMeta {}, index);
+            auto unit = self.GetUnitMeta(DMeta {}, index);
             if (unit)
-               return Traits::Part {unit};
+               return Tags::Part {unit};
             return {};
          }
-         else if (id.template IsTrait<Traits::Child>()) {
+         else if (id.template IsTag<Tags::Child>()) {
             // Get a child entity                                       
-            auto child = GetChild(index);
+            auto child = self.GetChild(index);
             if (child)
-               return Traits::Child {child};
+               return Tags::Child {child};
             return {};
          }
-         else if (id.template IsTrait<Traits::Runtime>()) {
+         else if (id.template IsTag<Tags::Runtime>()) {
             // Get the nearest runtime                                  
-            return Traits::Runtime {&(*mRuntime)};
+            return Tags::Runtime {&(*self.mRuntime)};
          }
-         else if (id.template IsTrait<Traits::Parent>()) {
+         else if (id.template IsTag<Tags::Parent>()) {
             // Get the parent                                           
-            return Traits::Parent {&(*mOwner)};
+            return Tags::Parent {&(*self.mOwner)};
          }
       }
 
       // Check dynamic traits in the entity                             
-      auto found = GetLocalTag(id.GetTag(), index);
+      auto found = self.GetLocalTag(id.GetTag(), index);
       if (found)
          return *found;
 
       // Nothing was found                                              
       return {};
    }
-
-   /// Get a trait by type and contents (const)                               
-   ///   @param id - trait to match                                           
-   ///   @param index - offset of result to use                               
-   ///   @return a non-empty trait, if found                                  
-   auto Thing::GetTag(Tag const& id, Index index) const -> Tag {
-      return const_cast<Thing*>(this)->GetTag(id, index);
-   }
-
-   /// Add a new trait to the thing                                           
-   ///   @param trait - trait to shallow copy                                 
-   ///   @return the new trait instance                                       
-   auto Thing::AddTrait(Tag trait) -> Tag* {
-      const auto tmeta = trait.GetTag();
-      auto found = mTraits.FindIt(tmeta);
+   
+   /// Add a new tag to the thing                                             
+   ///   @param tag tag to shallow copy                                       
+   ///   @return the new tag instance                                         
+   auto Thing::AddTag(Tag tag) -> Tag* {
+      const auto tmeta = tag.GetTag();
+      auto found = mTags.Find(tmeta);
       if (found) {
-         found.GetValue() << trait;
-         return &found.GetValue().Last();
+         found.GetVal() << tag;
+         return found.GetVal().GetAt(-1);
       }
 
-      mTraits.Insert(tmeta, trait);
+      mTags.Merge(tmeta, tag);
       mRefreshRequired = true;
-      THINGS_VERBOSE_SELF(trait, " added");
-      return &mTraits[tmeta].Last();
+      THINGS_VERBOSE_SELF(tag, " added");
+      return &mTags[tmeta].Last();
    }
 
-   /// Remove a trait from the universal entity                               
-   ///   @param trait - type of trait to remove                               
-   ///   @return the number of removed traits                                 
-   auto Thing::RemoveTrait(TMeta trait) -> size_t {
-      const auto found = mTraits.FindIt(trait);
+   /// Remove a tag from the universal entity                                 
+   ///   @param tag type of tag to remove                                     
+   ///   @return the number of removed tags                                   
+   auto Thing::RemoveTag(TMeta tag) -> size_t {
+      const auto found = mTags.Find(tag);
       if (found) {
-         const auto removed = found.GetValue().GetCount();
-         mTraits.RemoveIt(found);
-         THINGS_VERBOSE_SELF(trait, " removed");
+         const size_t removed = found.GetVal().GetCount();
+         mTags.Erase(found);
+         THINGS_VERBOSE_SELF(tag, " removed");
          mRefreshRequired = true;
          return removed;
       }
@@ -149,15 +123,15 @@ namespace Langulus::Things
       return 0;
    }
 
-   /// Remove an exact-matching trait from this entity                        
-   ///   @param trait - type and value to remove                              
-   ///   @return the number of removed traits                                 
-   auto Thing::RemoveTrait(Tag trait) -> size_t {
-      const auto found = mTraits.FindIt(trait.GetTag());
+   /// Remove an exact-matching tag from this entity                          
+   ///   @param tag type and value to remove                                  
+   ///   @return the number of removed tags                                   
+   auto Thing::RemoveTag(Tag tag) -> size_t {
+      const auto found = mTags.Find(tag.GetTag());
       if (found) {
-         const auto removed = found.GetValue().Remove(trait);
+         const auto removed = found.GetVal().Erase(tag);
          if (removed) {
-            THINGS_VERBOSE_SELF(trait, " removed");
+            THINGS_VERBOSE_SELF(tag, " removed");
             mRefreshRequired = true;
             return removed;
          }
@@ -166,54 +140,50 @@ namespace Langulus::Things
       return 0;
    }
 
-   /// A fast check whether traits of the given type are inside this entity   
-   ///   @param trait - type of trait to check                                
-   ///   @return the number of matching traits                                
-   auto Thing::HasTraits(TMeta trait) const -> size_t {
-      const auto found = mTraits.FindIt(trait);
-      return found ? found.GetValue().GetCount() : 0;
+   /// A fast check whether tags of the given type are inside this entity     
+   ///   @param tag - type of tag to check                                    
+   ///   @return the number of matching tags                                  
+   auto Thing::HasTags(TMeta tag) const -> size_t {
+      const auto found = mTags.Find(tag);
+      return found ? found.GetVal().GetCount() : 0;
    }
 
-   /// A fast check whether traits of the given type and value are inside     
-   ///   @param trait - trait to search for                                   
-   ///   @return the number of matching traits                                
-   auto Thing::HasTraits(Tag const& trait) const -> size_t {
-      const auto found = mTraits.FindIt(trait.GetTag());
+   /// A fast check whether tags of the given type and value are inside       
+   ///   @param tag - tag to search for                                       
+   ///   @return the number of matching tags                                  
+   auto Thing::HasTags(Tag const& tag) const -> size_t {
+      const auto found = mTags.Find(tag.GetTag());
       if (not found)
          return 0;
 
       size_t counter = 0;
-      for (auto& trait : found.GetValue()) {
-         if (trait == trait)
+      for (auto& t : found.GetVal()) {
+         if (t == tag)
             ++counter;
       }
       return counter;
    }
    
-   /// Get traits                                                             
-   ///   @return the map of traits                                            
-   LANGULUS_API(THINGS)
-   auto Thing::GetTraits() const noexcept -> const TraitMap& {
-      return mTraits;
+   /// Get map of tags                                                        
+   auto Thing::GetTags() const noexcept -> TagMap const& {
+      return mTags;
    }
 
-   /// Add/overwrite entity's name trait                                      
-   ///   @param name - the name to set                                        
+   /// Add/overwrite entity's name tag                                        
+   ///   @param name the name to set                                          
    void Thing::SetName(Text const& name) {
-      auto found = GetLocalTag<Traits::Name>();
+      auto found = GetLocalTag<Tags::Name>();
       if (not found)
-         AddTrait(Traits::Name {name});
+         AddTag(Tags::Name {name});
       else
          *found = name;
    }
 
-   /// Get entity's name trait, if any                                        
-   /// It can reside in one of the units                                      
-   ///   @return the name, or empty string if no such trait was found here    
+   /// Get entity's name tag, if any. It may reside in one of the parts.      
+   ///   @return the name, or empty string if no such tag was found here      
    Text Thing::GetName() const {
       Text name;
-      SeekValue<Traits::Name, Seek::Here>(name);
+      SeekValue<Tags::Name, Seek::Here>(name);
       return name;
    }
-   
-} // namespace Langulus::Entry
+}

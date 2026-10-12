@@ -12,6 +12,7 @@
 #include <Langulus/Verbs/Create.hpp>
 #include <Langulus/Verbs/Select.hpp>
 #include <Langulus/TPin.hpp>
+#include <Langulus/TRef.hpp>
 #include <Langulus/Recipe.hpp>
 
 
@@ -25,9 +26,9 @@ namespace Langulus::Things
    ///                                                                        
    ///   Thing                                                                
    ///                                                                        
-   /// The primary composable type. Its functionality comes from its units    
-   /// and children/owner's units. The Thing is an aggregate of traits,       
-   /// units, and subthings.                                                  
+   /// The primary composable type. Its functionality comes from its parts    
+   /// and children/owner's parts. The Thing is an aggregate of tags,         
+   /// parts, and subthings.                                                  
    ///                                                                        
    struct Thing final : Resolvable, Referenced, SeekInterface {
       using CTTI_Named     = Yes<"Thing">;
@@ -89,10 +90,10 @@ namespace Langulus::Things
       bool RequiresRefresh() const noexcept;
 
       LANGULUS_API(THINGS)
-      auto GetRuntime() const noexcept -> const Pin<Ref<Runtime>>&;
+      auto GetRuntime() const noexcept -> Pin<Ref<Runtime>> const&;
 
       LANGULUS_API(THINGS)
-      auto GetFlow() const noexcept -> const Pin<Ref<Temporal>>&;
+      auto GetFlow() const noexcept -> Pin<Ref<Temporal>> const&;
 
       LANGULUS_API(THINGS) void Do(Verb&);
       LANGULUS_API(THINGS) void Select(Verb&);

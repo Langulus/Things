@@ -115,7 +115,7 @@ namespace Langulus::Things
 
       (void)MetaDataOf<A::FileSystem>();
       (void)MetaDataOf<A::File>();
-      (void)MetaDataOf<A::Folder>();
+      (void)MetaDataOf<Things::Folder>();
 
       (void)MetaDataOf<A::GraphicsModule>();
       (void)MetaDataOf<A::Graphics>();
@@ -125,8 +125,8 @@ namespace Langulus::Things
       (void)MetaDataOf<Things::Renderable>();
       (void)MetaDataOf<Things::Light>();
 
-      (void)MetaDataOf<A::AssetModule>();
-      (void)MetaDataOf<A::Asset>();
+      (void)MetaDataOf<Things::AssetModule>();
+      (void)MetaDataOf<Things::Asset>();
       (void)MetaDataOf<Things::Image>();
       (void)MetaDataOf<A::Font>();
       (void)MetaDataOf<A::Material>();
@@ -681,7 +681,7 @@ namespace Langulus::Things
    /// Get a folder interface, relying on external modules to find it         
    ///   @param path - the path for the folder                                
    ///   @return the folder interface, or nullptr if folder doesn't exist     
-   auto Runtime::GetFolder(const Path& path) -> Ref<A::Folder> {
+   auto Runtime::GetFolder(const Path& path) -> Ref<Things::Folder> {
       auto& fileSystems = GetModules<A::FileSystem>();
       LANGULUS_ASSERT(fileSystems, Module,
          "Can't retrieve folder `", path, "` - no file system module available");

@@ -15,7 +15,7 @@ namespace Langulus::A
    /// Retrieve the asset module's repository folder                          
    ///   @return a reference to the folder interface                          
    LANGULUS(INLINED)
-   auto AssetModule::GetFolder() const noexcept -> const Ref<A::Folder>& {
+   auto AssetModule::GetFolder() const noexcept -> const Ref<Things::Folder>& {
       return mFolder;
    }
 
@@ -36,7 +36,7 @@ namespace Langulus::A
    ///   @tparam T - the trait to search for                                  
    ///   @param index - the Nth data associated to the trait                  
    ///   @return a pointer to the data entry, or nullptr if none exists       
-   template<CT::TraitBased T> LANGULUS(INLINED)
+   template<CT::DefineTag T> LANGULUS(INLINED)
    auto Asset::GetData(size_t index) noexcept -> Data* {
       TMeta trait;
       if constexpr (CT::Tag<T>)
@@ -44,7 +44,7 @@ namespace Langulus::A
       return GetData(trait, index);
    }
 
-   template<CT::TraitBased T> LANGULUS(INLINED)
+   template<CT::DefineTag T> LANGULUS(INLINED)
    auto Asset::GetData(size_t index) const noexcept -> Data const* {
       return const_cast<Asset*>(this)->GetData<T>(index);
    }
@@ -72,7 +72,7 @@ namespace Langulus::A
    /// Get a data list from the contents                                      
    ///   @tparam T - the trait to search for                                  
    ///   @return a pointer to the data list, or nullptr if none exists        
-   template<CT::TraitBased T> LANGULUS(INLINED)
+   template<CT::DefineTag T> LANGULUS(INLINED)
    auto Asset::GetDataList() noexcept -> DataList* {
       TMeta trait;
       if constexpr (CT::Tag<T>)
@@ -80,7 +80,7 @@ namespace Langulus::A
       return GetDataList(trait);
    }
 
-   template<CT::TraitBased T> LANGULUS(INLINED)
+   template<CT::DefineTag T> LANGULUS(INLINED)
    auto Asset::GetDataList() const noexcept -> DataList const* {
       return const_cast<Asset*>(this)->GetDataList<T>();
    }
@@ -113,7 +113,7 @@ namespace Langulus::A
    ///         disparity and confusion in asset libraries. Still useful when  
    ///         you don't use factories, and just want some local content      
    ///         representation.                                                
-   template<CT::TraitBased T> LANGULUS(INLINED)
+   template<CT::DefineTag T> LANGULUS(INLINED)
    void Asset::Commit(auto&& content) {
       TMeta trait;
       if constexpr (CT::Tag<T>)

@@ -60,55 +60,6 @@ namespace Langulus::Things
       template<Seek = Seek::HereAndAbove, CT::Executable V>
       V& RunIn(V&);
 
-      ///                                                                     
-      ///   Seek                                                              
-      ///                                                                     
-      /*using SeekInterface::SeekPart;
-      using SeekInterface::SeekPartAux;
-      using SeekInterface::SeekPartExt;
-      using SeekInterface::SeekPartAuxExt;
-      using SeekInterface::SeekTag;
-      using SeekInterface::SeekTagAux;
-      using SeekInterface::SeekValue;
-      using SeekInterface::SeekValueAux;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPart(DMeta, Index = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartAux(Many const&, DMeta, Index = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartExt(DMeta, Many const&, Index = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartAuxExt(DMeta, Many const&, Many const&, Index = 0) -> Part*;
-
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTag(TMeta, Index = 0) -> Langulus::Tag;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTagAux(Many const&, TMeta, Index = 0) -> Langulus::Tag;
-
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValue(TMeta, CT::NotVoid auto&, Index = 0) const;
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(TMeta, Many const&, CT::NotVoid auto&, Index = 0) const;*/
-
-      ///                                                                     
-      ///   Gather                                                            
-      ///                                                                     
-      /*using SeekInterface::GatherParts;
-      using SeekInterface::GatherPartsExt;
-      using SeekInterface::GatherTags;
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherParts(DMeta) -> TMany<Part*>;
-      template<Seek = Seek::HereAndAbove>
-      auto GatherPartsExt(DMeta, Many const&) -> TMany<Part*>;
-
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTags(TMeta) -> TagList;
-
-      template<CT::NotVoid D, Seek = Seek::HereAndAbove>
-      auto GatherValues() const -> TMany<D>;*/
-
    protected:
       void Couple(Many const&, const Thing* = nullptr);
       void Decouple(const Thing*);

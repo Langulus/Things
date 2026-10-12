@@ -7,6 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Hierarchy.hpp>
+#include <Langulus/CT/Pinnable.hpp>
 
 
 namespace Langulus::Things
@@ -128,7 +129,7 @@ namespace Langulus::Things
          return result;
 
       // If reached, then no part was found in the descriptor.          
-      // Let's delve into the reak hierarchy.                           
+      // Let's delve into the real hierarchy.                           
       return self.template SeekPart<SEEK>(meta, offset);
    }
 
@@ -236,76 +237,314 @@ namespace Langulus::Things
       return self.template SeekPartAuxExt<SEEK>(MetaDataOf<Decay<T>>(), aux, ext, LglsFwd(offset));
    }
       
-   /// Find a trait by type and optional offset                               
-   ///   @tparam SEEK - the direction to seek in                              
-   ///   @param type - the type of unit to search for                         
-   ///   @param offset - the match to return                                  
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   template<Seek SEEK>
-   auto SeekInterface::SeekTag(TMeta type, CT::Index auto&& offset) const -> Tag {
-      return const_cast<THIS*>(static_cast<const THIS*>(this))->template SeekTag<SEEK>(type, offset);
+   /// Find a tag by type and optional offset                                 
+   ///   @tparam SEEK the direction to seek in                                
+   ///   @param meta the type of tag to search for                            
+   ///   @param offset the Nth match to return                                
+   ///   @return a shallow copy of the found tag                              
+   template<Seek SEEK, class SELF>
+   auto SeekInterface::SeekTag(this SELF&& self, TMeta meta, CT::Index auto&& offset) -> Tag {
+      if constexpr (CT::Part<SELF>) {
+         for (auto owner : self.mOwners) {
+            auto result = owner->template SeekTag<SEEK>(meta, offset);
+            if (result)
+               return result;
+         }
+      }
+      else {
+         if constexpr (SEEK & Seek::Here) {
+            // Seek here if requested                                   
+            auto output = self.GetTag(meta, offset);
+            if (output)
+               return Abandon(output);
+         }
+
+         if constexpr (SEEK & Seek::Above) {
+            // Seek in parents up to root, if requested                 
+            if (self.mOwner) {
+               auto output = self.mOwner->template SeekTag<Seek::HereAndAbove>(meta, offset);
+               if (output)
+                  return Abandon(output);
+            }
+         }
+
+         if constexpr (SEEK & Seek::Below) {
+            // Seek children, if requested                              
+            for (auto child : self.mChildren) {
+               auto output = child->template SeekTag<Seek::HereAndBelow>(meta, offset);
+               if (output)
+                  return Abandon(output);
+            }
+         }
+      }
+
+      return {};
    }
 
-   template<CT::Tag T, Seek SEEK>
-   auto SeekInterface::SeekTag(CT::Index auto&& offset) -> Tag {
-      return static_cast<THIS*>(this)->template SeekTag<SEEK>(MetaTraitOf<T>(), offset);
+   template<CT::DefineTag T, Seek SEEK, class SELF>
+   auto SeekInterface::SeekTag(this SELF&& self, CT::Index auto&& offset) -> Tag {
+      return self.template SeekTag<SEEK>(MetaTagOf<T>(), LglsFwd(offset));
    }
 
-   /// Find a trait by type and specific properties and optional offset       
-   ///   @tparam SEEK - the direction to seek in                              
-   ///   @param ext - the properties of the unit to search for                
-   ///   @param type - the type of trait to search for                        
-   ///   @param offset - the match to return                                  
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   template<Seek SEEK>
-   auto SeekInterface::SeekTagAux(Many const& aux, TMeta type, CT::Index auto&& offset) const -> Tag {
-      return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template SeekTagAux<SEEK>(aux, type, offset);
+   /// Find a tag by type and optional offset, starting from an auxiliary     
+   /// descriptor.                                                            
+   ///   @tparam SEEK the direction to seek in                                
+   ///   @param aux auxiliary descriptor to check first                       
+   ///   @param meta the type of tag to search for                            
+   ///   @param offset the Nth match to return                                
+   ///   @return a shallow copy of the found tag                              
+   template<Seek SEEK, class SELF>
+   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, TMeta meta, CT::Index auto&& offset) -> Tag {
+      // Scan descriptor                                                
+      Tag result;
+      aux.ForEachDeep([&](Tag const& tag) {
+         if (tag.IsTag(meta)) {
+            // Found match                                              
+            result = tag;
+            return Loop::Break;
+         }
+
+         // Just keep searching...                                      
+         return Loop::Continue;
+      });
+
+      if (result)
+         return Abandon(result);
+
+      // If reached, then no trait was found in the descriptor          
+      // Let's delve into the hierarchy                                 
+      return self.template SeekTag<SEEK>(meta, offset);
    }
 
-   template<CT::Tag T, Seek SEEK>
-   auto SeekInterface::SeekTagAux(Many const& aux, CT::Index auto&& offset) -> Tag {
-      return static_cast<THIS*>(this)
-         ->template SeekTagAux<SEEK>(aux, MetaTraitOf<T>(), offset);
+   template<CT::DefineTag T, Seek SEEK, class SELF>
+   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, CT::Index auto&& offset) -> Tag {
+      return self.template SeekTagAux<SEEK>(aux, MetaTagOf<T>(), offset);
    }
 
+   /// Find a tag by type (and index) from the hierarchy, and attempt         
+   /// converting it to a desired output type. Supports pinnable outputs.     
+   ///   @tparam SEEK direction to search at                                  
+   ///   @param meta the tag type to search for                               
+   ///   @param output [out] the output                                       
+   ///   @param offset the Nth matching tag to use                            
+   ///   @return true if output was rewritten                                 
+   template<Seek SEEK, class SELF>
+   bool SeekInterface::SeekValue(this SELF const& self, TMeta meta, auto& output, CT::Index auto&& offset) {
+      using D = Deref<decltype(output)>;
+      if constexpr (CT::Pinnable<D>) {
+         // Never touch pinned values                                   
+         if (output.mLocked)
+            return false;
+      }
 
+      if constexpr (CT::Part<SELF>) {
+         // Let's delve into the hierarchy                              
+         for (auto owner : self.mOwners) {
+            if (owner->template SeekValue<SEEK>(meta, output, offset)) {
+               // Value was found                                       
+               return true;
+            }
+         }
+      }
+      else {
+         if constexpr (SEEK & Seek::Here) {
+            // Seek here if requested                                   
+            auto temp = self.GetTag(meta, offset);
+            if (temp) {
+               try {
+                  if (CT::Pinnable<D> and temp.template Is<TypeOf<D>>())
+                     output = temp.template As<TypeOf<D>>();
+                  else if (not CT::Pinnable<D> and temp.template Is<D>())
+                     output = temp.template As<D>();
+                  else if constexpr (CT::DescribeConstructible<D>)
+                     output = D {Describe(static_cast<Many const&>(temp))};
+                  else if constexpr (CT::Pinnable<D>)
+                     output = temp.template AsCast<TypeOf<D>>();
+                  else
+                     output = temp.template AsCast<D>();
+                  return true;
+               }
+               catch (...) {}
+            }
+         }
 
-   template<CT::Tag T, Seek SEEK>
-   bool SeekInterface::SeekValue(CT::NotTagged auto& output, CT::Index auto&& offset) const {
-      return static_cast<const THIS*>(this)
-         ->template SeekValue<SEEK>(MetaTraitOf<T>(), output, offset);
+         if constexpr (SEEK & Seek::Above) {
+            // Seek in parents up to root, if requested                 
+            if (self.mOwner) {
+               if (self.mOwner->template SeekValue<Seek::HereAndAbove>(meta, output, offset))
+                  return true;
+            }
+         }
+
+         if constexpr (SEEK & Seek::Below) {
+            // Seek children, if requested                              
+            for (auto child : self.mChildren) {
+               if (child->template SeekValue<Seek::HereAndBelow>(meta, output, offset))
+                  return true;
+            }
+         }
+      }
+
+      // If reached, nothing was found                                  
+      return false;
    }
 
-   template<CT::Tag T, Seek SEEK>
-   bool SeekInterface::SeekValueAux(Many const& aux, CT::NotTagged auto& output, CT::Index auto&& offset) const {
-      return static_cast<const THIS*>(this)
-         ->template SeekValueAux<SEEK>(MetaTraitOf<T>(), aux, output, offset);
+   /// Same as above, but derives the tag we search from the output           
+   template<Seek SEEK, class SELF>
+   bool SeekInterface::SeekValue(this SELF const& self, CT::Tagged auto& output, CT::Index auto&& offset) {
+      using TAGS = TagsOf<decltype(output)>;
+      return ForEachOr(TAGS{}, [&]<class T>() {
+         return self.template SeekValue<SEEK>(MetaTagOf<T>(), output, offset);
+      });
+   }
+
+   /// Same as above, but you can specify tag manually at compile-time        
+   template<CT::DefineTag T, Seek SEEK, class SELF>
+   bool SeekInterface::SeekValue(this SELF const& self, CT::NotTagged auto& output, CT::Index auto&& offset) {
+      return self.template SeekValue<SEEK>(MetaTagOf<T>(), output, offset);
+   }
+
+   /// Find a tag by type (and index) from the hierarchy, and attempt         
+   /// converting it to a desired output type. Scan the aux container first.  
+   /// Supports pinnable outputs, and pinnables will be pinned only if tag was
+   /// found in the aux container.                                            
+   ///   @tparam SEEK direction to search at                                  
+   ///   @param aux descriptor to search through                              
+   ///   @param meta the tag type to search for                               
+   ///   @param output [out] the output                                       
+   ///   @param offset the Nth matching tag to use                            
+   ///   @return shallow copy of the tag if found                             
+   template<Seek SEEK, class SELF>
+   bool SeekInterface::SeekValueAux(this SELF const& self, TMeta meta, Many const& aux, auto& output, CT::Index auto&& offset) {
+      using D = Deref<decltype(output)>;
+      if constexpr (CT::Pinnable<D>) {
+         // Never touch pinned values                                   
+         if (output.mLocked)
+            return false;
+      }
+
+      // Scan descriptor                                                
+      bool done = false;
+      if constexpr (SEEK & Seek::Here) {
+         if (meta) {
+            aux.ForEachDeep([&](Tag const& tag) -> LoopControl {
+               if (tag.IsTag(meta)) {
+                  // Found match                                     
+                  try {
+                     if (CT::Pinnable<D> and tag.Is<TypeOf<D>>())
+                        output = tag.As<TypeOf<D>>();
+                     else if (not CT::Pinnable<D> and tag.Is<D>())
+                        output = tag.As<D>();
+                     else if constexpr (CT::DescribeConstructible<D>)
+                        output = D {Describe {tag.GetData()}};
+                     else if constexpr (CT::Pinnable<D>)
+                        output = tag.template AsCast<TypeOf<D>>();
+                     else
+                        output = tag.template AsCast<D>();
+
+                     // Didn't throw, but we're done only if offset  
+                     // matches                                      
+                     done = offset == 0;
+                     --offset;
+                     return not done;
+                  }
+                  catch (...) {}
+               }
+
+               return Loop::Continue;
+            });
+         }
+         else {
+            aux.ForEachDeep([&](Many const& group) -> LoopControl {
+               try {
+                  // Found match if these don't throw                
+                  if (CT::Pinnable<D> and group.Is<TypeOf<D>>())
+                     output = group.As<TypeOf<D>>();
+                  else if (not CT::Pinnable<D> and group.Is<D>())
+                     output = group.As<D>();
+                  else if constexpr (CT::DescribeConstructible<D>)
+                     output = D {Describe {group}};
+                  else if constexpr (CT::Pinnable<D>)
+                     output = group.template AsCast<TypeOf<D>>();
+                  else
+                     output = group.template AsCast<D>();
+
+                  // Didn't throw, but we're done only if offset     
+                  // matches                                         
+                  done = offset == 0;
+                  --offset;
+                  return not done;
+               }
+               catch (...) {}
+
+               return Loop::Continue;
+            });
+         }
+      }
+
+      // If reached, then no tag was found in the descriptor            
+      // Let's delve into the hierarchy, by scanning for Tags::Parent   
+      // and Tags::Child inside the 'aux'                               
+      if (not done) {
+         if constexpr (SEEK & Seek::Above) {
+            aux.ForEachDeep([&](const Tags::Parent& tag) -> LoopControl {
+               tag.ForEach([&](const Thing& parent) {
+                  if (parent.template SeekValue<Seek::HereAndAbove>(meta, output, offset)) {
+                     // Value was found                                    
+                     done = true;
+                     return Loop::Break;
+                  }
+                  return Loop::Continue;
+               });
+
+               return not done;
+            });
+         }
+
+         if constexpr (SEEK & Seek::Below) {
+            aux.ForEachDeep([&](const Tags::Child& tag) -> LoopControl {
+               tag.ForEach([&](const Thing& child) {
+                  if (child.template SeekValue<Seek::HereAndBelow>(meta, output, offset)) {
+                     // Value was found                                    
+                     done = true;
+                     return Loop::Break;
+                  }
+                  return Loop::Continue;
+               });
+
+               return not done;
+            });
+         }
+      }
+
+      if (done) {
+         // Tag was found in the descriptor, which means our            
+         // intent is to set it to a custom value - pin it, so it       
+         // doesn't get overwritten on update/refresh.                  
+         if constexpr (CT::Pinnable<D>)
+            output.mLocked = true;
+         return true;
+      }
+
+      // If reached, then no data was found in the descriptor           
+      // Let's delve into the hierarchy                                 
+      return self.template SeekValue<SEEK>(meta, output, offset);
    }
    
-
-
-   template<Seek SEEK>
-   bool SeekInterface::SeekValue(CT::Tagged auto& output, CT::Index auto&& offset) const {
-      using T = Deref<decltype(output)>;
-      auto lambda = [&]<class T>() {
-         return static_cast<const THIS*>(this)->template
-            SeekValue<SEEK>(MetaTraitOf<T>(), output.mData, offset);
-      };
-      return T::Tags::ForEachOr(lambda);
+   /// Same as above, but derives the tag we search from the output           
+   template<Seek SEEK, class SELF>
+   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::Tagged auto& output, CT::Index auto&& offset) {
+      using TAGS = TagsOf<decltype(output)>;
+      return ForEachOr(TAGS{}, [&]<class T>() {
+         return self.template SeekValueAux<SEEK>(MetaTagOf<T>(), aux, output, offset);
+      });
    }
 
-   template<Seek SEEK>
-   bool SeekInterface::SeekValueAux(Many const& aux, CT::Tagged auto& output, CT::Index auto&& offset) const {
-      using T = Deref<decltype(output)>;
-      auto lambda = [&]<class T>() {
-         return static_cast<const THIS*>(this)->template
-            SeekValueAux<SEEK>(MetaTraitOf<T>(), aux, output.mData, offset);
-      };
-      return T::Tags::ForEachOr(lambda);
+   /// Same as above, but you can specify tag manually at compile-time        
+   template<CT::DefineTag T, Seek SEEK, class SELF>
+   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::NotTagged auto& output, CT::Index auto&& offset) {
+      return self.template SeekValueAux<SEEK>(MetaTagOf<T>(), aux, output, offset);
    }
-   
-
 
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
       ///                                                                     
@@ -348,207 +587,4 @@ namespace Langulus::Things
             ->template SeekValueAux<SEEK>(RTTI::GetMetaTrait(traitToken), aux, output, offset);
       }
    #endif
-
-   
-   /// Find a trait by type (and index), searching into the hierarchy         
-   ///   @tparam SEEK - direction to search at                                
-   ///   @param meta - the trait to search for                                
-   ///   @param offset - the offset to apply                                  
-   ///   @return the trait, which is not empty, if trait was found            
-   template<Seek SEEK>
-   auto Hierarchy::SeekTag(TMeta meta, CT::Index auto&& offset) -> Tag {
-      for (auto owner : *this) {
-         auto result = owner->template SeekTag<SEEK>(meta, offset);
-         if (result)
-            return result;
-      }
-
-      return {};
-   }
-   
-   /// Find a trait, searching into the hierarchy (const)                     
-   ///   @tparam SEEK - direction to search at                                
-   ///   @param aux - descriptor to search through                            
-   ///   @param meta - the trait type to search for                           
-   ///   @param offset - the number of the matching trait to use              
-   ///   @return the trait, which is not empty, if trait was found            
-   template<Seek SEEK>
-   auto Hierarchy::SeekTagAux(Many const& aux, TMeta meta, CT::Index auto&& offset) -> Tag {
-      // Scan descriptor                                                
-      Tag result;
-      aux.ForEachDeep([&](Tag const& trait) {
-         if (trait.IsTrait(meta)) {
-            if (offset == 0) {
-               // Match found                                           
-               result = trait;
-               return Loop::Break;
-            }
-            
-            --offset;
-         }
-
-         return Loop::Continue;
-      });
-
-      if (result)
-         return Abandon(result);
-
-      // If reached, then no trait was found in the descriptor          
-      // Let's delve into the hierarchy                                 
-      return SeekTag<SEEK>(meta, offset);
-   }
-
-   /// Find a trait by type (and index) from the hierarchy, and attempt       
-   /// converting it to a desired output type                                 
-   /// Supports pinnable outputs                                              
-   ///   @tparam SEEK - direction to search at                                
-   ///   @param meta - the trait type to search for                           
-   ///   @param output - [out] the output                                     
-   ///   @param offset - the number of the matching trait to use              
-   ///   @return true if output was rewritten                                 
-   template<Seek SEEK>
-   bool Hierarchy::SeekValue(TMeta meta, CT::NotVoid auto& output, CT::Index auto&& offset) const {
-      using D = Deref<decltype(output)>;
-
-      if constexpr (CT::Pinnable<D>) {
-         // Never touch pinned values                                   
-         if (output.mLocked)
-            return false;
-      }
-
-      // Let's delve into the hierarchy                                 
-      for (auto owner : *this) {
-         if (owner->template SeekValue<SEEK>(meta, output, offset)) {
-            // Value was found                                          
-            return true;
-         }
-      }
-
-      // If reached, nothing was found                                  
-      return false;
-   }
-      
-   /// Find a trait by type (and index) from the hierarchy, and attempt       
-   /// converting it to a desired output type. Scan the aux container first   
-   /// Supports pinnable outputs, and pinnables will be pinned if trait was   
-   /// found in the aux container.                                            
-   ///   @tparam SEEK - direction to search at                                
-   ///   @param aux - descriptor to search through                            
-   ///   @param meta - the trait type to search for                           
-   ///   @param output - [out] the output                                     
-   ///   @param offset - the number of the matching trait to use              
-   ///   @return the trait, which is not empty, if trait was found            
-   template<Seek SEEK>
-   bool Hierarchy::SeekValueAux(TMeta meta, Many const& aux, CT::NotVoid auto& output, CT::Index auto&& offset) const {
-      using D = Deref<decltype(output)>;
-
-      if constexpr (CT::Pinnable<D>) {
-         // Never touch pinned values                                   
-         if (output.mLocked)
-            return false;
-      }
-
-      // Scan descriptor                                                
-      if constexpr (SEEK & Seek::Here) {
-         bool done = false;
-         if (meta) {
-            aux.ForEachDeep([&](Tag const& trait) -> LoopControl {
-               if (trait.IsTrait(meta)) {
-                  // Found match                                        
-                  try {
-                     if (CT::Pinnable<D> and trait.Is<TypeOf<D>>())
-                        output = trait.As<TypeOf<D>>();
-                     else if (not CT::Pinnable<D> and trait.Is<D>())
-                        output = trait.As<D>();
-                     else if constexpr (CT::DescriptorMakable<D>)
-                        output = D {Describe(static_cast<Many const&>(trait))};
-                     else if constexpr (CT::Pinnable<D>)
-                        output = trait.template AsCast<TypeOf<D>>();
-                     else
-                        output = trait.template AsCast<D>();
-
-                     // Didn't throw, but we're done only if offset     
-                     // matches                                         
-                     done = offset == 0;
-                     --offset;
-                     return not done;
-                  }
-                  catch (...) {}
-               }
-
-               return Loop::Continue;
-            });
-         }
-         else {
-            aux.ForEachDeep([&](Many const& group) -> LoopControl {
-               try {
-                  // Found match if these don't throw                   
-                  if (CT::Pinnable<D> and group.Is<TypeOf<D>>())
-                     output = group.As<TypeOf<D>>();
-                  else if (not CT::Pinnable<D> and group.Is<D>())
-                     output = group.As<D>();
-                  else if constexpr (CT::DescriptorMakable<D>)
-                     output = D {Describe(group)};
-                  else if constexpr (CT::Pinnable<D>)
-                     output = group.template AsCast<TypeOf<D>>();
-                  else
-                     output = group.template AsCast<D>();
-
-                  // Didn't throw, but we're done only if offset matches
-                  done = offset == 0;
-                  --offset;
-                  return not done;
-               }
-               catch (...) {}
-
-               return Loop::Continue;
-            });
-         }
-
-         if (done) {
-            // Tag was found in the descriptor, which means our intent
-            // is to set it to a custom value - pin it, so it doesn't   
-            // get overwritten on update/refresh                        
-            if constexpr (CT::Pinnable<D>)
-               output.mLocked = true;
-            return true;
-         }
-      }
-
-      // If reached, then no trait was found in the descriptor          
-      // Let's delve into the hierarchy, by scanning for Traits::Parent 
-      // and Traits::Child inside the 'aux'                             
-      bool done = false;
-      if constexpr (SEEK & Seek::Above) {
-         aux.ForEachDeep([&](const Traits::Parent& trait) -> LoopControl {
-            trait.ForEach([&](const Thing& parent) {
-               if (parent.SeekValue<Seek::HereAndAbove>(meta, output, offset)) {
-                  // Value was found                                    
-                  done = true;
-                  return Loop::Break;
-               }
-               return Loop::Continue;
-            });
-
-            return not done;
-         });
-      }
-
-      if constexpr (SEEK & Seek::Below) {
-         aux.ForEachDeep([&](const Traits::Child& trait) -> LoopControl {
-            trait.ForEach([&](const Thing& child) {
-               if (child.SeekValue<Seek::HereAndBelow>(meta, output, offset)) {
-                  // Value was found                                    
-                  done = true;
-                  return Loop::Break;
-               }
-               return Loop::Continue;
-            });
-
-            return not done;
-         });
-      }
-
-      return done;
-   }
 }

@@ -18,7 +18,7 @@ namespace Langulus::Things
    ///                                                                        
    struct AssetModule : virtual Module {
       using CTTI_Bases = Module;
-      AssetModule() : Resolvable {this}, Module {nullptr} {}
+      AssetModule() : /*Resolvable {this},*/ Module {nullptr} {}
 
    protected:
       // Data folder, where assets will be saved or loaded from         
@@ -28,50 +28,41 @@ namespace Langulus::Things
       // @attention never delete stuff from this call! Do it on         
       // Update() instead                                               
       virtual void RequestGarbageCollection() = 0;
-      auto GetFolder() const noexcept -> const Ref<A::Folder>&;
+      auto GetFolder() const noexcept -> Ref<Things::Folder> const&;
    };
 
 
    ///                                                                        
-   ///   Abstract asset unit                                                  
+   ///   Abstract asset part                                                  
    ///                                                                        
    struct Asset : virtual Part, virtual ProducedFrom<AssetModule> {
       using CTTI_Bases     = Part;
       using CTTI_Producer  = AssetModule;      
       using Data           = Many;
       using DataList       = TMany<Data>;
-      using DataListMap    = TUnorderedMap<TMeta, DataList>;
+      using TMeta          = RTTI::TMeta;
+      using DataListMap    = TMapUnsorted<TMeta, DataList>;
 
    protected:
       // Map of lists of generated data                                 
       DataListMap mDataListMap;
 
    public:
-      Asset() : Resolvable {this} {}
+      Asset() /*: Resolvable {this}*/ {}
 
       virtual bool Generate(TMeta, size_t = 0) { return true; }
 
-      template<CT::TraitBased = Langulus::Tag>
+      template<CT::DefineTag>
       void Commit(auto&&);
 
-      template<CT::TraitBased = Langulus::Tag>
-      auto GetData(size_t = 0)       noexcept -> Data*;
-      template<CT::TraitBased = Langulus::Tag>
-      auto GetData(size_t = 0) const noexcept -> Data const*;
+      template<CT::DefineTag>
+      auto* GetData(this auto&&, size_t = 0) noexcept;
+      auto* GetData(this auto&&, TMeta = {}, size_t = 0) noexcept;
 
-      auto GetData(TMeta, size_t = 0)       noexcept -> Data*;
-      auto GetData(TMeta, size_t = 0) const noexcept -> Data const*;
-
-      template<CT::TraitBased = Langulus::Tag>
-      auto GetDataList()       noexcept -> DataList*;
-      template<CT::TraitBased = Langulus::Tag>
-      auto GetDataList() const noexcept -> DataList const*;
-
-      auto GetDataList(TMeta)       noexcept -> DataList*;
-      auto GetDataList(TMeta) const noexcept -> DataList const*;
-
-      auto GetDataListMap()       noexcept -> DataListMap&;
-      auto GetDataListMap() const noexcept -> DataListMap const&;
+      template<CT::DefineTag>
+      auto* GetDataList(this auto&&) noexcept;
+      auto* GetDataList(this auto&&, TMeta = {}) noexcept;
+      auto& GetDataListMap(this auto&&) noexcept;
    };
 }
 
@@ -79,7 +70,7 @@ namespace Langulus::CT
 {
    /// A concept for any kind of asset                                        
    template<class T>
-   concept Asset = DerivedFrom<T, A::Asset>;
+   concept Asset = DerivedFrom<T, Things::Asset>;
 }
 
 #include "Asset.inl"

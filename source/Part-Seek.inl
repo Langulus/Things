@@ -12,50 +12,6 @@
 
 namespace Langulus
 {
-   /// Find a specific unit, searching into the hierarchy                     
-   ///   @tparam SEEK - where in the hierarchy are we seeking in?             
-   ///   @param meta - the unit to seek for                                   
-   ///   @param offset - which of the matches to return                       
-   ///   @return the found unit, or nullptr if no such unit was found         
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Part::SeekPart(DMeta meta, Index offset) -> Part* {
-      return mOwners.template SeekPart<SEEK>(meta, offset);
-   }
-
-   /// Find a unit by type and index from the hierarchy                       
-   ///   @tparam SEEK - where to seek for the unit                            
-   ///   @param aux - descriptor to search through                            
-   ///   @param meta - the type of the unit to seek for                       
-   ///   @param offset - the index of the unit to return                      
-   ///   @return the unit if found, or nullptr otherwise                      
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Part::SeekPartAux(Many const& aux, DMeta meta, Index offset) -> Part* {
-      return mOwners.template SeekPartAux<SEEK>(aux, meta, offset);
-   }
-      
-   /// Seek a unit with specific properties                                   
-   ///   @tparam SEEK - where to seek for the unit                            
-   ///   @param type - the type of the unit to seek for                       
-   ///   @param ext - the properties of the unit to seek for                  
-   ///   @param offset - the index of the unit to return                      
-   ///   @return the unit if found, or nullptr otherwise                      
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Part::SeekPartExt(DMeta type, Many const& ext, Index offset) -> Part* {
-      return mOwners.template SeekPartExt<SEEK>(type, ext, offset);
-   }
-
-   /// Seek a unit with specific properties                                   
-   /// Scan an auxiliary descriptor first                                     
-   ///   @tparam SEEK - the direction in which we're scanning the hierarchy   
-   ///   @param type - the type of the unit to seek for                       
-   ///   @param aux - local descriptor to seek through first                  
-   ///   @param ext - the unit properties to seek for                         
-   ///   @param offset - the index of the unit to return                      
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Part::SeekPartAuxExt(DMeta type, Many const& aux, Many const& ext, Index offset) -> Part* {
-      return mOwners.template SeekPartAuxExt<SEEK>(type, aux, ext, offset);
-   }
 
    /// Find a trait by type (and index), searching into the hierarchy         
    ///   @tparam SEEK - direction to search at                                

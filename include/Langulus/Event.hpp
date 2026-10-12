@@ -132,11 +132,12 @@ namespace Langulus
    ///   Events are often used as arguments for Verbs::Interact.              
    ///                                                                        
    struct Event : Annies::Inner::EventBase {
-      using CTTI_Event  = Yup;
-      using CTTI_Deep   = No;
-      using Base        = Annies::Inner::EventBase;
-      using DeepType    = Many;
-      using DMeta       = RTTI::DMeta;
+      using CTTI_ReflectAs = Event;
+      using CTTI_Event     = Yup;
+      using CTTI_Deep      = No;
+      using Base           = Annies::Inner::EventBase;
+      using DeepType       = Many;
+      using DMeta          = RTTI::DMeta;
 
       constexpr Event() noexcept {
          this->ConstructDefault();
@@ -154,6 +155,7 @@ namespace Langulus
          LglsAssert(describe.ExtractData(*Stack<DMeta, 1>::Get()), "Invalid event");
          describe.ExtractData(*Stack<EventState, 2>::Get());
          describe.ExtractTag<Tags::Data>(*this);
+         SetTimestamp(SteadyClock::Now());
       }
 
       constexpr ~Event() noexcept {
@@ -252,17 +254,17 @@ namespace Langulus
       }
       
       /// Assignment                                                          
-      constexpr Event& operator = (Many const& other) {
+      constexpr Event& operator = (Event const& other) {
          return this->AssignAbsorb(Refer(other));
       }
-      constexpr Event& operator = (Many&& other) noexcept {
+      constexpr Event& operator = (Event&& other) noexcept {
          return this->AssignAbsorb(Move(other));
       }
       
       template<class A>
       constexpr Event& operator = (A&& argument) {
          if constexpr (CT::DeepDense<Deint<A>> or CT::Event<A>) {
-            LglsAssumeUser(Same<Deint<A>, Event>,
+            LglsAssumeUser(CT::Event<A>,
                "Ambiguous use of assignment "
                "- you should use either AssignAbsorb (if you want to overwrite "
                "the container itself) or Assign (if you want to overwrite the "

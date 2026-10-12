@@ -6,112 +6,234 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include <Langulus/Thing.hpp>
-#include <Langulus/Part.hpp>
-
-#define TEMPLATE()   template<class THIS>
-#define TME()        SeekInterface<THIS>
+#include <Langulus/Hierarchy.hpp>
 
 
 namespace Langulus::Things
 {
+   /// Find a part by type and optional offset                                
+   ///   @tparam SEEK the direction to seek in                                
+   ///   @param meta the type of part to search for                           
+   ///   @param offset the Nth match to return                                
+   ///   @return a pointer to the found part, or nullptr if not found         
+   template<Seek SEEK, class SELF>
+   auto SeekInterface::SeekPart(this SELF&& self, DMeta meta, CT::Index auto&& offset)
+   -> Tmut<SELF, Part*, Part const*> {
+      Tmut<SELF, Part*, Part const*> result;
 
-   /// Find a unit by type and optional offset                                
-   ///   @tparam SEEK - the direction to seek in                              
-   ///   @param type - the type of unit to search for                         
-   ///   @param offset - the match to return                                  
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPart(DMeta type, Index offset) const -> Part const* {
-      return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template SeekPart<SEEK>(type, offset);
+      if constexpr (CT::Part<SELF>) {
+         for (auto owner : self.mOwners) {
+            result = owner->template SeekPart<SEEK>(meta, offset);
+            if (result)
+               return result;
+         }
+      }
+      else {
+         result = nullptr;
+         if constexpr (SEEK & Seek::Here) {
+            // Seek here if requested                                   
+            result = self.GetPartMeta(meta, offset);
+            if (result)
+               return result;
+         }
+
+         if constexpr (SEEK & Seek::Above) {
+            // Seek in parents up to root, if requested                 
+            if (self.mOwner) {
+               result = self.mOwner->template SeekPart<Seek::HereAndAbove>(meta, offset);
+               if (result)
+                  return result;
+            }
+         }
+
+         if constexpr (SEEK & Seek::Below) {
+            // Seek children, if requested                              
+            for (auto child : self.mChildren) {
+               result = child->template SeekPart<Seek::HereAndBelow>(meta, offset);
+               if (result)
+                  return result;
+            }
+         }
+      }
+      return nullptr;
    }
 
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPart(Index offset) -> Decay<T>* {
-      return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
-         ->template SeekPart<SEEK>(MetaDataOf<Decay<T>>(), offset));
+   template<CT::Part T, Seek SEEK, class SELF>
+   auto SeekInterface::SeekPart(this SELF&& self, CT::Index auto&& offset)
+   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
+      return self.template SeekPart<SEEK>(MetaDataOf<Decay<T>>(), LglsFwd(offset));
    }
 
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPart(Index offset) const -> const Decay<T>* {
-      return const_cast<TME()*>(this)
-         ->template SeekPart<T, SEEK>(offset);
+   /// Find part by type and optional offset, but search first in an          
+   /// auxiliary descriptor. Cease search if found there.                     
+   ///   @tparam SEEK the direction to seek in                                
+   ///   @param aux the auxiliary descriptor to scan first                    
+   ///   @param meta the type of part to search for                           
+   ///   @param offset the Nth match to return                                
+   ///   @return a pointer to the found part, or nullptr if not found         
+   template<Seek SEEK, class SELF>
+   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, DMeta meta, CT::Index auto&& offset) 
+   -> Tmut<SELF, Part*, Part const*> {
+      Tmut<SELF, Part*, Part const*> result = nullptr;
+
+      // Scan descriptor even if hierarchy is empty                     
+      if constexpr (SEEK & Seek::Here) {
+         aux.ForEachDeep([&](Part const* part) {
+            if (part->GetResolved().CastsTo(meta)) {
+               // Found match                                           
+               if (offset == 0) {
+                  // We're done                                         
+                  result = part;
+                  return Loop::Break;
+               }
+               else --offset;
+            }
+
+            return Loop::Continue;
+         });
+
+         if (result)
+            return result;
+      }
+      
+      // If reached, then no part was found in the descriptor.          
+      // Let's delve into the aux hierarchy, by scanning for            
+      // Tags::Parent and Tags::Child inside the 'aux'.                 
+      // 'aux' acts like a mini world for us.                           
+      if constexpr (SEEK & Seek::Above) {
+         aux.ForEachDeep([&](const Tags::Parent& tag) -> LoopControl {
+            tag.ForEach([&](const Thing& parent) {
+               if (nullptr != (result = parent.SeekPart<Seek::HereAndAbove>(meta, offset)))
+                  // Value was found                                    
+                  return Loop::Break;
+               return Loop::Continue;
+            });
+            return result == nullptr;
+         });
+      }
+
+      if constexpr (SEEK & Seek::Below) {
+         aux.ForEachDeep([&](const Tags::Child& tag) -> LoopControl {
+            tag.ForEach([&](const Thing& child) {
+               if (nullptr != (result = child.SeekPart<Seek::HereAndBelow>(meta, offset)))
+                  // Value was found                                    
+                  return Loop::Break;
+               return Loop::Continue;
+            });
+            return result == nullptr;
+         });
+      }
+
+      if (result)
+         return result;
+
+      // If reached, then no part was found in the descriptor.          
+      // Let's delve into the reak hierarchy.                           
+      return self.template SeekPart<SEEK>(meta, offset);
    }
 
-   /// Find a unit by type and optional offset, but search first in an        
-   /// auxiliary descriptor                                                   
-   ///   @tparam SEEK - the direction to seek in                              
-   ///   @param aux - the auxiliary descriptor to scan first                  
-   ///   @param type - the type of unit to search for                         
-   ///   @param offset - the match to return                                  
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartAux(Many const& aux, DMeta type, Index offset) const -> Part const* {
-      return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template SeekPartAux<SEEK>(aux, type, offset);
-   }
-
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartAux(Many const& aux, Index offset) -> Decay<T>* {
-      return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
-         ->template SeekPartAux<SEEK>(aux, MetaDataOf<Decay<T>>(), offset));
-   }
-
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartAux(Many const& aux, Index offset) const -> const Decay<T>* {
-      return const_cast<TME()*>(this)
-         ->template SeekPartAux<T, SEEK>(aux, offset);
+   template<CT::Part T, Seek SEEK, class SELF>
+   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, CT::Index auto&& offset)
+   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
+      return self.template SeekPartAux<SEEK>(aux, MetaDataOf<Decay<T>>(), LglsFwd(offset));
    }
       
-   /// Find a unit by type and specific properties and optional offset        
-   ///   @tparam SEEK - the direction to seek in                              
-   ///   @param type - the type of unit to search for                         
-   ///   @param ext - the properties of the unit to search for                
-   ///   @param offset - the match to return                                  
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartExt(DMeta type, Many const& ext, Index offset) const -> Part const* {
-      return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template SeekPartExt<SEEK>(type, ext, offset);
+   /// Find part by type and specific properties and optional offset          
+   ///   @tparam SEEK the direction to seek in                                
+   ///   @param meta the type of part to search for                           
+   ///   @param ext the properties of the part to search for                  
+   ///   @param offset the Nth match to return                                
+   ///   @return a pointer to the found part, or nullptr if not found         
+   template<Seek SEEK, class SELF>
+   auto SeekInterface::SeekPartExt(this SELF&& self, DMeta meta, Many const& ext, CT::Index auto&& offset)
+   -> Tmut<SELF, Part*, Part const*> {
+      Tmut<SELF, Part*, Part const*> result;
+
+      if constexpr (CT::Part<SELF>) {
+         for (auto owner : self.mOwners) {
+            result = owner->template SeekPartExt<SEEK>(meta, ext, offset);
+            if (result)
+               return result;
+         }
+      }
+      else {
+         result = nullptr;
+         if constexpr (SEEK & Seek::Here) {
+            // Seek here if requested                                   
+            result = self.GetPartExt(meta, ext, offset);
+            if (result)
+               return result;
+         }
+
+         if constexpr (SEEK & Seek::Above) {
+            // Seek in parents up to root, if requested                 
+            if (self.mOwner) {
+               result = self.mOwner->template SeekPartExt<Seek::HereAndAbove>(meta, ext, offset);
+               if (result)
+                  return result;
+            }
+         }
+
+         if constexpr (SEEK & Seek::Below) {
+            // Seek children, if requested                              
+            for (auto child : self.mChildren) {
+               result = child->template SeekPartExt<Seek::HereAndBelow>(meta, ext, offset);
+               if (result)
+                  return result;
+            }
+         }
+      }
+
+      return nullptr;
    }
 
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartExt(Many const& ext, Index offset) -> Decay<T>* {
-      return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
-         ->template SeekPartExt<SEEK>(MetaDataOf<Decay<T>>(), ext, offset));
+   template<CT::Part T, Seek SEEK, class SELF>
+   auto SeekInterface::SeekPartExt(this SELF&& self, Many const& ext, CT::Index auto&& offset)
+   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
+      return self.template SeekPartExt<SEEK>(MetaDataOf<Decay<T>>(), ext, LglsFwd(offset));
    }
 
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartExt(Many const& ext, Index offset) const -> const Decay<T>* {
-      return const_cast<TME()*>(this)
-         ->template SeekPartExt<T, SEEK>(ext, offset);
-   }
-
-   /// Find a unit by type, specific properties, and optional offset, but     
+   /// Find part by type, specific properties, and optional offset, but       
    /// search first in an auxiliary descriptor                                
-   ///   @tparam SEEK - the direction to seek in                              
-   ///   @param aux - the auxiliary descriptor to scan first                  
-   ///   @param type - the type of unit to search for                         
-   ///   @param ext - the properties of the unit to search for                
-   ///   @param offset - the match to return                                  
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartAuxExt(DMeta type, Many const& aux, Many const& ext, Index offset) const -> Part const* {
-      return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template SeekPartAuxExt<SEEK>(type, aux, ext, offset);
+   ///   @tparam SEEK the direction to seek in                                
+   ///   @param aux the auxiliary descriptor to scan first                    
+   ///   @param meta the type of part to search for                           
+   ///   @param ext the properties of the part to search for                  
+   ///   @param offset the Nth match to return                                
+   ///   @return a pointer to the found part, or nullptr if not found         
+   template<Seek SEEK, class SELF>
+   auto SeekInterface::SeekPartAuxExt(this SELF&& self, DMeta meta, Many const& aux, Many const& ext, CT::Index auto&& offset)
+   -> Tmut<SELF, Part*, Part const*> {
+      Tmut<SELF, Part*, Part const*> result = nullptr;
+
+      // Scan descriptor even if hierarchy is empty                     
+      aux.ForEachDeep([&](Part const* u) {
+         if (u->GetResolved().CastsTo(meta)) {
+            //TODO check construct arguments
+            // Found match                                              
+            if (offset == 0) {
+               // We're done                                            
+               result = u;
+               return Loop::Break;
+            }
+            else --offset;
+         }
+
+         return Loop::Continue;
+      });
+
+      if (result)
+         return result;
+
+      // If reached, then no unit was found in the descriptor           
+      // Let's delve into the hierarchy                                 
+      return self.template SeekPartExt<SEEK>(meta, ext, offset);
    }
 
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartAuxExt(Many const& aux, Many const& ext, Index offset) -> Decay<T>* {
-      return dynamic_cast<Decay<T>*>(static_cast<THIS*>(this)
-         ->template SeekPartAuxExt<SEEK>(MetaDataOf<Decay<T>>(), aux, ext, offset));
-   }
-
-   TEMPLATE() template<CT::NotVoid T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekPartAuxExt(Many const& aux, Many const& ext, Index offset) const -> const Decay<T>* {
-      return const_cast<TME()*>(this)
-         ->template SeekPartAuxExt<T, SEEK>(aux, ext, offset);
+   template<CT::Part T, Seek SEEK, class SELF>
+   auto SeekInterface::SeekPartAuxExt(this SELF&& self, Many const& aux, Many const& ext, CT::Index auto&& offset)
+   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
+      return self.template SeekPartAuxExt<SEEK>(MetaDataOf<Decay<T>>(), aux, ext, LglsFwd(offset));
    }
       
    /// Find a trait by type and optional offset                               
@@ -119,22 +241,14 @@ namespace Langulus::Things
    ///   @param type - the type of unit to search for                         
    ///   @param offset - the match to return                                  
    ///   @return a pointer to the found unit, or nullptr if not found         
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekTag(TMeta type, Index offset) const -> Tag {
-      return const_cast<THIS*>(static_cast<const THIS*>(this))
-         ->template SeekTag<SEEK>(type, offset);
+   template<Seek SEEK>
+   auto SeekInterface::SeekTag(TMeta type, CT::Index auto&& offset) const -> Tag {
+      return const_cast<THIS*>(static_cast<const THIS*>(this))->template SeekTag<SEEK>(type, offset);
    }
 
-   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekTag(Index offset) -> Tag {
-      return static_cast<THIS*>(this)
-         ->template SeekTag<SEEK>(MetaTraitOf<T>(), offset);
-   }
-
-   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekTag(Index offset) const -> Tag {
-      return const_cast<TME()*>(this)
-         ->template SeekTag<T, SEEK>(offset);
+   template<CT::Tag T, Seek SEEK>
+   auto SeekInterface::SeekTag(CT::Index auto&& offset) -> Tag {
+      return static_cast<THIS*>(this)->template SeekTag<SEEK>(MetaTraitOf<T>(), offset);
    }
 
    /// Find a trait by type and specific properties and optional offset       
@@ -143,42 +257,36 @@ namespace Langulus::Things
    ///   @param type - the type of trait to search for                        
    ///   @param offset - the match to return                                  
    ///   @return a pointer to the found unit, or nullptr if not found         
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekTagAux(Many const& aux, TMeta type, Index offset) const -> Tag {
+   template<Seek SEEK>
+   auto SeekInterface::SeekTagAux(Many const& aux, TMeta type, CT::Index auto&& offset) const -> Tag {
       return const_cast<THIS*>(static_cast<const THIS*>(this))
          ->template SeekTagAux<SEEK>(aux, type, offset);
    }
 
-   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekTagAux(Many const& aux, Index offset) -> Tag {
+   template<CT::Tag T, Seek SEEK>
+   auto SeekInterface::SeekTagAux(Many const& aux, CT::Index auto&& offset) -> Tag {
       return static_cast<THIS*>(this)
          ->template SeekTagAux<SEEK>(aux, MetaTraitOf<T>(), offset);
    }
 
-   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
-   auto TME()::SeekTagAux(Many const& aux, Index offset) const -> Tag {
-      return const_cast<TME()*>(this)
-         ->template SeekTagAux<T, SEEK>(aux, offset);
-   }
 
 
-
-   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
-   bool TME()::SeekValue(CT::NotTagged auto& output, Index offset) const {
+   template<CT::Tag T, Seek SEEK>
+   bool SeekInterface::SeekValue(CT::NotTagged auto& output, CT::Index auto&& offset) const {
       return static_cast<const THIS*>(this)
          ->template SeekValue<SEEK>(MetaTraitOf<T>(), output, offset);
    }
 
-   TEMPLATE() template<CT::Tag T, Seek SEEK> LANGULUS(INLINED)
-   bool TME()::SeekValueAux(Many const& aux, CT::NotTagged auto& output, Index offset) const {
+   template<CT::Tag T, Seek SEEK>
+   bool SeekInterface::SeekValueAux(Many const& aux, CT::NotTagged auto& output, CT::Index auto&& offset) const {
       return static_cast<const THIS*>(this)
          ->template SeekValueAux<SEEK>(MetaTraitOf<T>(), aux, output, offset);
    }
    
 
 
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   bool TME()::SeekValue(CT::Tagged auto& output, Index offset) const {
+   template<Seek SEEK>
+   bool SeekInterface::SeekValue(CT::Tagged auto& output, CT::Index auto&& offset) const {
       using T = Deref<decltype(output)>;
       auto lambda = [&]<class T>() {
          return static_cast<const THIS*>(this)->template
@@ -187,8 +295,8 @@ namespace Langulus::Things
       return T::Tags::ForEachOr(lambda);
    }
 
-   TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-   bool TME()::SeekValueAux(Many const& aux, CT::Tagged auto& output, Index offset) const {
+   template<Seek SEEK>
+   bool SeekInterface::SeekValueAux(Many const& aux, CT::Tagged auto& output, CT::Index auto&& offset) const {
       using T = Deref<decltype(output)>;
       auto lambda = [&]<class T>() {
          return static_cast<const THIS*>(this)->template
@@ -204,206 +312,51 @@ namespace Langulus::Things
       /// Token based interface                                               
       /// Available only when managed reflection is enabled                   
       ///                                                                     
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      auto TME()::SeekPart(Token const& dataToken, Index offset) -> Part* {
+      template<Seek SEEK>
+      auto SeekInterface::SeekPart(Token const& dataToken, CT::Index auto&& offset) -> Part* {
          return static_cast<THIS*>(this)
             ->template SeekPart<SEEK>(RTTI::GetMetaData(dataToken), offset);
       }
 
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      auto TME()::SeekPart(Token const& dataToken, Index offset) const -> Part const* {
-         return static_cast<THIS*>(this)
-            ->template SeekPart<SEEK>(RTTI::GetMetaData(dataToken), offset);
-      }
-
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      auto TME()::SeekPartAux(Many const& aux, Token const& dataToken, Index offset) -> Part* {
-         return static_cast<THIS*>(this)
-            ->template SeekPartAux<SEEK>(aux, RTTI::GetMetaData(dataToken), offset);
-      }
-
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      auto TME()::SeekPartAux(Many const& aux, Token const& dataToken, Index offset) const -> Part const* {
+      template<Seek SEEK>
+      auto SeekInterface::SeekPartAux(Many const& aux, Token const& dataToken, CT::Index auto&& offset) -> Part* {
          return static_cast<THIS*>(this)
             ->template SeekPartAux<SEEK>(aux, RTTI::GetMetaData(dataToken), offset);
       }
       
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      auto TME()::SeekTag(Token const& traitToken, Index offset) -> Tag {
+      template<Seek SEEK>
+      auto SeekInterface::SeekTag(Token const& traitToken, CT::Index auto&& offset) -> Tag {
          return static_cast<THIS*>(this)
             ->template SeekTag<SEEK>(RTTI::GetMetaTrait(traitToken), offset);
       }
 
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      auto TME()::SeekTag(Token const& traitToken, Index offset) const -> Tag {
-         return static_cast<THIS*>(this)
-            ->template SeekTag<SEEK>(RTTI::GetMetaTrait(traitToken), offset);
-      }
-
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      auto TME()::SeekTagAux(Many const& aux, Token const& traitToken, Index offset) const -> Tag {
+      template<Seek SEEK>
+      auto SeekInterface::SeekTagAux(Many const& aux, Token const& traitToken, CT::Index auto&& offset) const -> Tag {
          return static_cast<THIS*>(this)
             ->template SeekTagAux<SEEK>(aux, RTTI::GetMetaTrait(traitToken), offset);
       }
 
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      bool TME()::SeekValue(Token const& traitToken, CT::NotVoid auto& output, Index offset) const {
+      template<Seek SEEK>
+      bool SeekInterface::SeekValue(Token const& traitToken, CT::NotVoid auto& output, CT::Index auto&& offset) const {
          return static_cast<THIS*>(this)
             ->template SeekValue<SEEK>(RTTI::GetMetaTrait(traitToken), output, offset);
       }
      
-      TEMPLATE() template<Seek SEEK> LANGULUS(INLINED)
-      bool TME()::SeekValueAux(Token const& traitToken, Many const& aux, CT::NotVoid auto& output, Index offset) const {
+      template<Seek SEEK>
+      bool SeekInterface::SeekValueAux(Token const& traitToken, Many const& aux, CT::NotVoid auto& output, CT::Index auto&& offset) const {
          return static_cast<THIS*>(this)
             ->template SeekValueAux<SEEK>(RTTI::GetMetaTrait(traitToken), aux, output, offset);
       }
    #endif
 
-} // namespace Langulus::Things
-
-#undef TEMPLATE
-#undef TME
-
-
-namespace Langulus::Things
-{
-
-   /// Find a specific unit, searching into the hierarchy                     
-   ///   @tparam SEEK - where in the hierarchy are we seeking in?             
-   ///   @param meta - the unit to seek for                                   
-   ///   @param offset - which of the matches to return                       
-   ///   @return the found unit, or nullptr if no such unit was found         
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Hierarchy::SeekPart(DMeta meta, Index offset) -> Part* {
-      for (auto owner : *this) {
-         Part* result = owner->template SeekPart<SEEK>(meta, offset);
-         if (result)
-            return result;
-      }
-
-      return nullptr;
-   }
-
-   /// Find a unit by type and index from the hierarchy                       
-   /// Scan a locally provided descriptor first                               
-   ///   @tparam SEEK - where to seek for the unit                            
-   ///   @param aux - descriptor to search through                            
-   ///   @param meta - the type of the unit to seek for                       
-   ///   @param offset - the index of the unit to return                      
-   ///   @return the unit if found, or nullptr otherwise                      
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Hierarchy::SeekPartAux(Many const& aux, DMeta meta, Index offset) -> Part* {
-      Part const* result = nullptr;
-
-      // Scan descriptor even if hierarchy is empty                     
-      if constexpr (SEEK & Seek::Here) {
-         aux.ForEachDeep([&](Part const* unit) {
-            if (unit->CastsTo(meta)) {
-               // Found match                                           
-               if (offset == 0) {
-                  // We're done                                         
-                  result = unit;
-                  return Loop::Break;
-               }
-               else --offset;
-            }
-
-            return Loop::Continue;
-         });
-
-         if (result)
-            return const_cast<Part*>(result);
-      }
-      
-      // If reached, then no unit was found in the descriptor           
-      // Let's delve into the hierarchy, by scanning for Traits::Parent 
-      // and Traits::Child inside the 'aux'                             
-      if constexpr (SEEK & Seek::Above) {
-         aux.ForEachDeep([&](const Traits::Parent& trait) -> LoopControl {
-            trait.ForEach([&](const Thing& parent) {
-               if (nullptr != (result = parent.SeekPart<Seek::HereAndAbove>(meta, offset)))
-                  // Value was found                                    
-                  return Loop::Break;
-               return Loop::Continue;
-            });
-            return result == nullptr;
-         });
-      }
-
-      if constexpr (SEEK & Seek::Below) {
-         aux.ForEachDeep([&](const Traits::Child& trait) -> LoopControl {
-            trait.ForEach([&](const Thing& child) {
-               if (nullptr != (result = child.SeekPart<Seek::HereAndBelow>(meta, offset)))
-                  // Value was found                                    
-                  return Loop::Break;
-               return Loop::Continue;
-            });
-            return result == nullptr;
-         });
-      }
-
-      return const_cast<Part*>(result);
-   }
-
-   /// Seek a unit with specific properties                                   
-   ///   @tparam SEEK - where to seek for the unit                            
-   ///   @param type - type of unit to search for                             
-   ///   @param ext - the properties of the unit to seek for                  
-   ///   @param offset - the index of the unit to return                      
-   ///   @return the unit if found, or nullptr otherwise                      
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Hierarchy::SeekPartExt(DMeta type, Many const& ext, Index offset) -> Part* {
-      for (auto owner : *this) {
-         Part* result = owner->template SeekPartExt<SEEK>(type, ext, offset);
-         if (result)
-            return result;
-      }
-
-      return nullptr;
-   }
-
-   /// Seek a unit with specific properties                                   
-   /// Scan a locally provided descriptor first                               
-   ///   @tparam SEEK - the direction in which we're scanning the hierarchy   
-   ///   @param type - type of unit to search for                             
-   ///   @param aux - local descriptor to seek through first                  
-   ///   @param ext - the unit properties to seek for                         
-   ///   @param offset - the index of the unit to return                      
-   ///   @return a pointer to the found unit, or nullptr if not found         
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Hierarchy::SeekPartAuxExt(DMeta type, Many const& aux, Many const& ext, Index offset) -> Part* {
-      // Scan descriptor even if hierarchy is empty                     
-      Part* result = nullptr;
-      aux.ForEachDeep([&](Part const* u) {
-         if (u->CastsTo(type)) {
-            //TODO check construct arguments
-            // Found match                                              
-            if (offset == 0) {
-               // We're done                                            
-               result = const_cast<Part*>(u);
-               return Loop::Break;
-            }
-            else --offset;
-         }
-
-         return Loop::Continue;
-      });
-
-      if (result)
-         return result;
-
-      // If reached, then no unit was found in the descriptor           
-      // Let's delve into the hierarchy                                 
-      return SeekPartExt<SEEK>(type, ext, offset);
-   }
    
    /// Find a trait by type (and index), searching into the hierarchy         
    ///   @tparam SEEK - direction to search at                                
    ///   @param meta - the trait to search for                                
    ///   @param offset - the offset to apply                                  
    ///   @return the trait, which is not empty, if trait was found            
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Hierarchy::SeekTag(TMeta meta, Index offset) -> Tag {
+   template<Seek SEEK>
+   auto Hierarchy::SeekTag(TMeta meta, CT::Index auto&& offset) -> Tag {
       for (auto owner : *this) {
          auto result = owner->template SeekTag<SEEK>(meta, offset);
          if (result)
@@ -419,8 +372,8 @@ namespace Langulus::Things
    ///   @param meta - the trait type to search for                           
    ///   @param offset - the number of the matching trait to use              
    ///   @return the trait, which is not empty, if trait was found            
-   template<Seek SEEK> LANGULUS(INLINED)
-   auto Hierarchy::SeekTagAux(Many const& aux, TMeta meta, Index offset) -> Tag {
+   template<Seek SEEK>
+   auto Hierarchy::SeekTagAux(Many const& aux, TMeta meta, CT::Index auto&& offset) -> Tag {
       // Scan descriptor                                                
       Tag result;
       aux.ForEachDeep([&](Tag const& trait) {
@@ -453,8 +406,8 @@ namespace Langulus::Things
    ///   @param output - [out] the output                                     
    ///   @param offset - the number of the matching trait to use              
    ///   @return true if output was rewritten                                 
-   template<Seek SEEK> LANGULUS(INLINED)
-   bool Hierarchy::SeekValue(TMeta meta, CT::NotVoid auto& output, Index offset) const {
+   template<Seek SEEK>
+   bool Hierarchy::SeekValue(TMeta meta, CT::NotVoid auto& output, CT::Index auto&& offset) const {
       using D = Deref<decltype(output)>;
 
       if constexpr (CT::Pinnable<D>) {
@@ -485,8 +438,8 @@ namespace Langulus::Things
    ///   @param output - [out] the output                                     
    ///   @param offset - the number of the matching trait to use              
    ///   @return the trait, which is not empty, if trait was found            
-   template<Seek SEEK> LANGULUS(INLINED)
-   bool Hierarchy::SeekValueAux(TMeta meta, Many const& aux, CT::NotVoid auto& output, Index offset) const {
+   template<Seek SEEK>
+   bool Hierarchy::SeekValueAux(TMeta meta, Many const& aux, CT::NotVoid auto& output, CT::Index auto&& offset) const {
       using D = Deref<decltype(output)>;
 
       if constexpr (CT::Pinnable<D>) {
@@ -598,5 +551,4 @@ namespace Langulus::Things
 
       return done;
    }
-
-} // namespace Langulus::Things
+}

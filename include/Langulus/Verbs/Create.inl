@@ -269,10 +269,10 @@ namespace Langulus::Verbs
                ? element.Get<Tag>().GetType()
                : element.GetType();
 
-            if (meta->CastsTo<A::Number>(1)) {
+            if (meta->CastsTo<Math::Number>()) {
                // If number, keep it abstract                           
                //TODO this seems sketchy and i don't like it!
-               meta = MetaOf<A::Number>();
+               meta = MetaOf<Math::Number>();
             }
 
             const auto sati = satisfiedData.Find(meta);

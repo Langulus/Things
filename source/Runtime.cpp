@@ -133,7 +133,7 @@ namespace Langulus::Things
       (void)MetaDataOf<Things::Mesh>();
 
       (void)MetaDataOf<A::AIModule>();
-      (void)MetaDataOf<Things::AIUnit>();
+      (void)MetaDataOf<Things::AIPart>();
       (void)MetaDataOf<Things::Mind>();
 
       (void)MetaDataOf<A::InputModule>();
@@ -147,7 +147,7 @@ namespace Langulus::Things
       (void)MetaDataOf<A::Organism>();
 
       (void)MetaDataOf<A::Economy>();
-      (void)MetaDataOf<A::EconomyUnit>();
+      (void)MetaDataOf<A::EconomyPart>();
       (void)MetaDataOf<A::Resource>();
       (void)MetaDataOf<A::ResourceInstance>();
       (void)MetaDataOf<A::Converter>();

@@ -31,9 +31,9 @@ namespace Langulus::Things
    protected:
       friend struct Thing;
 
-      // Things that are coupled with this unit                         
+      // Things that are coupled with this part.                        
       // Owners act as an environment for the part's context, providing 
-      // additional tags and other parts for interoperability           
+      // additional tags and other parts for interoperability.          
       Hierarchy mOwners;
 
    public:
@@ -114,11 +114,4 @@ namespace Langulus::Things
       void Decouple(const Thing*);
       void ReplaceOwner(const Thing*, const Thing*);
    };
-}
-
-namespace Langulus::CT
-{
-   /// Any type that inherits Part is considered a CT::Part                   
-   template<class T>
-   concept Part = DerivedFrom<T, Things::Part>;
 }

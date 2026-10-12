@@ -11,6 +11,7 @@
 #include <Langulus/CT/DefineTag.hpp>
 #include <Langulus/CT/Index.hpp>
 #include <Langulus/CT/Tagged.hpp>
+#include <Langulus/CT/Part.hpp>
 
 
 namespace Langulus::Things
@@ -30,25 +31,37 @@ namespace Langulus::Things
 
       ///                                                                     
       /// MARK: Seek parts                                                    
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPart(this auto&&, DMeta, CT::Index auto&& = 0) -> Part*;
-      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPart(this auto&&, CT::Index auto&& = 0) -> Decay<T>*;
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPart(this SELF&&, DMeta, CT::Index auto&& = 0)
+         -> Tmut<SELF, Part*, Part const*>;
 
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartAux(this auto&&, Many const&, DMeta, CT::Index auto&& = 0) -> Part*;
-      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPartAux(this auto&&, Many const&, CT::Index auto&& = 0) -> Decay<T>*;
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPart(this SELF&&, CT::Index auto&& = 0)
+         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
 
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartExt(this auto&&, DMeta, Many const&, CT::Index auto&& = 0) -> Part*;
-      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPartExt(this auto&&, Many const&, CT::Index auto&& = 0) -> Decay<T>*;
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPartAux(this SELF&&, Many const&, DMeta, CT::Index auto&& = 0)
+         -> Tmut<SELF, Part*, Part const*>;
 
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartAuxExt(this auto&&, DMeta, Many const&, Many const&, CT::Index auto&& = 0) -> Part*;
-      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto SeekPartAuxExt(this auto&&, Many const&, Many const&, CT::Index auto&& = 0) -> Decay<T>*;
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPartAux(this SELF&&, Many const&, CT::Index auto&& = 0)
+         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
+
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPartExt(this SELF&&, DMeta, Many const&, CT::Index auto&& = 0)
+         -> Tmut<SELF, Part*, Part const*>;
+
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPartExt(this SELF&&, Many const&, CT::Index auto&& = 0)
+         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
+
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPartAuxExt(this SELF&&, DMeta, Many const&, Many const&, CT::Index auto&& = 0)
+         -> Tmut<SELF, Part*, Part const*>;
+
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
+      auto SeekPartAuxExt(this SELF&&, Many const&, Many const&, CT::Index auto&& = 0)
+         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
 
       ///                                                                     
       /// MARK: Seek tags                                                     
@@ -80,10 +93,10 @@ namespace Langulus::Things
 
       ///                                                                     
       /// MARK: Gather parts                                                  
-      template<Seek = Seek::HereAndAbove>
-      auto GatherParts(this auto&&, DMeta) -> TMany<Part*>;
-      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto GatherParts(this auto&&) -> TMany<T*>;
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto GatherParts(this SELF&&, DMeta) -> TMany<Tmut<SELF, Part*, Part const*>>;
+      template<CT::Part P, Seek = Seek::HereAndAbove, class SELF> requires CT::Decayed<P>
+      auto GatherParts(this SELF&&) -> TMany<Tmut<SELF, P*, P const*>>;
 
       template<Seek = Seek::HereAndAbove>
       auto GatherPartsExt(this auto&&, DMeta, Many const&) -> TMany<Part*>;
@@ -94,11 +107,11 @@ namespace Langulus::Things
       /// MARK: Gather tags                                                   
       template<Seek = Seek::HereAndAbove>
       auto GatherTags(this auto&&, TMeta = {}) -> TagList;
-      template<CT::DefineTag, Seek = Seek::HereAndAbove>
+      template<CT::DefineTag T, Seek = Seek::HereAndAbove> requires CT::Decayed<T>
       auto GatherTags(this auto&&) -> TagList;
 
-      template<class D, Seek = Seek::HereAndAbove>
-      auto GatherValues(this auto const&) -> TMany<D>;
+      template<class D, Seek = Seek::HereAndAbove, class SELF>
+      auto GatherValues(this SELF const&) -> TMany<D>;
       
      
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
@@ -121,8 +134,8 @@ namespace Langulus::Things
       template<Seek = Seek::HereAndAbove>
       bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, CT::Index auto&& = 0);
 
-      template<Seek = Seek::HereAndAbove>
-      auto GatherParts(this auto&&, Token const&) -> TMany<Part*>;
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto GatherParts(this SELF&&, Token const&) -> TMany<Tmut<SELF, Part*, Part const*>>;
       template<Seek = Seek::HereAndAbove>
       auto GatherTags(this auto&&, Token const&) -> TagList;
    #endif
@@ -132,15 +145,16 @@ namespace Langulus::Things
    ///                                                                        
    /// MARK: Hierarchy                                                        
    ///                                                                        
-   /// Simply a container of Things, with various quality-of-life             
-   /// functions related to hierarchical retrieval of things, parts and tags. 
+   /// Container of Things, with various quality-of-life functions related to 
+   /// hierarchical retrieval of sub-things, parts and tags.                  
    ///                                                                        
-   struct Hierarchy : TMany<Thing*>, SeekInterface {
+   using Hierarchy = TMany<Thing*>;
+   /*struct Hierarchy : TMany<Thing*>, SeekInterface {
       using Base        = TMany<Thing*>;
       using CTTI_Bases  = Base;
 
       using Base::TMany;
       using Base::operator =;
       using Base::operator ==;
-   };
+   };*/
 }

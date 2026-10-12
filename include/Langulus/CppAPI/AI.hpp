@@ -7,6 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
 namespace Langulus::Things
@@ -16,24 +17,24 @@ namespace Langulus::Things
    ///                                                                        
    struct AIModule : virtual Module {
       using CTTI_Bases = Module;
-      AIModule() : Resolvable {this}, Module {nullptr} {}
+      AIModule() : /*Resolvable {this},*/ Module {nullptr} {}
    };
 
    ///                                                                        
-   ///   Abstract artificial intelligence unit                                
+   ///   Abstract artificial intelligence part                                
    ///                                                                        
-   struct AIUnit : virtual Part {
+   struct AIPart : virtual Part {
       using CTTI_Bases     = Part;
       using CTTI_Producer  = AIModule;
-      AIUnit() : Resolvable {this} {}
+      AIPart() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
    ///   Abstract mind                                                        
    ///                                                                        
-   struct Mind : virtual AIUnit {
-      using CTTI_Bases = AIUnit;
-      Mind() : Resolvable {this} {}
+   struct Mind : virtual AIPart {
+      using CTTI_Bases = AIPart;
+      Mind() /*: Resolvable {this}*/ {}
 
       virtual Many Interpret(Text const&) = 0;
    };

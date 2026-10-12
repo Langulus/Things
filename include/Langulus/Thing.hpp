@@ -12,6 +12,7 @@
 #include <Langulus/Verbs/Create.hpp>
 #include <Langulus/Verbs/Select.hpp>
 #include <Langulus/TPin.hpp>
+#include <Langulus/Recipe.hpp>
 
 
 namespace Langulus::Things
@@ -208,12 +209,12 @@ namespace Langulus::Things
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          LANGULUS_API(THINGS)
-         auto GetPartMeta(Token const&, Index = 0) const -> Part const*;
+         auto GetPartMeta(Token const&, CT::Index auto&& = 0) const -> Part const*;
          LANGULUS_API(THINGS)
-         auto GetPartMeta(Token const&, Index = 0)       -> Part*;
+         auto GetPartMeta(Token const&, CT::Index auto&& = 0)       -> Part*;
 
          template<CT::Part T>
-         auto GetPartAs(Token const&, Index = 0) -> Decay<T>*;
+         auto GetPartAs(Token const&, CT::Index auto&& = 0) -> Decay<T>*;
       #endif
 
    private:
@@ -237,24 +238,24 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       auto GetTags() const noexcept -> const TagMap&;
       LANGULUS_API(THINGS)
-      auto GetTag(TMeta, Index = 0) const -> Tag;
+      auto GetTag(TMeta, CT::Index auto&& = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(TMeta, Index = 0)       -> Tag;
+      auto GetTag(TMeta, CT::Index auto&& = 0)       -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(Tag const&, Index = 0) const -> Tag;
+      auto GetTag(Tag const&, CT::Index auto&& = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(Tag const&, Index = 0)       -> Tag;
-      template<CT::TraitBased = Tag>
-      auto GetTag(Index = 0) -> Tag;
+      auto GetTag(Tag const&, CT::Index auto&& = 0)       -> Tag;
+      template<CT::DefineTag>
+      auto GetTag(CT::Index auto&& = 0) -> Tag;
 
       LANGULUS_API(THINGS)
-      auto GetLocalTag(TMeta, Index = 0) const -> Tag const*;
+      auto GetLocalTag(TMeta, CT::Index auto&& = 0) const -> Tag const*;
       LANGULUS_API(THINGS)
-      auto GetLocalTag(TMeta, Index = 0)       -> Tag*;
-      template<CT::TraitBased = Tag>
-      auto GetLocalTag(Index = 0)       -> Tag*;
-      template<CT::TraitBased = Tag>
-      auto GetLocalTag(Index = 0) const -> Tag const*;
+      auto GetLocalTag(TMeta, CT::Index auto&& = 0)       -> Tag*;
+      template<CT::DefineTag>
+      auto GetLocalTag(CT::Index auto&& = 0)       -> Tag*;
+      template<CT::DefineTag>
+      auto GetLocalTag(CT::Index auto&& = 0) const -> Tag const*;
 
       LANGULUS_API(THINGS)
       void SetName(Text const&);

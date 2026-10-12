@@ -7,7 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
-#include "Thing-Gather.inl"
+#include <Langulus/Part.hpp>
 #include "Thing-Seek.inl"
 
 

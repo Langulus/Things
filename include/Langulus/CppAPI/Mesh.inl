@@ -577,13 +577,13 @@ namespace Langulus::Things
       // Data was found, always decay it down to a vector type to       
       // simplify things a bit on the other end                         
       //TODO this can be made more elegant by CastsTo<float/double, true>(count)
-      if (found->template CastsTo<Math::Triangle3, true>())
+      if (found->template CastsTo<Math::Triangle3>(1, true))
          return Disown(found->template ReinterpretAs<Math::Vec3>());
-      else if (found->template CastsTo<Math::Triangle2, true>())
+      else if (found->template CastsTo<Math::Triangle2>(1, true))
          return Disown(found->template ReinterpretAs<Math::Vec2>());
-      else if (found->template CastsTo<Math::Vec3, true>())
+      else if (found->template CastsTo<Math::Vec3>(1, true))
          return Disown(found->template ReinterpretAs<Math::Vec3>());
-      else if (found->template CastsTo<Math::Vec2, true>())
+      else if (found->template CastsTo<Math::Vec2>(1, true))
          return Disown(found->template ReinterpretAs<Math::Vec2>());
 
       LANGULUS_OOPS(Access, "Unsupported trait format");

@@ -8,7 +8,7 @@
 
 /// INTENTIONALLY NOT GUARDED                                                 
 /// Include this file once in each cpp file, after all other headers          
-#include <Langulus/Things/Thing.hpp>
+#include <Langulus/Thing.hpp>
 #include <Langulus/Testing.hpp>
 
 

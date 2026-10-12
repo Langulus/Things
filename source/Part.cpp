@@ -7,10 +7,9 @@
 ///                                                                           
 #include <Langulus/Part.hpp>
 #include "Thing.inl"
-#include "Part-Gather.inl"
 #include "Part-Seek.inl"
 
-using namespace Langulus::A;
+using namespace Langulus::Things;
 
 
 /// Part destructor decouples unit from all owners                            

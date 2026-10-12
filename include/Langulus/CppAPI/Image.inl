@@ -115,7 +115,7 @@ namespace Langulus::A
       LglsAssumeDev(pixels->IsDense(),
          "Image data is not dense", " for ", Self());
       LglsAssumeDev(
-         pixels->CastsTo<Bytes>() or pixels->CastsTo<A::Color>(),
+         pixels->CastsTo<Bytes>() or pixels->CastsTo<Math::Color>(),
          "Image doesn't contain pixel data", 
          " - contains ", pixels->GetType(), " instead");
 
@@ -299,9 +299,9 @@ namespace Langulus::A
       }
 
       if constexpr (not CT::Integer<TT>) {
-         if (fromAny->GetType()->CastsTo<A::Integer>()) {
+         if (fromAny->GetType()->CastsTo<Math::Integer>()) {
             // We have to normalize the color                           
-            if (fromAny->GetType()->CastsTo<A::Unsigned>()) {
+            if (fromAny->GetType()->CastsTo<Math::Unsigned>()) {
                // Unsigned normalization                                
                switch (fromAny->GetType()->mSize) {
                case 1:

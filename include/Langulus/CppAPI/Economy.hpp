@@ -21,7 +21,7 @@ namespace Langulus::Things
    struct Economy : virtual Module {
       using CTTI_Bases = Module;
 
-      Economy() : Resolvable {this}, Module {nullptr} {}
+      Economy() : /*Resolvable {this},*/ Module {nullptr} {}
 
       virtual auto GetResource (Text const&) const -> const Resource*  = 0;
       virtual auto GetConverter(Text const&) const -> const Converter* = 0;
@@ -30,11 +30,11 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract economy unit                                                
    ///                                                                        
-   struct EconomyUnit : virtual Part {
+   struct EconomyPart : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = Economy;
 
-      EconomyUnit() : Resolvable {this} {}
+      EconomyPart() /*: Resolvable {this}*/ {}
    };
    
    struct ResourceInstance;
@@ -43,11 +43,11 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract resource                                                    
    ///                                                                        
-   struct Resource : virtual EconomyUnit {
-      using CTTI_Bases = EconomyUnit;
+   struct Resource : virtual EconomyPart {
+      using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
 
-      Resource() : Resolvable {this} {}
+      Resource() /*: Resolvable {this}*/ {}
 
       using Place = Math::Vec3;
 
@@ -72,11 +72,11 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract resource instance                                           
    ///                                                                        
-   struct ResourceInstance : virtual EconomyUnit {
-      using CTTI_Bases = EconomyUnit;
+   struct ResourceInstance : virtual EconomyPart {
+      using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
       
-      ResourceInstance() : Resolvable {this} {}
+      ResourceInstance() /*: Resolvable {this}*/ {}
 
       virtual int  GetQuantity()    const noexcept = 0;
       virtual int  GetCapacity()    const noexcept = 0;
@@ -88,11 +88,11 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract converter                                                   
    ///                                                                        
-   struct Converter : virtual EconomyUnit {
-      using CTTI_Bases = EconomyUnit;
+   struct Converter : virtual EconomyPart {
+      using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
       
-      Converter() : Resolvable {this} {}
+      Converter() /*: Resolvable {this}*/ {}
 
       using Place = Math::Vec3;
 
@@ -105,20 +105,20 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract converter instance                                          
    ///                                                                        
-   struct ConverterInstance : virtual EconomyUnit {
-      using CTTI_Bases = EconomyUnit;
+   struct ConverterInstance : virtual EconomyPart {
+      using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
       
-      ConverterInstance() : Resolvable {this} {}
+      ConverterInstance() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
    ///   Abstract trader                                                      
    ///                                                                        
-   struct Trader : virtual EconomyUnit {
-      using CTTI_Bases = EconomyUnit;
+   struct Trader : virtual EconomyPart {
+      using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
 
-      Trader() : Resolvable {this} {}
+      Trader() /*: Resolvable {this}*/ {}
    };
 }

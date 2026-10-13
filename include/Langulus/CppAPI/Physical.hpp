@@ -24,7 +24,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract physical unit                                               
+   ///   Abstract physical part                                               
    ///                                                                        
    struct Physical : virtual Part {
       using CTTI_Bases = Part;
@@ -32,7 +32,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract physical world unit                                         
+   ///   Abstract physical world part                                         
    ///                                                                        
    struct World : virtual Physical {
       using CTTI_Bases = Physical;
@@ -41,7 +41,7 @@ namespace Langulus::Things
    };
    
    ///                                                                        
-   ///   Abstract physical instance unit                                      
+   ///   Abstract physical instance part                                      
    ///                                                                        
    struct Instance : virtual Physical {
       using CTTI_Bases = Physical;
@@ -63,7 +63,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract physical bond unit                                          
+   ///   Abstract physical bond part                                          
    ///                                                                        
    struct Bond : virtual Physical {
       using CTTI_Bases = Physical;
@@ -72,7 +72,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract physical particles unit                                     
+   ///   Abstract physical particles part                                     
    ///                                                                        
    struct Particles : virtual Physical {
       using CTTI_Bases = Physical;
@@ -81,7 +81,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract physical field unit                                         
+   ///   Abstract physical field part                                         
    ///                                                                        
    struct Field : virtual Physical {
       using CTTI_Bases = Physical;
@@ -92,7 +92,7 @@ namespace Langulus::Things
 
 namespace Langulus::CT
 {
-   /// A concept for any kind of a physical unit                              
+   /// A concept for any kind of a physical part                              
    template<class T>
    concept Physical = DerivedFrom<T, Things::Physical>;
 }

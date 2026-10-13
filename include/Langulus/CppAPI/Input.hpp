@@ -21,7 +21,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract input unit                                                  
+   ///   Abstract input part                                                  
    ///                                                                        
    struct Input : virtual Part {
       using CTTI_Bases = Part;

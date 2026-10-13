@@ -12,7 +12,7 @@
 #include <Langulus/Testing.hpp>
 
 
-/// A unit implementation for testing                                         
+/// A part implementation for testing                                         
 class TestUnit1 final : public Part {
 public:
    using CTTI_Abstract = No;
@@ -33,7 +33,7 @@ public:
    void Refresh() {}
 };
 
-/// A unit implementation for testing                                         
+/// A part implementation for testing                                         
 class TestUnit2 final : public Part {
 public:
    using CTTI_Abstract = No;

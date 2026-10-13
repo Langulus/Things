@@ -93,22 +93,22 @@ namespace Langulus::CTTI
                   ExecuteDefault(context, nested);
                   verb << Abandon(nested.GetOutput());
                },
-               [&](Tag const& trait) {
-                  if (trait.template IsTrait<Tags::Index>()) {
+               [&](Tag const& tag) {
+                  if (tag.template IsTrait<Tags::Index>()) {
                      // Skip indices - they were already gathered       
                      return;
                   }
 
-                  VERBOSE_SELECT("Selecting trait: ", trait);
+                  VERBOSE_SELECT("Selecting tag: ", tag);
                   containsOnlyIndices = false;
-                  auto tmeta = trait.GetTag();
+                  auto tmeta = tag.GetTag();
                   if (tmeta)
                      PerIndex<MUTABLE>(context, selectedTraits, tmeta, tmeta, indices);
                   else
-                     PerIndex<MUTABLE>(context, selectedTraits, tmeta, trait.GetType(), indices);
+                     PerIndex<MUTABLE>(context, selectedTraits, tmeta, tag.GetType(), indices);
                },
                [&](TMeta tmeta) {
-                  VERBOSE_SELECT("Selecting trait: ", tmeta);
+                  VERBOSE_SELECT("Selecting tag: ", tmeta);
                   containsOnlyIndices = false;
                   PerIndex<MUTABLE>(context, selectedTraits, tmeta, tmeta, indices);
                },
@@ -128,8 +128,8 @@ namespace Langulus::CTTI
          }
 
          // Output results if any, satisfying the verb                     
-         for (auto& trait : selectedTraits)
-            verb << static_cast<Many&>(trait);
+         for (auto& tag : selectedTraits)
+            verb << static_cast<Many&>(tag);
 
          verb << selectedAbilities;
 
@@ -206,14 +206,14 @@ namespace Langulus::Verbs
 
    
 
-   /// Select members by providing either meta data or meta trait             
+   /// Select members by providing either meta data or meta tag             
    ///   @tparam MUTABLE - whether or not selection will be mutable           
    ///   @param context - the thing we're searching in                        
    ///   @param selectedTraits - [out] found traits go here                   
-   ///   @param resultingTrait - the type of trait to push to selectedTraits  
+   ///   @param resultingTrait - the type of tag to push to selectedTraits  
    ///   @param meta - the filter we'll be using                              
-   ///   @param indices - optional indices (i.e. Nth trait of a kind          
-   ///   @return true if at least one trait has been pushed to selectedTraits 
+   ///   @param indices - optional indices (i.e. Nth tag of a kind          
+   ///   @return true if at least one tag has been pushed to selectedTraits 
    template<bool MUTABLE>
    bool Select::PerIndex(
       Many& context,
@@ -263,12 +263,12 @@ namespace Langulus::Verbs
    }
 
    /// Select ability or member by a meta                                     
-   ///   @param indices - optional index for trait/verb (Nth trait/verb)      
+   ///   @param indices - optional index for tag/verb (Nth tag/verb)      
    ///   @param id - type of data we'll be selecting                          
    ///   @param context - the thing we're searching in                        
    ///   @param selectedTraits - [out] found traits go here                   
    ///   @param selectedVerbs - [out] found verb go here                      
-   ///   @return if at least trait/verb has been pushed to outputs            
+   ///   @return if at least tag/verb has been pushed to outputs            
    template<bool MUTABLE>
    inline bool Select::SelectByMeta(
       const TMany<Index>& indices,

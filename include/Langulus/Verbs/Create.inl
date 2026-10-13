@@ -231,19 +231,19 @@ namespace Langulus::Verbs
          for (size_t i = 0; i < group.GetCount(); ++i) {
             Many element = group.GetElementResolved(i);
             if (element.Is<Tag>()) {
-               // Search for the trait                                  
+               // Search for the tag                                  
                const auto meta = element.Get<Tag>().GetTag();
                const auto sati = satisfiedTraits.Find(meta);
                const auto index = sati
                   ? satisfiedTraits.GetValue(sati)
                   : IndexFirst;
 
-               VERBOSE_CREATION("Searching trait ", meta, "... ", " (", index, ")");
+               VERBOSE_CREATION("Searching tag ", meta, "... ", " (", index, ")");
 
                Verbs::Select selector {meta, index};
                Verb::GenericExecuteIn(context, selector);
                if (selector.GetOutput()) {
-                  VERBOSE_CREATION("Initializing trait ", selector.GetOutput(),
+                  VERBOSE_CREATION("Initializing tag ", selector.GetOutput(),
                      " with ", Logger::Cyan, element, " (", index, ")");
 
                   Verbs::Associate associator {element};
@@ -262,7 +262,7 @@ namespace Langulus::Verbs
             }
 
             // Search for the data block                                
-            // This is only reached if the trait attempt fails          
+            // This is only reached if the tag attempt fails          
             // Failing this is considered critical - context should be  
             // later discarded - it's cosidered ill-formed              
             auto meta = element.Is<Tag>()

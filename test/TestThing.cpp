@@ -112,7 +112,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child1->GetReferences() == 2);
       }
 
-      WHEN("Adding an existing unit") {
+      WHEN("Adding an existing part") {
          TestUnit1 testUnit;
          auto added = root.AddUnit(&testUnit);
 
@@ -136,8 +136,8 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(it->GetReferences() == 1);
       }
 
-      WHEN("Creating a new unit") {
-         auto unit = root.CreateUnit<TestUnit1>();
+      WHEN("Creating a new part") {
+         auto part = root.CreateUnit<TestUnit1>();
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
@@ -152,25 +152,25 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          auto it = root.GetUnits().begin();
          REQUIRE(it->GetType() == MetaOf<TestUnit1>());
-         REQUIRE(*it == unit.As<TestUnit1*>());
+         REQUIRE(*it == part.As<TestUnit1*>());
 
-         // Kept once in `unit`                                         
+         // Kept once in `part`                                         
          // Kept once in root.mUnitsList                                
          // Kept once in root.mUnitsAmbiguous                           
-         REQUIRE(unit.GetUses() == 3);
+         REQUIRE(part.GetUses() == 3);
 
-         REQUIRE(Fractalloc::Instance.Find({}, unit.As<TestUnit1*>())->GetUses() == 3);
-         REQUIRE(unit.As<TestUnit1*>()->GetReferences() == 3);
-         REQUIRE(Fractalloc::Instance.Find({}, unit.As<TestUnit1*>())->GetUses() == 3);
+         REQUIRE(Fractalloc::Instance.Find({}, part.As<TestUnit1*>())->GetUses() == 3);
+         REQUIRE(part.As<TestUnit1*>()->GetReferences() == 3);
+         REQUIRE(Fractalloc::Instance.Find({}, part.As<TestUnit1*>())->GetUses() == 3);
          REQUIRE(it->GetOwners().GetCount() == 1);
          REQUIRE(it->GetOwners()[0] == &root);
          REQUIRE(it->GetReferences() == 3);
       }
 
-      WHEN("Adding a trait") {
-         auto trait = root.AddTrait(Traits::Count {666});
+      WHEN("Adding a tag") {
+         auto tag = root.AddTrait(Tags::Count {666});
 
-         REQUIRE(trait != nullptr);
+         REQUIRE(tag != nullptr);
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
@@ -185,16 +185,16 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetReferences() == 1);
 
          auto it = root.GetTraits().begin();
-         REQUIRE(it.GetKey() == MetaOf<Traits::Count>());
+         REQUIRE(it.GetKey() == MetaOf<Tags::Count>());
          REQUIRE(it.GetValue().GetCount() == 1);
-         REQUIRE(it.GetValue()[0] == Traits::Count {666});
-         REQUIRE(&(it.GetValue()[0]) == trait);
+         REQUIRE(it.GetValue()[0] == Tags::Count {666});
+         REQUIRE(&(it.GetValue()[0]) == tag);
       }
 
-      WHEN("Set a name trait") {
-         auto trait = root.AddTrait(Traits::Name {"Dimo"});
+      WHEN("Set a name tag") {
+         auto tag = root.AddTrait(Tags::Name {"Dimo"});
 
-         REQUIRE(trait != nullptr);
+         REQUIRE(tag != nullptr);
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
@@ -210,10 +210,10 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetReferences() == 1);
 
          auto it = root.GetTraits().begin();
-         REQUIRE(it.GetKey() == MetaOf<Traits::Name>());
+         REQUIRE(it.GetKey() == MetaOf<Tags::Name>());
          REQUIRE(it.GetValue().GetCount() == 1);
-         REQUIRE(it.GetValue()[0] == Traits::Name {"Dimo"});
-         REQUIRE(&(it.GetValue()[0]) == trait);
+         REQUIRE(it.GetValue()[0] == Tags::Name {"Dimo"});
+         REQUIRE(&(it.GetValue()[0]) == tag);
       }
    }
 
@@ -221,19 +221,19 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       WHEN(std::string("Creating a Thing by descriptor #") + std::to_string(repeat)) {
          Logger::Special("Start: Creating a Thing by descriptor");
          TestType descriptor {
-            Traits::Name {"Root"},
+            Tags::Name {"Root"},
             Recipe::From<Runtime>(),
             Recipe::From<Temporal>(),
             Recipe::From<TestUnit1>(),
             Recipe::From<TestUnit2>(),
             Recipe::From<Thing>(
-               Traits::Name {"Child1"},
+               Tags::Name {"Child1"},
                Recipe::From<TestUnit1>(),
                Recipe::From<TestUnit2>(),
-               Recipe::From<Thing>(Traits::Name {"GrandChild1"}),
-               Recipe::From<Thing>(Traits::Name {"GrandChild2"})
+               Recipe::From<Thing>(Tags::Name {"GrandChild1"}),
+               Recipe::From<Thing>(Tags::Name {"GrandChild2"})
             ),
-            Recipe::From<Thing>(Traits::Name {"Child2"})
+            Recipe::From<Thing>(Tags::Name {"Child2"})
          };
 
          Thing root {Describe(descriptor)};
@@ -315,29 +315,29 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
    }
 
-   GIVEN("A complex hierarchy with runtime, flow, units, and traits") {
+   GIVEN("A complex hierarchy with runtime, flow, parts, and traits") {
       TestType descriptor {
-         Traits::Name {"Root"},
+         Tags::Name {"Root"},
          Recipe::From<Runtime>(),
          Recipe::From<Temporal>(),
          Recipe::From<TestUnit1>(),
          Recipe::From<TestUnit2>(),
          Recipe::From<Thing>(
-            Traits::Name {"Child1"},
+            Tags::Name {"Child1"},
             Recipe::From<TestUnit1>(),
             Recipe::From<TestUnit2>(),
             Recipe::From<Thing>(
-               Traits::Name {"GrandChild1"}
+               Tags::Name {"GrandChild1"}
             ),
             Recipe::From<Thing>(
-               Traits::Name {"GrandChild2"}
+               Tags::Name {"GrandChild2"}
             )
          ),
          Recipe::From<Thing>(
-            Traits::Name {"Child2"}
+            Tags::Name {"Child2"}
          ),
          Recipe::From<Thing>(
-            Traits::Name {"Child2"}
+            Tags::Name {"Child2"}
          )
       };
 
@@ -349,19 +349,19 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child1 == child);
       }
 
-      WHEN("Getting a local child by name trait") {
+      WHEN("Getting a local child by name tag") {
          auto child = root.GetNamedChild("Child2");
          auto child2 = root.GetChildren()[1];
          REQUIRE(child2 == child);
       }
 
-      WHEN("Getting a local child by index and name trait") {
+      WHEN("Getting a local child by index and name tag") {
          auto child = root.GetNamedChild("Child2", 1);
          auto child3 = root.GetChildren()[2];
          REQUIRE(child3 == child);
       }
 
-      WHEN("Get a local unit by index") {
+      WHEN("Get a local part by index") {
          // Hash algorithm changes might swap the order of these two    
          auto unit0 = root.GetUnit(0);
          auto unit1 = root.GetUnit(1);
@@ -374,15 +374,15 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(unit1 == root.GetUnitsMap()[MetaOf<TestUnit2>()][0]);
       }
 
-      WHEN("Get a local unit by type and index") {
-         auto unit = root.GetUnitMeta(MetaOf<TestUnit1>());
+      WHEN("Get a local part by type and index") {
+         auto part = root.GetUnitMeta(MetaOf<TestUnit1>());
 
-         REQUIRE(unit);
-         REQUIRE(unit->Is<TestUnit1>());
-         REQUIRE(unit == root.GetUnitsMap()[MetaOf<TestUnit1>()][0]);
+         REQUIRE(part);
+         REQUIRE(part->Is<TestUnit1>());
+         REQUIRE(part == root.GetUnitsMap()[MetaOf<TestUnit1>()][0]);
       }
 
-      WHEN("Removing a specific local unit") {
+      WHEN("Removing a specific local part") {
          auto unitmemory = root.GetUnit(0);
          auto removed = root.RemoveUnit(root.GetUnit(0));
 
@@ -391,7 +391,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(nullptr == Allocator::Find(MetaOf<TestUnit1>(), unitmemory));
       }
 
-      WHEN("Removing all local units") {
+      WHEN("Removing all local parts") {
          auto unitmemory1 = root.GetUnit(0);
          auto unitmemory2 = root.GetUnit(1);
          auto removed = root.RemoveUnits();
@@ -402,7 +402,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(nullptr == Allocator::Find(MetaOf<TestUnit2>(), unitmemory2));
       }
 
-      /*WHEN("Replace local units") {
+      /*WHEN("Replace local parts") {
          TestUnit2 replacement;
          auto replaced = root.ReplaceUnit(root.GetUnit<TestUnit1>(), &replacement);
 
@@ -412,40 +412,40 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.mUnitsAmbiguous[MetaOf<TestUnit2>()].Contains(&replacement));
       }*/
 
-      WHEN("Count available units") {
+      WHEN("Count available parts") {
          auto found = root.HasUnits<TestUnit1>();
 
          REQUIRE(found == 1);
       }
 
-      WHEN("Gather units of a specific type") {
+      WHEN("Gather parts of a specific type") {
          auto found1 = root.GatherParts<TestUnit1>();
 
          REQUIRE(found1.GetCount() == 1);
       }
 
-      /*WHEN("Seek a unit by index") {
-         auto unit = root.SeekPart(0);
+      /*WHEN("Seek a part by index") {
+         auto part = root.SeekPart(0);
       }
 
-      WHEN("Seek a unit by type and index") {
-         auto unit = root.SeekPart<Part>(0);
+      WHEN("Seek a part by type and index") {
+         auto part = root.SeekPart<Part>(0);
       }
 
-      WHEN("Get a static/unit/dynamic trait by index") {
+      WHEN("Get a static/part/dynamic tag by index") {
          auto child = root.GetTag(0);
       }
 
-      WHEN("Get a static/unit/dynamic trait by type and index") {
-         auto child = root.GetTag<Traits::Name>();
+      WHEN("Get a static/part/dynamic tag by type and index") {
+         auto child = root.GetTag<Tags::Name>();
       }
 
-      WHEN("Seek a trait in the hierarchy by index") {
-         auto trait = root.SeekTag(0);
+      WHEN("Seek a tag in the hierarchy by index") {
+         auto tag = root.SeekTag(0);
       }
 
-      WHEN("Seek a trait in the hierarchy by type index") {
-         auto child = root.SeekTag<Traits::Name>();
+      WHEN("Seek a tag in the hierarchy by type index") {
+         auto child = root.SeekTag<Tags::Name>();
       }*/
    }
 

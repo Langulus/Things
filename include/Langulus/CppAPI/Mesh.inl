@@ -259,7 +259,7 @@ namespace Langulus::Things
    ///   @param index - line index                                            
    ///   @return the point indices as a 32bit unsigned 2D vector              
    inline auto Mesh::GetLineIndices(size_t index) const -> Vec2u {
-      const auto indices = GetData<Traits::Index>();
+      const auto indices = GetData<Tags::Index>();
 
       if (CheckTopology<A::Line>())
          return InnerGetIndices(indices, Vec2u(index * 2, index * 2 + 1));
@@ -304,7 +304,7 @@ namespace Langulus::Things
    }
 
    /// Get a specific property of a specific line                             
-   ///   @tparam T - the trait to retrieve                                    
+   ///   @tparam T - the tag to retrieve                                    
    ///   @param lineIndex - the line index                                    
    ///   @return data for the specific line                                   
    template<CT::Tag T>
@@ -366,7 +366,7 @@ namespace Langulus::Things
    ///   @param index - triangle index                                        
    ///   @return the indices as a 32bit unsigned 3D vector                    
    inline auto Mesh::GetTriangleIndices(size_t index) const -> Vec3u {
-      const auto indices = GetData<Traits::Index>(0);
+      const auto indices = GetData<Tags::Index>(0);
 
       if (CheckTopology<A::Triangle>()) {
          return InnerGetIndices(indices, Vec3u(
@@ -395,7 +395,7 @@ namespace Langulus::Things
 
    /// Get a specific property of a specific triangle                         
    ///   @attention not optimized for iteration                               
-   ///   @tparam T - the trait to retrieve                                    
+   ///   @tparam T - the tag to retrieve                                    
    ///   @param triangleIndex - the triangle index                            
    ///   @return data for the specific triangle                               
    template<CT::Tag T>
@@ -428,7 +428,7 @@ namespace Langulus::Things
       using F = Deref<decltype(call)>;
       using A = ArgumentsOf<F>;
 
-      const auto indices = GetDataList<Traits::Index>();
+      const auto indices = GetDataList<Tags::Index>();
       if (not indices or not *indices)
          return ForEachVertexInner<false>(A {}, Forward<F>(call));
       else
@@ -442,8 +442,8 @@ namespace Langulus::Things
    template<bool INDEXED, class...T>
    size_t Mesh::ForEachVertexInner(Types<T...>, auto&& call) const {
       static_assert(CT::Tag<Decay<T>...>,
-         "All iterator arguments must be traits, like Traits::Place, "
-         "Traits::Aim, Tags::Color, etc.");
+         "All iterator arguments must be traits, like Tags::Place, "
+         "Tags::Aim, Tags::Color, etc.");
 
       // Represent iterator arguments as a tuple of disowned Blocks     
       using Tuple = std::tuple<Decay<T>...>;
@@ -562,15 +562,15 @@ namespace Langulus::Things
       return counter;
    }
 
-   /// Prepare a trait block, that will be offsetted while iterating          
-   ///   @tparam T - the trait to interface                                   
-   ///   @return a disowned trait block                                       
+   /// Prepare a tag block, that will be offsetted while iterating          
+   ///   @tparam T - the tag to interface                                   
+   ///   @return a disowned tag block                                       
    template<CT::Tag T>
    T Mesh::ForEachVertex_PrepareStream() const {
       const auto found = GetData<T>(0);
       if (not found or not *found) {
          // No such data was found, no iteration will be performed      
-         // on that trait                                               
+         // on that tag                                               
          return {};
       }
 
@@ -586,16 +586,16 @@ namespace Langulus::Things
       else if (found->template CastsTo<Math::Vec2>(1, true))
          return Disown(found->template ReinterpretAs<Math::Vec2>());
 
-      LANGULUS_OOPS(Access, "Unsupported trait format");
+      LANGULUS_OOPS(Access, "Unsupported tag format");
       return {};
    }
 
    /// Prepare an index block, that will be offsetted while iterating         
-   ///   @tparam T - the trait to interface                                   
-   ///   @return a disowned trait block                                       
+   ///   @tparam T - the tag to interface                                   
+   ///   @return a disowned tag block                                       
    template<CT::Tag T>
    T Mesh::ForEachVertex_PrepareIndexStream() const {
-      const auto indices = GetDataList<Traits::Index>();
+      const auto indices = GetDataList<Tags::Index>();
       if (not indices or not *indices)
          return {};
 
@@ -605,10 +605,10 @@ namespace Langulus::Things
       }
 
       // Multiple index sequences for different streams                 
-      // Each sequence should be kept in a corresponding trait          
+      // Each sequence should be kept in a corresponding tag          
       T result;
-      indices->ForEachDeep([&result](T const& trait) noexcept {
-         result = trait;
+      indices->ForEachDeep([&result](T const& tag) noexcept {
+         result = tag;
          return Loop::Break;
       });
       return result;

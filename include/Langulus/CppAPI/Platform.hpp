@@ -24,7 +24,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract platform unit                                               
+   ///   Abstract platform part                                               
    ///                                                                        
    struct Platform : virtual Part {
       using CTTI_Bases = Part;

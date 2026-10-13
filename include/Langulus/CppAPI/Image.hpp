@@ -137,7 +137,7 @@ namespace Langulus::Things
 
 namespace Langulus::CT
 {
-   /// A concept for any kind of image content unit                           
+   /// A concept for any kind of image content part                           
    template<class T>
    concept Image = DerivedFrom<T, Things::Image>;
 }

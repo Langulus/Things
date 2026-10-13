@@ -20,7 +20,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract UI unit                                                     
+   ///   Abstract UI part                                                     
    ///                                                                        
    struct UIUnit : virtual Part {
       using CTTI_Bases = Part;

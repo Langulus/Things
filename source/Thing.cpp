@@ -57,7 +57,7 @@ namespace Langulus::Things
       }
 
       if (descriptor) {
-         // Create any subthings/traits/unit in this thing              
+         // Create any subthings/traits/part in this thing              
          Verbs::Create creator {descriptor};
          Create(creator);
       }
@@ -95,9 +95,9 @@ namespace Langulus::Things
       for (auto& child : mChildren)
          child->mOwner = this;
 
-      // Remap units                                                    
-      for (auto& unit : mUnitsList)
-         unit->ReplaceOwner(&other, this);
+      // Remap parts                                                    
+      for (auto& part : mUnitsList)
+         part->ReplaceOwner(&other, this);
 
       // Make sure the losing parent is notified of the change          
       if (other.mOwner)
@@ -125,9 +125,9 @@ namespace Langulus::Things
       for (auto& child : mChildren)
          child->mOwner = this;
 
-      // Remap units                                                    
-      for (auto& unit : mUnitsList)
-         unit->ReplaceOwner(&*other, this);
+      // Remap parts                                                    
+      for (auto& part : mUnitsList)
+         part->ReplaceOwner(&*other, this);
 
       // Make sure the losing parent is notified of the change          
       if (other->mOwner)
@@ -148,7 +148,7 @@ namespace Langulus::Things
    {
       TODO();
       //TODO clone flow and runtime if pinned, recreate modules if new runtime, 
-      // recreate units and traits, then recreate children
+      // recreate parts and traits, then recreate children
       THINGS_VERBOSE_SELF("Cloned from ", *other);
    }
 
@@ -178,11 +178,11 @@ namespace Langulus::Things
             }
          }
 
-         for (auto& unit : mUnitsList) {
-            if (unit->GetReferences() > 3) {
+         for (auto& part : mUnitsList) {
+            if (part->GetReferences() > 3) {
                Logger::Warning(
-                  unit, " can't be destroyed yet - has ",
-                  unit->GetReferences(), " uses instead of 3 (or less)" 
+                  part, " can't be destroyed yet - has ",
+                  part->GetReferences(), " uses instead of 3 (or less)" 
                );
             }
          }
@@ -200,25 +200,25 @@ namespace Langulus::Things
       // in the hierarchy: the owner's mChildren                        
       mOwner.Reset();
 
-      // Traits might be exposing members in units. Make sure we        
-      // dereference those first, so that units have as small number of 
+      // Tags might be exposing members in parts. Make sure we        
+      // dereference those first, so that parts have as small number of 
       // references as possible                                         
       THINGS_VERBOSE_SELF("Tearing off traits (name might change)");
       mTraits.Reset();
 
-      // Decouple all units from this owner because units might get     
+      // Decouple all parts from this owner because parts might get     
       // destroyed upon destroying mUnitsList and mUnitsAmbiguous, if   
-      // the Units were created on the stack.                           
+      // the Parts were created on the stack.                           
       // If they still have owners, they will attempt to Decouple in    
       // Part::~Part from already destroyed mUnitsList/Ambiguous     
       mUnitsAmbiguous.Reset();
-      for (auto& unit : mUnitsList) {
+      for (auto& part : mUnitsList) {
          THINGS_VERBOSE_SELF(
-            "Tearing off unit ", unit, " at ", unit->GetReferences(), " uses...");
-         unit->mOwners.Remove(this);
+            "Tearing off part ", part, " at ", part->GetReferences(), " uses...");
+         part->mOwners.Remove(this);
 
-         if (unit->mOwners.IsEmpty())
-            unit->mOwners.Reset();
+         if (part->mOwners.IsEmpty())
+            part->mOwners.Reset();
       }
 
       // Propagate Teardown through the hierarchy of Things             
@@ -259,18 +259,18 @@ namespace Langulus::Things
 
       if (mTraits) {
          const auto tab2 = Logger::Section(Logger::White, Logger::Underline,
-            "Traits (", mTraits.GetCount(), "):");
+            "Tags (", mTraits.GetCount(), "):");
          for (auto traitpair : mTraits) {
-            for (auto& trait : traitpair.GetValue())
-               Logger::Verbose(trait);
+            for (auto& tag : traitpair.GetValue())
+               Logger::Verbose(tag);
          }
       }
 
       if (mUnitsList) {
          const auto tab2 = Logger::Section(Logger::White, Logger::Underline,
-            "Units (", mUnitsList.GetCount(), "):");
-         for (auto& unit : mUnitsList)
-            Logger::Verbose(*unit);
+            "Parts (", mUnitsList.GetCount(), "):");
+         for (auto& part : mUnitsList)
+            Logger::Verbose(*part);
       }
 
       if (mChildren) {
@@ -283,7 +283,7 @@ namespace Langulus::Things
 
    /// Simulate the hierarchy of things for a given period of time, by        
    /// updating all runtimes and flows at and under this Thing                
-   /// Also synchronizes changes between all units, if mRefreshRequired       
+   /// Also synchronizes changes between all parts, if mRefreshRequired       
    ///   @param deltaTime - how much time passes for the simulation           
    ///   @return true if no exit was requested by any of the runtimes/flows   
    bool Thing::Update(Time deltaTime) {
@@ -318,7 +318,7 @@ namespace Langulus::Things
       return true;
    }
 
-   /// Refresh all units and children down the hierarchy                      
+   /// Refresh all parts and children down the hierarchy                      
    ///   @param force - force refresh                                         
    void Thing::Refresh(bool force) {
       LANGULUS(PROFILE);
@@ -327,24 +327,24 @@ namespace Langulus::Things
 
       mRefreshRequired = false;
 
-      // Refresh all units                                              
-      for (auto& unit : mUnitsList)
-         unit->Refresh();
+      // Refresh all parts                                              
+      for (auto& part : mUnitsList)
+         part->Refresh();
 
       // And cascade down the hierarchy                                 
       for (auto& child : mChildren)
          child->Refresh(true);
    }
 
-   /// Reset the entity, clearing all children, units, traits                 
+   /// Reset the entity, clearing all children, parts, traits                 
    void Thing::Reset() {
       // Decouple all children from this parent                         
       for (auto& child : mChildren)
          child->mOwner.Reset();
 
-      // Decouple all units from this owner                             
-      for (auto& unit : mUnitsList)
-         unit->mOwners.Remove(this);
+      // Decouple all parts from this owner                             
+      for (auto& part : mUnitsList)
+         part->mOwners.Remove(this);
 
       mChildren.Reset();
       mUnitsList.Reset();
@@ -352,22 +352,22 @@ namespace Langulus::Things
       mTraits.Reset();
    }
 
-   /// Get a unit by type and offset                                          
+   /// Get a part by type and offset                                          
    /// If type is nullptr searches only by offset                             
-   /// If type is not nullptr, gets the Nth matching unit, if any             
-   ///   @param id - the type of the unit                                     
-   ///   @param index - the unit index to seek                                
-   ///   @return the unit if found, or nullptr if not                         
+   /// If type is not nullptr, gets the Nth matching part, if any             
+   ///   @param id - the type of the part                                     
+   ///   @param index - the part index to seek                                
+   ///   @return the part if found, or nullptr if not                         
    auto Thing::GetUnitMeta(DMeta id, Index index) -> Part* {
       if (id) {
-         // Search a typed trait                                        
+         // Search a typed tag                                        
          const auto found = mUnitsAmbiguous.FindIt(id);
          return found
             ? static_cast<Part*>(found.GetValue()[index])
             : static_cast<Part*>(nullptr);
       }
 
-      // Get unit by index only                                         
+      // Get part by index only                                         
       return mUnitsList[index];
    }
 
@@ -375,38 +375,38 @@ namespace Langulus::Things
       return const_cast<Thing*>(this)->GetUnitMeta(type, offset);
    }
    
-   /// Get a unit by type, properties, and offset                             
+   /// Get a part by type, properties, and offset                             
    /// If construct's type is nullptr searches only by offset and properties  
-   /// If construct's type is not nullptr, gets the Nth matching unit, if any 
-   ///   @param meta - the type of the unit                                   
-   ///   @param what - the desired properties of the unit                     
-   ///   @param index - the unit index to seek                                
-   ///   @return the unit if found, or nullptr if not                         
+   /// If construct's type is not nullptr, gets the Nth matching part, if any 
+   ///   @param meta - the type of the part                                   
+   ///   @param what - the desired properties of the part                     
+   ///   @param index - the part index to seek                                
+   ///   @return the part if found, or nullptr if not                         
    auto Thing::GetUnitExt(DMeta meta, Many const& what, Index index) -> Part* {
       if (meta) {
-         // Search a typed unit                                         
+         // Search a typed part                                         
          const auto found = mUnitsAmbiguous.FindIt(meta);
          if (found) {
             auto& bucket = found.GetValue();
             if (not what)
                return bucket[index];
 
-            // Check all units in that bucket for required properties   
-            for (auto& unit : bucket) {
-               if (unit->CompareDescriptor(what)) {
+            // Check all parts in that bucket for required properties   
+            for (auto& part : bucket) {
+               if (part->CompareDescriptor(what)) {
                   // Match found                                        
-                  if (index == 0) return unit;
+                  if (index == 0) return part;
                   else --index;
                }
             }
          }
       }
       else {
-         // Search unit by index and properties only                    
-         for (auto& unit : mUnitsList) {
-            if (unit->CompareDescriptor(what)) {
+         // Search part by index and properties only                    
+         for (auto& part : mUnitsList) {
+            if (part->CompareDescriptor(what)) {
                // Match found                                           
-               if (index == 0) return unit;
+               if (index == 0) return part;
                else --index;
             }
          }
@@ -420,10 +420,10 @@ namespace Langulus::Things
    }
 
 #if LANGULUS_FEATURE(MANAGED_REFLECTION)
-   /// Get a unit by token and offset                                         
-   ///   @param token - the type name of the unit                             
-   ///   @param offset - the unit index                                       
-   ///   @return the unit if found, or nullptr if not                         
+   /// Get a part by token and offset                                         
+   ///   @param token - the type name of the part                             
+   ///   @param offset - the part index                                       
+   ///   @return the part if found, or nullptr if not                         
    auto Thing::GetUnitMeta(Token const& token, Index offset) -> Part* {
       return GetUnitMeta(RTTI::DisambiguateMeta(token), offset);
    }
@@ -452,7 +452,7 @@ namespace Langulus::Things
       return const_cast<Thing*>(this)->GetChild(offset);
    }
 
-   /// Get child by name and offset (searches for Traits::Name in children)   
+   /// Get child by name and offset (searches for Tags::Name in children)   
    ///   @param name - name to seek                                           
    ///   @param offset - offset to seek                                       
    ///   @return the child entity, or nullptr of none was found               
@@ -497,15 +497,15 @@ namespace Langulus::Things
          child->ResetFlow(newflow);
    }
 
-   /// Count the number of matching units in this entity                      
-   ///   @param type - the type of units to search for                        
-   ///   @return the number of matching units                                 
+   /// Count the number of matching parts in this entity                      
+   ///   @param type - the type of parts to search for                        
+   ///   @return the number of matching parts                                 
    auto Thing::HasUnits(DMeta type) const -> size_t {
       const auto found = mUnitsAmbiguous.FindIt(type);
       return found ? found.GetValue().GetCount() : 0;
    }
 
-   /// Check if all units in the hierarchy require a Refresh() call           
+   /// Check if all parts in the hierarchy require a Refresh() call           
    ///   @return true if the thing is dirty                                   
    bool Thing::RequiresRefresh() const noexcept {
       return mRefreshRequired;

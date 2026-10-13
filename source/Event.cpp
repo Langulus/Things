@@ -15,13 +15,13 @@ namespace Langulus
    /*Event::operator Text() const {
       if (mState) {
          if (mPayload)
-            return Text::TemplateRt("{}({}, {})", mType, mState, Traits::Data {mPayload});
+            return Text::TemplateRt("{}({}, {})", mType, mState, Tags::Data {mPayload});
          else
             return Text::TemplateRt("{}({})", mType, mState);
       }
       else {
          if (mPayload)
-            return Text::TemplateRt("{}({})", mType, Traits::Data {mPayload});
+            return Text::TemplateRt("{}({})", mType, Tags::Data {mPayload});
          else
             return Text::TemplateRt("{}()", mType);
       }

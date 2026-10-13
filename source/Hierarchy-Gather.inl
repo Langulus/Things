@@ -11,10 +11,10 @@
 
 namespace Langulus::Things
 {
-   /// Collects all units of the given type inside the hierarchy              
+   /// Collects all parts of the given type inside the hierarchy              
    ///   @tparam SEEK where in the hierarchy are we seeking in?               
-   ///   @param meta the unit type to seek for                                
-   ///   @return the gathered units that match the type                       
+   ///   @param meta the part type to seek for                                
+   ///   @return the gathered parts that match the type                       
    template<Seek SEEK, class SELF>
    auto SeekInterface::GatherParts(this SELF&& self, DMeta meta) -> TMany<Tmut<SELF, Part*, Part const*>> {
       TMany<Tmut<SELF, Part*, Part const*>> result;
@@ -95,7 +95,7 @@ namespace Langulus::Things
             if (found)
                result += found.GetVal();
 
-            // Then check each unit's static traits                     
+            // Then check each part's static traits                     
             for (auto& part : self.mPartsList) {
                size_t index = 0;
                auto t = part->GetMember(tag, index);
@@ -143,13 +143,13 @@ namespace Langulus::Things
          if constexpr (SEEK & Seek::Here) {
             // Check dynamic traits in the entity                       
             for (auto tagGroup : self.mTags) {
-               for (auto trait : tagGroup.GetValue()) {
-                  try { result << trait.template AsCast<D>(); }
+               for (auto tag : tagGroup.GetValue()) {
+                  try { result << tag.template AsCast<D>(); }
                   catch (...) {}
                }
             }
 
-            // Then check each unit's static traits                     
+            // Then check each part's static traits                     
             for (auto& part : self.mPartsList) {
                size_t index = 0;
                auto t = part->GetMember(TMeta {}, index);

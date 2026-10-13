@@ -25,14 +25,14 @@ namespace Langulus::Things
    ///   @return a pointer to the tag, or nullptr if not found                
    auto Thing::GetLocalTag(this auto&& self, TMeta id, CT::Index auto&& index) -> Tag* {
       if (id) {
-         // Search a typed trait                                        
+         // Search a typed tag                                        
          const auto found = self.mTags.Find(id);
          if (found)
             return &(found.GetValue()[index]);
          return nullptr;
       }
 
-      // Search trait by index                                          
+      // Search tag by index                                          
       Tag* found {};
       if (index.IsArithmetic()) {
          auto offset = index.GetOffsetUnsafe();
@@ -59,9 +59,9 @@ namespace Langulus::Things
          // Handle some predefined traits here                          
          if (id.template IsTag<Tags::Part>()) {
             // Get a component                                          
-            auto unit = self.GetUnitMeta(DMeta {}, index);
-            if (unit)
-               return Tags::Part {unit};
+            auto part = self.GetUnitMeta(DMeta {}, index);
+            if (part)
+               return Tags::Part {part};
             return {};
          }
          else if (id.template IsTag<Tags::Child>()) {

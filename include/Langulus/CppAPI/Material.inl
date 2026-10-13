@@ -14,7 +14,7 @@ namespace Langulus::A
    
    /// Get input traits for a given rate (const)                              
    ///   @param rate - the rate                                               
-   ///   @return the input trait list                                         
+   ///   @return the input tag list                                         
    LANGULUS(INLINED)
    auto Material::GetInputs(RefreshRate rate) const -> const TagList& {
       return GetInputs(rate.GetInputIndex());
@@ -23,7 +23,7 @@ namespace Langulus::A
    /// Get input traits for a given input offset (const)                      
    ///   @attention offset must be in the range [0; Rate::InputCount)         
    ///   @param rate - the input offset                                       
-   ///   @return the input trait list                                         
+   ///   @return the input tag list                                         
    LANGULUS(INLINED)
    auto Material::GetInputs(size_t rate) const -> const TagList& {
       LglsAssumeDev(rate < RefreshRate::InputCount,
@@ -33,7 +33,7 @@ namespace Langulus::A
 
    /// Get output traits for a given rate (const)                             
    ///   @param rate - the rate                                               
-   ///   @return the output trait list                                        
+   ///   @return the output tag list                                        
    LANGULUS(INLINED)
    auto Material::GetOutputs(RefreshRate rate) const -> const TagList& {
       return GetOutputs(rate.GetInputIndex());
@@ -42,7 +42,7 @@ namespace Langulus::A
    /// Get output traits for a given input offset (const)                     
    ///   @attention offset must be in the range [0; Rate::InputCount)         
    ///   @param rate - the input offset                                       
-   ///   @return the output trait list                                        
+   ///   @return the output tag list                                        
    LANGULUS(INLINED)
    auto Material::GetOutputs(size_t rate) const -> const TagList& {
       LglsAssumeDev(rate < RefreshRate::InputCount,

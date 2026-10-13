@@ -20,7 +20,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract network unit                                                
+   ///   Abstract network part                                                
    ///                                                                        
    struct NetworkUnit : virtual Part {
       using CTTI_Bases = Part;

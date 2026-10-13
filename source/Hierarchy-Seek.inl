@@ -226,7 +226,7 @@ namespace Langulus::Things
       if (result)
          return result;
 
-      // If reached, then no unit was found in the descriptor           
+      // If reached, then no part was found in the descriptor           
       // Let's delve into the hierarchy                                 
       return self.template SeekPartExt<SEEK>(meta, ext, offset);
    }
@@ -311,7 +311,7 @@ namespace Langulus::Things
       if (result)
          return Abandon(result);
 
-      // If reached, then no trait was found in the descriptor          
+      // If reached, then no tag was found in the descriptor          
       // Let's delve into the hierarchy                                 
       return self.template SeekTag<SEEK>(meta, offset);
    }

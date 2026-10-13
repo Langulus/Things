@@ -99,10 +99,11 @@ namespace Langulus::Things
       LANGULUS_API(THINGS) void Select(Verb&);
       LANGULUS_API(THINGS) void Create(Verb&);
 
-      template<Seek = Seek::HereAndAbove, CT::Executable V>
-      V& RunIn(V&);
-      template<CT::Executable V>
-      V& Run(V&);
+      template<Seek = Seek::HereAndAbove>
+      void DoIn(Verb&);
+
+      /*template<CT::Executable V>
+      V& Run(V&);*/
 
       LANGULUS_API(THINGS) Many Say(Text const&);
       LANGULUS_API(THINGS) Many Run(Code const&);
@@ -203,10 +204,8 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       auto GetPartExt(DMeta, Many const&, CT::Index auto&& = 0) const -> Part const*;
 
-      template<CT::Part T = Part>
-      auto GetPart(CT::Index auto&& = 0)       -> Decay<T>*;
-      template<CT::Part T = Part>
-      auto GetPart(CT::Index auto&& = 0) const -> Decay<T> const*;
+      template<CT::Part T = Part, class SELF> requires CT::Decayed<T>
+      auto GetPart(this SELF&&, CT::Index auto&& = 0) -> Tmut<SELF, T*, T const*>;
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          LANGULUS_API(THINGS)
@@ -214,8 +213,8 @@ namespace Langulus::Things
          LANGULUS_API(THINGS)
          auto GetPartMeta(Token const&, CT::Index auto&& = 0)       -> Part*;
 
-         template<CT::Part T>
-         auto GetPartAs(Token const&, CT::Index auto&& = 0) -> Decay<T>*;
+         template<CT::Part T, class SELF> requires CT::Decayed<T>
+         auto GetPartAs(this SELF&&, Token const&, CT::Index auto&& = 0) -> Tmut<SELF, T*, T const*>;
       #endif
 
    private:
@@ -253,10 +252,8 @@ namespace Langulus::Things
       auto GetLocalTag(TMeta, CT::Index auto&& = 0) const -> Tag const*;
       LANGULUS_API(THINGS)
       auto GetLocalTag(TMeta, CT::Index auto&& = 0)       -> Tag*;
-      template<CT::DefineTag>
-      auto GetLocalTag(CT::Index auto&& = 0)       -> Tag*;
-      template<CT::DefineTag>
-      auto GetLocalTag(CT::Index auto&& = 0) const -> Tag const*;
+      template<CT::DefineTag, class SELF>
+      auto GetLocalTag(this SELF&&, CT::Index auto&& = 0) -> Tmut<SELF, Tag*, Tag const*>;
 
       LANGULUS_API(THINGS)
       void SetName(Text const&);

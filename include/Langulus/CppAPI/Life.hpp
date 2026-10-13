@@ -20,7 +20,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract life unit                                                   
+   ///   Abstract life part                                                   
    ///                                                                        
    struct LifeUnit : virtual Part {
       using CTTI_Bases = Part;

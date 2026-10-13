@@ -8,8 +8,8 @@
 #include "Common.hpp"
 
 
-SCENARIO("Testing Part", "[unit]") {
-   WHEN("Dynamically casting to/from unit pointers") {
+SCENARIO("Testing Part", "[part]") {
+   WHEN("Dynamically casting to/from part pointers") {
       TestUnit1 t1;
       TestUnit2 t2;
       Part* t1p = &t1;

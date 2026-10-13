@@ -50,8 +50,8 @@ namespace Langulus::Things
       if constexpr (CT::Deep<T> or CT::Neat<T>) {
          // Nest if deep/neat                                           
          stuff.ForEachDeep(
-            [this, &verb](Tag const& trait) {
-               verb << AddTrait(trait);
+            [this, &verb](Tag const& tag) {
+               verb << AddTrait(tag);
             },
             [this, &verb](Recipe const& construct) {
                CreateInner(verb, construct);
@@ -180,74 +180,13 @@ namespace Langulus::Things
       return removed;
    }
 
-   /// Execute verb in the hierarchy, searching for valid context in the      
-   /// given direction                                                        
-   ///   @tparam SEEK the direction in which to seek a valid context          
+
+   /// Execute verb in this thing only, scanning parts for required abilities 
    ///   @param verb the verb to execute                                      
    ///   @return verb output                                                  
-   template<Seek SEEK, CT::Executable V>
-   V& Thing::RunIn(V& verb) {
-      if constexpr (SEEK & Seek::Here) {
-         // Execute here                                                
-         if (Run(verb).IsDone())
-            return verb;
-      }
-
-      if constexpr (SEEK & Seek::Above) {
-         // Execute in parents up to root, if requested                 
-         if (mOwner and mOwner->template
-         RunIn<Seek::HereAndAbove>(verb).IsDone())
-            return verb;
-      }
-
-      if constexpr (SEEK & Seek::Below) {
-         // Execute in children, if requested                           
-         for (auto& child : mChildren) {
-            V local = verb;
-            local.ShortCircuit(false);
-            verb << Abandon(child->template
-               RunIn<Seek::HereAndBelow>(local).GetOutput());
-         }
-      }
-
-      return verb;
-   }
-
-   /// Execute verb in this thing only, scanning units for required verbs     
-   ///   @param verb the verb to execute                                      
-   ///   @return verb output                                                  
-   template<CT::Executable V>
+   /*template<CT::Executable V>
    V& Thing::Run(V& verb) {
-      try {
-         // Dispatch to entity first, using reflected and default verbs,
-         // but disallowing custom dispatch, because we're currently in 
-         // it and there's a potential for infinite regress             
-         Resolvable::Run<false>(verb);
-      }
-      catch (...) {}
-
-      if (verb.IsDone())
-         return verb;
-
-      // If verb is still not satisfied, dispatch to ALL units          
-      for (auto& unit : mUnitsList) {
-         try {
-            V local = verb;
-            local.ShortCircuit(false);
-            unit->Run(local);
-
-            if (local.IsDone()) {
-               // The local verb may or may not have an output, but a   
-               // success should always be carried over                 
-               verb.Done();
-               verb << Abandon(local.GetOutput());
-            }
-         }
-         catch (...) {}
-      }
-
-      return verb;
-   }
+   }*/
    
    /// Register part by all its bases in mPartsAmbiguous                      
    ///   @param part the part instance to register                            
@@ -255,15 +194,16 @@ namespace Langulus::Things
    inline void Thing::AddPartBases(Part* part, DMeta type) {
       const auto found = mPartsAmbiguous.Find(type);
       if (found)
-         found.GetVal() << part;
+         *found.GetVal() << part;
       else
          mPartsAmbiguous.Merge(type, part);
 
-      for (auto& base : type->mBases) {
-         if (base.mType->IsExact<Part>())
+      const auto abstract_part = MetaDataOf<Part>();
+      for (auto& base : type.GetBases()) {
+         if (base.type == abstract_part)
             break;
 
-         AddPartBases(part, base.mType);
+         AddPartBases(part, base.type);
       }
    }
 
@@ -273,16 +213,17 @@ namespace Langulus::Things
    inline void Thing::RemovePartBases(Part* part, DMeta type) {
       const auto found = mPartsAmbiguous.Find(type);
       if (found) {
-         auto& set = found.GetVal();
+         auto& set = *found.GetVal();
          if (set.Erase(part) and not set)
             mPartsAmbiguous.Erase(found);
       }
 
-      for (auto& base : type->mBases) {
-         if (base.mType->IsExact<Part>())
+      const auto abstract_part = MetaDataOf<Part>();
+      for (auto& base : type.GetBases()) {
+         if (base.type == abstract_part)
             break;
 
-         RemoveUnitBases(part, base.mType);
+         RemovePartBases(part, base.type);
       }
    }
 
@@ -296,13 +237,13 @@ namespace Langulus::Things
    ///   @return 1 if part has been added                                     
    template<bool TWOSIDED>
    size_t Thing::AddPart(Part* part) {
-      // Check if the unit instance is already registered here          
-      const auto meta = part->GetType();
+      // Check if the part instance is already registered here          
+      const auto meta = part->GetResolved().GetType();
       const auto found = mPartsAmbiguous.Find(meta);
-      if (found and found.GetVal().Find(part))
+      if (found and (*found.GetVal()).Find(part))
          return 0;
 
-      // We must guarantee, that no unit is coupled to entities with    
+      // We must guarantee, that no part is coupled to entities with    
       // different runtimes!                                            
       for (const auto& owners : part->mOwners) {
          LglsAssert(owners->GetRuntime() == GetRuntime(),
@@ -310,7 +251,7 @@ namespace Langulus::Things
          );
       }
 
-      // Log self before unit being added, it might change name         
+      // Log self before part being added, it might change name         
       THINGS_VERBOSE_SELF("");
 
       if constexpr (TWOSIDED) {
@@ -338,16 +279,16 @@ namespace Langulus::Things
    ///   @return 1 if part has been removed                                   
    template<bool TWOSIDED>
    size_t Thing::RemovePart(Part* part) {
-      const auto meta = part->GetType();
+      const auto meta = part->GetResolved().GetType();
       const auto foundType = mPartsAmbiguous.Find(meta);
       if (not foundType)
          return 0;
 
-      const auto partIndex = foundType.GetVal().Find(part);
+      const auto partIndex = (*foundType.GetVal()).Find(part);
       if (partIndex) {
          // Decouple before part is destroyed                           
          if constexpr (TWOSIDED)
-            part->mOwners.Remove(this);
+            part->mOwners.Erase(this);
 
          // Notify all other parts about the environment change         
          mRefreshRequired = true;
@@ -355,7 +296,7 @@ namespace Langulus::Things
 
          // Dereference (and eventually destroy) part                   
          RemovePartBases(part, meta);
-         mPartsList.Remove(part);
+         mPartsList.Erase(part);
          return 1;
       }
 
@@ -370,13 +311,13 @@ namespace Langulus::Things
    ///   @return the number of removed parts                                  
    template<CT::Part T, bool TWOSIDED>
    size_t Thing::RemoveParts() {
-      if constexpr (CT::Same<T, Part>) {
+      if constexpr (Same<T, Part>) {
          // Remove all parts                                            
          const auto removed = mPartsList.GetCount();
          if constexpr (TWOSIDED) {
             // Decouple before parts are (potentially) destroyed        
             for (auto& part : mPartsList)
-               part->mOwners.Remove(this);
+               part->mOwners.Erase(this);
          }
 
          mPartsList.Reset();
@@ -386,7 +327,7 @@ namespace Langulus::Things
          return removed;
       }
       else {
-         // Remove units of a specific type                             
+         // Remove parts of a specific type                             
          const auto meta = MetaOf<Decay<T>>();
          const auto found = mPartsAmbiguous.Find(meta);
          if (not found)
@@ -395,7 +336,7 @@ namespace Langulus::Things
          // List intentionally shallow-copied, its memory will diverge  
          // upon RemovePart                                             
          auto list = found.GetVal();
-         size_t removed {};
+         size_t removed = 0;
          for (auto& part : list)
             removed += RemovePart(part);
          return removed;
@@ -418,7 +359,7 @@ namespace Langulus::Things
 
    /// Get the ambiguous map of parts                                         
    ///   @return a reference to the map of parts                              
-   inlineauto Thing::GetPartsMap() const noexcept -> PartMap const& {
+   inline auto Thing::GetPartsMap() const noexcept -> PartMap const& {
       return mPartsAmbiguous;
    }
 
@@ -450,9 +391,9 @@ namespace Langulus::Things
    ///   @param token the part type token                                     
    ///   @param arguments... the arguments to provide for construct           
    ///   @return the created part(s)                                          
-   template<class... A>
+   template<class...A>
    Many Thing::CreatePartToken(Token const& token, A&&...arguments) {
-      return CreateData(Recipe::FromToken(token, LglsFwd(arguments)...));
+      return CreateData(Recipe::Of(token, LglsFwd(arguments)...));
    }
 #endif
 
@@ -460,14 +401,13 @@ namespace Langulus::Things
    ///   @tparam T the type of part we're searching for                       
    ///   @param offset optional offset (Nth match)                            
    ///   @return the part if found, or nullptr if not                         
-   template<CT::Part T, class SELF>
-   auto Thing::GetPart(this SELF&& self, Index offset) -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
-      if constexpr (not Same<T, Part>) {
-         return static_cast<Decay<T>*>(
-            GetPartMeta(MetaOf<Decay<T>>(), offset)
-         );
-      }
-      else return static_cast<Decay<T>*>(GetPartMeta(DMeta {}, offset));
+   template<CT::Part T, class SELF> requires CT::Decayed<T>
+   auto Thing::GetPart(this SELF&& self, CT::Index auto&& offset)
+   -> Tmut<SELF, T*, T const*> {
+      if constexpr (not Same<T, Part>)
+         return self.GetPartMeta(MetaOf<T>(), LglsFwd(offset));
+      else
+         return self.GetPartMeta(DMeta {}, LglsFwd(offset));
    }
 
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
@@ -476,8 +416,9 @@ namespace Langulus::Things
       ///   @param token part type token                                      
       ///   @param offset optional offset (Nth match)                         
       ///   @return the part if found, or nullptr if not                      
-      Part const* Thing::GetPartMeta(Token const& token, Index offset) const {
-         return const_cast<Thing*>(this)->GetPartMeta(token, offset);
+      inline auto Thing::GetPartMeta(Token const& token, CT::Index auto&& offset) const
+      -> Part const* {
+         return const_cast<Thing*>(this)->GetPartMeta(token, LglsFwd(offset));
       }
 
       /// Get a part by a token, and an optional offset, then dynamic_cast it 
@@ -486,14 +427,17 @@ namespace Langulus::Things
       ///   @param token part type token                                      
       ///   @param offset optional offset (Nth match)                         
       ///   @return the part if found, or nullptr if not                      
-      template<CT::Part T>
-      Decay<T>* Thing::GetPartAs(Token const& token, Index offset) {
-         return dynamic_cast<Decay<T>*>(GetPartMeta(token, offset));
+      template<CT::Part T, class SELF> requires CT::Decayed<T>
+      auto Thing::GetPartAs(this SELF&& self, Token const& token, CT::Index auto&& offset)
+      -> Tmut<SELF, T*, T const*> {
+         return dynamic_cast<Tmut<SELF, T*, T const*>>(
+            self.GetPartMeta(token, LglsFwd(offset))
+         );
       }
    #endif
 
    template<CT::DefineTag T>
-   Tag Thing::GetTag(Index offset) {
+   Tag Thing::GetTag(CT::Index auto&& offset) {
       return GetTag(MetaTagOf<T>(), offset);
    }
 
@@ -501,8 +445,9 @@ namespace Langulus::Things
    ///   @tparam T the tag to search for                                      
    ///   @param offset the offset of the tag to return (optional)             
    ///   @return the tag or nullptr if none found                             
-   template<CT::DefineTag T>
-   Tag* Thing::GetLocalTag(this auto&& self, Index offset) {
+   template<CT::DefineTag T, class SELF>
+   auto Thing::GetLocalTag(this SELF&& self, CT::Index auto&& offset)
+   -> Tmut<SELF, Tag*, Tag const*> {
       return self.GetLocalTag(MetaTagOf<T>(), offset);
    }
 
@@ -513,10 +458,9 @@ namespace Langulus::Things
    ///   @return created data                                                 
    template<Seek SEEK>
    Many Thing::CreateData(Recipe const& recipe) {
-      LglsAssumeUser(recipe.GetTarget(), "Invalid construct type");
-      const auto type = recipe.GetTarget();
-      const auto producer = type and type->mProducerRetriever
-         ? type->mProducerRetriever() : nullptr;
+      LglsAssumeUser(recipe.GetTarget(), "Invalid recipe type");
+      const DMeta type = recipe.GetTarget();
+      const DMeta producer = type.GetProducer();
       Recipe descriptor = recipe;
 
       THINGS_VERBOSE_SELF(
@@ -524,13 +468,12 @@ namespace Langulus::Things
          type, "` (at ", GetReferences(), " references)"
       );
 
-      // Implicitly add a parent tag to descriptor, if one isn't        
+      // Implicitly add a parent tag to descriptor if one isn't         
       // already added - it will be stripped later, when normalizing    
       // the descriptor when producing the item from a factory          
       Tags::Parent parent;
-      if (not descriptor->ExtractTrait<Tags::Parent>(parent)) {
-         parent = this;
-         parent.MakeMissing();
+      if (not descriptor.ExtractTag<Tags::Parent>(parent)) {
+         parent.Assign(this).EnablePast();
          descriptor << parent;
          THINGS_VERBOSE_SELF(
             "Referenced as Tags::Parent (now at ",
@@ -543,38 +486,38 @@ namespace Langulus::Things
       if (producer) {
          // Data has a specific producer, we can narrow the required    
          // contexts for creation a lot                                 
-         if (producer->template CastsTo<Part>()) {
-            // Data is producible from a unit                           
+         if (producer.CastsTo(MetaDataOf<Part>())) {
+            // Data is producible from a part                           
             auto producers = GatherParts<SEEK>(producer);
-            LANGULUS_ASSERT(producers, Construct, 
-               "No producers", " (of unit type `", producer, "`) available "
-               "in hierarchy for construct: ", construct
+            LglsAssert(producers, 
+               "No producers", " (of part type `", producer, "`) available "
+               "in hierarchy for recipe: ", recipe
             );
 
-            // Potential unit producers found, attempt creation         
-            producers.MakeOr();
-            Verbs::Create creator {descriptor};
-            if (Flow::DispatchFlat(producers, creator))
+            // Potential part producers found, attempt creation         
+            producers.EnableOr();
+            auto creator = Verbs::Create{descriptor}.In(producers);
+            if (creator.Run())
                return Abandon(creator.GetOutput());
 
             Logger::Error(
                "Failed to create `", Logger::PushDarkYellow, type, Logger::Pop,
-               "` in unit(s) ", Logger::PushDarkYellow, producers, Logger::Pop,
+               "` in part(s) ", Logger::PushDarkYellow, producers, Logger::Pop,
                ": ", descriptor
             );
          }
-         else if (producer->template CastsTo<Things::Module>()) {
+         else if (producer.CastsTo(MetaDataOf<Module>())) {
             // Data is producible from a module                         
             auto producers = GetRuntime()->GetModules(producer);
-            LANGULUS_ASSERT(producers, Construct,
+            LglsAssert(producers,
                "No producers", " (of module type `", producer, "`) available "
-               "in hierarchy for construct: ", construct
+               "in hierarchy for recipe: ", recipe
             );
 
             // Potential module producers found, attempt creation       
-            producers.MakeOr();
-            Verbs::Create creator {descriptor};
-            if (Flow::DispatchFlat(producers, creator))
+            producers.EnableOr();
+            auto creator = Verbs::Create{descriptor}.In(producers);
+            if (creator.Run())
                return Abandon(creator.GetOutput());
 
             Logger::Error(
@@ -583,26 +526,26 @@ namespace Langulus::Things
                ": ", descriptor
             );
          }
-         else if (producer->template CastsTo<Thing>()) {
+         else if (producer.CastsTo(MetaDataOf<Thing>())) {
             // Data is producible from a thing                          
             TODO();
          }
       }
-      else if (type->mIsAbstract and not type->mConcreteRetriever) {
+      else if (type.IsAbstract() and not type.GetConcrete()) {
          // Data doesn't have a specific producer, but it is abstract   
-         // so we know that only a module/unit can concretize it        
-         // Gather all units in the desired part of the hierarchy       
+         // so we know that only a module/part can concretize it.       
+         // Gather all parts in the desired part of the hierarchy.      
          auto producers = GatherParts<Part, SEEK>();
          if (producers) {
-            // Potential unit producers found, attempt creation there   
-            producers.MakeOr();
-            Verbs::Create creator {descriptor};
-            if (Flow::DispatchFlat(producers, creator))
+            // Potential part producers found, attempt creation there   
+            producers.EnableOr();
+            auto creator = Verbs::Create{descriptor}.In(producers);
+            if (creator.Run())
                return Abandon(creator.GetOutput());
 
             Logger::Error(
                "Failed to create abstract `", Logger::PushDarkYellow, type, Logger::Pop,
-               "` in unit(s) ", Logger::PushDarkYellow, producers, Logger::Pop,
+               "` in part(s) ", Logger::PushDarkYellow, producers, Logger::Pop,
                ": ", descriptor
             );
          }
@@ -613,15 +556,15 @@ namespace Langulus::Things
       else {
          // Data is not abstract, nor has a producer, so just make it   
          // right here if possible, passing the descriptor over, if     
-         // such constructor is reflected. If it's a unit, its          
+         // such constructor is reflected. If it's a part, its          
          // descriptor is resposible for registering it with the parent 
-         // via the Traits::Parent trait                                
-         Verbs::Create creator {descriptor};
-         if (Verbs::Create::ExecuteStateless(creator))
+         // via the Tags::Parent tag                                    
+         auto creator = Verbs::Create{descriptor};
+         if (creator.RunStateless())
             return Abandon(creator.GetOutput());
       }
 
-      LANGULUS_THROW(Construct, "Unable to create data");
+      throw Exception("Unable to create data");
       return {};
    }
 
@@ -630,7 +573,7 @@ namespace Langulus::Things
    ///   @tparam SEEK - direction to seek valid execution context in          
    ///   @param verb - the verb to execute                                    
    ///   @return the verb output                                              
-   template<Seek SEEK, CT::VerbBased V>
+   /*template<Seek SEEK, CT::VerbBased V>
    V& Part::RunIn(V& verb) {
       if (not mOwners) {
          Logger::Warning(Self(), "No owners available for executing: ", verb);
@@ -645,5 +588,5 @@ namespace Langulus::Things
       }
 
       return verb;
-   }
+   }*/
 }

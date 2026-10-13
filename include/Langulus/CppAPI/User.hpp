@@ -20,7 +20,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract user unit                                                   
+   ///   Abstract user part                                                   
    ///                                                                        
    struct User : virtual Part {
       using CTTI_Bases = Part;

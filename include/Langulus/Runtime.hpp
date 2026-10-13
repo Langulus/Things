@@ -26,7 +26,7 @@ namespace Langulus::Things
    ///   You can view a Runtime as a single process inside Langulus. You can  
    /// create infinite nested subprocesses in any Thing. Each new runtime     
    /// will act as the environment for that Thing, as well as all of its      
-   /// children, modules, units, etc.                                         
+   /// children, modules, parts, etc.                                         
    ///                                                                        
    struct Runtime final {
    private:

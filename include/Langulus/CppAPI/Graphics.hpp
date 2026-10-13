@@ -20,7 +20,7 @@ namespace Langulus
    };
 
    ///                                                                        
-   ///   Abstract graphics units                                              
+   ///   Abstract graphics parts                                              
    ///                                                                        
    struct Graphics : virtual Part {
       using CTTI_Bases = Part;
@@ -85,7 +85,7 @@ namespace Langulus
 
 namespace Langulus::CT
 {
-   /// A concept for any kind of a graphics unit                              
+   /// A concept for any kind of a graphics part                              
    template<class T>
    concept Graphics = DerivedFrom<T, A::Graphics>;
 }

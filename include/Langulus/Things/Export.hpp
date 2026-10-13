@@ -75,7 +75,7 @@ LANGULUS_DEFINE_TAG(Precedence,
 LANGULUS_DEFINE_TAG(Runtime,
    "Accesses the runtime of a hierarchy of Things");
 LANGULUS_DEFINE_TAG(Part,
-   "Accesses units (components) of Things");
+   "Accesses parts (components) of Things");
 LANGULUS_DEFINE_TAG(Mesh,
    "Associated geometry asset");
 LANGULUS_DEFINE_TAG(FOV,

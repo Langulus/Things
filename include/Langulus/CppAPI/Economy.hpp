@@ -28,7 +28,7 @@ namespace Langulus::Things
    };
 
    ///                                                                        
-   ///   Abstract economy unit                                                
+   ///   Abstract economy part                                                
    ///                                                                        
    struct EconomyPart : virtual Part {
       using CTTI_Bases = Part;

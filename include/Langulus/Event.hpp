@@ -12,6 +12,7 @@
 #include "Langulus/RTTI/Definition.hpp"
 #include <Langulus/Time.hpp>
 #include <Langulus/Many.hpp>
+#include <Langulus/Text.hpp>
 #include <Langulus/Describe.hpp>
 #include "Things/Export.hpp"
 
@@ -19,7 +20,7 @@
 namespace Langulus
 {
    ///                                                                        
-   ///   Event state                                                          
+   /// MARK: Event state                                                      
    ///                                                                        
    struct EventState {
       using CTTI_POD       = Yup;
@@ -124,7 +125,7 @@ namespace Langulus::Annies::Inner
 namespace Langulus
 {
    ///                                                                        
-   ///   An event                                                             
+   /// MARK:  Event                                                           
    ///                                                                        
    ///   Simply a named container, that has some of the conventional data     
    /// associated with events, like event type, state and timestamp moved     
@@ -335,7 +336,6 @@ namespace Langulus
       }
 }
 
-LANGULUS_MORPHISM(Langulus::Event, Langulus::Annies::Text);
 
 LANGULUS_DEFINE_EVENT(WindowClose,
    "An event that occurs when native window closes")
@@ -659,3 +659,40 @@ LANGULUS_DEFINE_KEY(Joystick15,
    "The event of pressing/releasing the joystick #15 key")
 LANGULUS_DEFINE_KEY(Joystick16,
    "The event of pressing/releasing the joystick #16 key")
+
+
+namespace Langulus::CTTI
+{
+   /// Rule for serializing events to Text.                                   
+   //TODO events use real timestamps, but they should be produced by a flow, and use
+   //TODO the flow's time units and relative timestamps. this will make flows much
+   //TODO more deterministic when serialized as well
+   template<CT::Event E>
+   struct SerializationRule<Annies::Text, E> {
+      using S = Serializer<Annies::Text>;
+      using Context = typename S::Context;
+
+      static void Serialize(E const& event, Annies::Text& out, Context*) {
+         out += event.GetEvent();
+         out += Serial::OpenScope.Token;
+
+         const bool state_depicted = event.GetEventState();
+         if (state_depicted)
+            out += event.GetEventState();
+
+         if (event.GetPayload()) {
+            if (state_depicted)
+               out += Serial::And.Token;
+            out += event.GetPayload();
+         }
+
+         out += Serial::CloseScope.Token;
+      }
+   };
+}
+
+LANGULUS_MORPHISM_CUSTOM(Langulus::Event, {
+   Annies::Text text;
+   Langulus::Serialize(from, text);
+   return text;
+}, Annies::Text);

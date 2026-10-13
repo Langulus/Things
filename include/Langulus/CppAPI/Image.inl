@@ -247,10 +247,10 @@ namespace Langulus::A
    T Image::Iterator<M>::As() const {
       const auto from = mImage->GetView().mFormat;
       LglsAssumeDev(from, "No color type");
-      const auto fromRed = from->GetMember(MetaOf<Traits::R>());
-      const auto fromGre = from->GetMember(MetaOf<Traits::G>());
-      const auto fromBlu = from->GetMember(MetaOf<Traits::B>());
-      const auto fromAlf = from->GetMember(MetaOf<Traits::A>());
+      const auto fromRed = from->GetMember(MetaOf<Tags::R>());
+      const auto fromGre = from->GetMember(MetaOf<Tags::G>());
+      const auto fromBlu = from->GetMember(MetaOf<Tags::B>());
+      const auto fromAlf = from->GetMember(MetaOf<Tags::A>());
       const RTTI::Member* fromAny =
          fromRed ? fromRed :
          fromGre ? fromGre :

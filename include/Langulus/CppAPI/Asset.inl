@@ -33,15 +33,15 @@ namespace Langulus::A
    }
 
    /// Get a single data entry from the contents                              
-   ///   @tparam T - the trait to search for                                  
-   ///   @param index - the Nth data associated to the trait                  
+   ///   @tparam T - the tag to search for                                  
+   ///   @param index - the Nth data associated to the tag                  
    ///   @return a pointer to the data entry, or nullptr if none exists       
    template<CT::DefineTag T> LANGULUS(INLINED)
    auto Asset::GetData(size_t index) noexcept -> Data* {
-      TMeta trait;
+      TMeta tag;
       if constexpr (CT::Tag<T>)
-         trait = MetaTraitOf<T>();
-      return GetData(trait, index);
+         tag = MetaTraitOf<T>();
+      return GetData(tag, index);
    }
 
    template<CT::DefineTag T> LANGULUS(INLINED)
@@ -50,34 +50,34 @@ namespace Langulus::A
    }
 
    /// Get a single data entry from the contents                              
-   ///   @param trait - the trait to search for                               
-   ///   @param index - the Nth data associated to the trait                  
+   ///   @param tag - the tag to search for                               
+   ///   @param index - the Nth data associated to the tag                  
    ///   @return a pointer to the data entry, or nullptr if none exists       
    LANGULUS(INLINED)
-   auto Asset::GetData(TMeta trait, size_t index) noexcept -> Data* {
-      if (not Generate(trait, index))
+   auto Asset::GetData(TMeta tag, size_t index) noexcept -> Data* {
+      if (not Generate(tag, index))
          return nullptr;
 
-      const auto datalist = GetDataList(trait);
+      const auto datalist = GetDataList(tag);
       return datalist and datalist->GetCount() > index
          ? &(*datalist)[index]
          : nullptr;
    }
 
    LANGULUS(INLINED)
-   auto Asset::GetData(TMeta trait, size_t index) const noexcept -> Data const* {
-      return const_cast<Asset*>(this)->GetData(trait, index);
+   auto Asset::GetData(TMeta tag, size_t index) const noexcept -> Data const* {
+      return const_cast<Asset*>(this)->GetData(tag, index);
    }
 
    /// Get a data list from the contents                                      
-   ///   @tparam T - the trait to search for                                  
+   ///   @tparam T - the tag to search for                                  
    ///   @return a pointer to the data list, or nullptr if none exists        
    template<CT::DefineTag T> LANGULUS(INLINED)
    auto Asset::GetDataList() noexcept -> DataList* {
-      TMeta trait;
+      TMeta tag;
       if constexpr (CT::Tag<T>)
-         trait = MetaTraitOf<T>();
-      return GetDataList(trait);
+         tag = MetaTraitOf<T>();
+      return GetDataList(tag);
    }
 
    template<CT::DefineTag T> LANGULUS(INLINED)
@@ -86,26 +86,26 @@ namespace Langulus::A
    }
 
    /// Get a data list from the contents                                      
-   ///   @param trait - the trait to search for                               
+   ///   @param tag - the tag to search for                               
    ///   @return a pointer to the data list, or nullptr if none exists        
    LANGULUS(INLINED)
-   auto Asset::GetDataList(TMeta trait) noexcept -> DataList* {
-      if (not const_cast<Asset*>(this)->Generate(trait))
+   auto Asset::GetDataList(TMeta tag) noexcept -> DataList* {
+      if (not const_cast<Asset*>(this)->Generate(tag))
          return nullptr;
 
-      const auto found = mDataListMap.FindIt(trait);
+      const auto found = mDataListMap.FindIt(tag);
       return found ? &found.GetValue() : nullptr;
    }
 
    LANGULUS(INLINED)
-   auto Asset::GetDataList(TMeta trait) const noexcept -> const DataList* {
-      return const_cast<Asset*>(this)->GetDataList(trait);
+   auto Asset::GetDataList(TMeta tag) const noexcept -> const DataList* {
+      return const_cast<Asset*>(this)->GetDataList(tag);
    }
 
    /// Commit data to an asset                                                
-   ///   @attention data is always comitted, even if trait already exists     
-   ///   @tparam T - an optional trait type                                   
-   ///      @attention default value leads all data to the no-trait bucket    
+   ///   @attention data is always comitted, even if tag already exists     
+   ///   @tparam T - an optional tag type                                   
+   ///      @attention default value leads all data to the no-tag bucket    
    ///   @param content - block of data to insert (with intents or not)       
    ///      @attention you can use references to external data, but beware    
    ///         that asset data is intrinsically paired with the asset         
@@ -115,16 +115,16 @@ namespace Langulus::A
    ///         representation.                                                
    template<CT::DefineTag T> LANGULUS(INLINED)
    void Asset::Commit(auto&& content) {
-      TMeta trait;
+      TMeta tag;
       if constexpr (CT::Tag<T>)
-         trait = MetaTraitOf<T>();
+         tag = MetaTraitOf<T>();
 
       using S = IntentOf<decltype(content)>;
-      const auto found = mDataListMap.FindIt(trait);
+      const auto found = mDataListMap.FindIt(tag);
       if (found)
          found.GetValue() << S::Nest(content);
       else
-         mDataListMap.Insert(trait, S::Nest(content));
+         mDataListMap.Insert(tag, S::Nest(content));
    }
 
 } // namespace Langulus::A

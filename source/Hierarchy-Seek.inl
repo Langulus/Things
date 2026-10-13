@@ -19,8 +19,8 @@ namespace Langulus::Things
    ///   @return a pointer to the found part, or nullptr if not found         
    template<Seek SEEK, class SELF>
    auto SeekInterface::SeekPart(this SELF&& self, DMeta meta, CT::Index auto&& offset)
-   -> Tmut<SELF, Part*, Part const*> {
-      Tmut<SELF, Part*, Part const*> result;
+   -> LglsMutIf(SELF, Part*) {
+      LglsMutIf(SELF, Part*) result;
 
       if constexpr (CT::Part<SELF>) {
          for (auto owner : self.mOwners) {
@@ -61,8 +61,10 @@ namespace Langulus::Things
 
    template<CT::Part T, Seek SEEK, class SELF>
    auto SeekInterface::SeekPart(this SELF&& self, CT::Index auto&& offset)
-   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
-      return self.template SeekPart<SEEK>(MetaDataOf<Decay<T>>(), LglsFwd(offset));
+   -> LglsMutIf(SELF, Decay<T>*) {
+      return self.template SeekPart<SEEK>(
+         MetaDataOf<Decay<T>>(), LglsFwd(offset)
+      );
    }
 
    /// Find part by type and optional offset, but search first in an          
@@ -74,8 +76,8 @@ namespace Langulus::Things
    ///   @return a pointer to the found part, or nullptr if not found         
    template<Seek SEEK, class SELF>
    auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, DMeta meta, CT::Index auto&& offset) 
-   -> Tmut<SELF, Part*, Part const*> {
-      Tmut<SELF, Part*, Part const*> result = nullptr;
+   -> LglsMutIf(SELF, Part*) {
+      LglsMutIf(SELF, Part*) result = nullptr;
 
       // Scan descriptor even if hierarchy is empty                     
       if constexpr (SEEK & Seek::Here) {
@@ -135,8 +137,10 @@ namespace Langulus::Things
 
    template<CT::Part T, Seek SEEK, class SELF>
    auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, CT::Index auto&& offset)
-   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
-      return self.template SeekPartAux<SEEK>(aux, MetaDataOf<Decay<T>>(), LglsFwd(offset));
+   -> LglsMutIf(SELF, Decay<T>*) {
+      return self.template SeekPartAux<SEEK>(
+         aux, MetaDataOf<Decay<T>>(), LglsFwd(offset)
+      );
    }
       
    /// Find part by type and specific properties and optional offset          
@@ -147,8 +151,8 @@ namespace Langulus::Things
    ///   @return a pointer to the found part, or nullptr if not found         
    template<Seek SEEK, class SELF>
    auto SeekInterface::SeekPartExt(this SELF&& self, DMeta meta, Many const& ext, CT::Index auto&& offset)
-   -> Tmut<SELF, Part*, Part const*> {
-      Tmut<SELF, Part*, Part const*> result;
+   -> LglsMutIf(SELF, Part*) {
+      LglsMutIf(SELF, Part*) result;
 
       if constexpr (CT::Part<SELF>) {
          for (auto owner : self.mOwners) {
@@ -190,7 +194,7 @@ namespace Langulus::Things
 
    template<CT::Part T, Seek SEEK, class SELF>
    auto SeekInterface::SeekPartExt(this SELF&& self, Many const& ext, CT::Index auto&& offset)
-   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
+   -> LglsMutIf(SELF, Decay<T>*) {
       return self.template SeekPartExt<SEEK>(MetaDataOf<Decay<T>>(), ext, LglsFwd(offset));
    }
 
@@ -204,8 +208,8 @@ namespace Langulus::Things
    ///   @return a pointer to the found part, or nullptr if not found         
    template<Seek SEEK, class SELF>
    auto SeekInterface::SeekPartAuxExt(this SELF&& self, DMeta meta, Many const& aux, Many const& ext, CT::Index auto&& offset)
-   -> Tmut<SELF, Part*, Part const*> {
-      Tmut<SELF, Part*, Part const*> result = nullptr;
+   -> LglsMutIf(SELF, Part*) {
+      LglsMutIf(SELF, Part*) result = nullptr;
 
       // Scan descriptor even if hierarchy is empty                     
       aux.ForEachDeep([&](Part const* u) {
@@ -233,7 +237,7 @@ namespace Langulus::Things
 
    template<CT::Part T, Seek SEEK, class SELF>
    auto SeekInterface::SeekPartAuxExt(this SELF&& self, Many const& aux, Many const& ext, CT::Index auto&& offset)
-   -> Tmut<SELF, Decay<T>*, Decay<T> const*> {
+   -> LglsMutIf(SELF, Decay<T>*) {
       return self.template SeekPartAuxExt<SEEK>(MetaDataOf<Decay<T>>(), aux, ext, LglsFwd(offset));
    }
       

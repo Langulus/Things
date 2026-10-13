@@ -76,7 +76,7 @@ namespace Langulus::CTTI
          }
 
          TMany<Tags::Index> indices;
-         TMany<Tag> selectedTraits;
+         TMany<Tag> selectedTags;
          TMany<RTTI::DefinitionVerb const*> selectedAbilities;
 
          // Scan verb argument for indices                              
@@ -103,19 +103,19 @@ namespace Langulus::CTTI
                   containsOnlyIndices = false;
                   auto tmeta = tag.GetTag();
                   if (tmeta)
-                     PerIndex<MUTABLE>(context, selectedTraits, tmeta, tmeta, indices);
+                     PerIndex<MUTABLE>(context, selectedTags, tmeta, tmeta, indices);
                   else
-                     PerIndex<MUTABLE>(context, selectedTraits, tmeta, tag.GetType(), indices);
+                     PerIndex<MUTABLE>(context, selectedTags, tmeta, tag.GetType(), indices);
                },
                [&](TMeta tmeta) {
                   VERBOSE_SELECT("Selecting tag: ", tmeta);
                   containsOnlyIndices = false;
-                  PerIndex<MUTABLE>(context, selectedTraits, tmeta, tmeta, indices);
+                  PerIndex<MUTABLE>(context, selectedTags, tmeta, tmeta, indices);
                },
                [&](DMeta dmeta) {
                   VERBOSE_SELECT("Selecting data: ", dmeta);
                   containsOnlyIndices = false;
-                  SelectByMeta<MUTABLE>(indices, dmeta, context, selectedTraits, selectedAbilities);
+                  SelectByMeta<MUTABLE>(indices, dmeta, context, selectedTags, selectedAbilities);
                }
             );
          });
@@ -124,11 +124,11 @@ namespace Langulus::CTTI
             // Try selecting via indices only                              
             // This is allowed only if no metas were found in the argument 
             VERBOSE_SELECT("Selecting via indices only: ", indices);
-            PerIndex<MUTABLE>(context, selectedTraits, TMeta {}, DMeta {}, indices);
+            PerIndex<MUTABLE>(context, selectedTags, TMeta {}, DMeta {}, indices);
          }
 
          // Output results if any, satisfying the verb                     
-         for (auto& tag : selectedTraits)
+         for (auto& tag : selectedTags)
             verb << static_cast<Many&>(tag);
 
          verb << selectedAbilities;
@@ -209,15 +209,15 @@ namespace Langulus::Verbs
    /// Select members by providing either meta data or meta tag             
    ///   @tparam MUTABLE - whether or not selection will be mutable           
    ///   @param context - the thing we're searching in                        
-   ///   @param selectedTraits - [out] found traits go here                   
-   ///   @param resultingTrait - the type of tag to push to selectedTraits  
+   ///   @param selectedTags - [out] found traits go here                   
+   ///   @param resultingTrait - the type of tag to push to selectedTags  
    ///   @param meta - the filter we'll be using                              
    ///   @param indices - optional indices (i.e. Nth tag of a kind          
-   ///   @return true if at least one tag has been pushed to selectedTraits 
+   ///   @return true if at least one tag has been pushed to selectedTags 
    template<bool MUTABLE>
    bool Select::PerIndex(
       Many& context,
-      TMany<Tag>& selectedTraits,
+      TMany<Tag>& selectedTags,
       TMeta resultingTrait,
       CT::Meta auto meta,
       const TMany<Index>& indices
@@ -249,7 +249,7 @@ namespace Langulus::Verbs
                variable.MakeConst();
 
             if (variable.IsAllocated()) {
-               selectedTraits << Tag::From(resultingTrait, variable);
+               selectedTags << Tag::From(resultingTrait, variable);
                done = true;
             }
          }
@@ -266,7 +266,7 @@ namespace Langulus::Verbs
    ///   @param indices - optional index for tag/verb (Nth tag/verb)      
    ///   @param id - type of data we'll be selecting                          
    ///   @param context - the thing we're searching in                        
-   ///   @param selectedTraits - [out] found traits go here                   
+   ///   @param selectedTags - [out] found traits go here                   
    ///   @param selectedVerbs - [out] found verb go here                      
    ///   @return if at least tag/verb has been pushed to outputs            
    template<bool MUTABLE>
@@ -274,7 +274,7 @@ namespace Langulus::Verbs
       const TMany<Index>& indices,
       DMeta id,
       Many& context,
-      TMany<Tag>& selectedTraits,
+      TMany<Tag>& selectedTags,
       TMany<const RTTI::Ability*>& selectedVerbs
    ) {
       const auto type = context.GetType();
@@ -300,7 +300,7 @@ namespace Langulus::Verbs
       }
 
       // Select data IDs                                                
-      return PerIndex<MUTABLE>(context, selectedTraits, nullptr, id, indices);
+      return PerIndex<MUTABLE>(context, selectedTags, nullptr, id, indices);
    };
 
 } // namespace Langulus::Verbs

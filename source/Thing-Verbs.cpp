@@ -6,6 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/Thing.hpp>
+#include <Langulus/Temporal.hpp>
 #include <Langulus/Verbs/Conjunct.hpp>
 #include <Langulus/CppAPI/AI.hpp>
 #include "Thing.inl"
@@ -71,7 +72,7 @@ namespace Langulus::Things
    /// Custom dispatcher, reflected via CT::Dispatcher                        
    /// Entity is a composite type, and its behavior depends on the coupled    
    /// parts, so the custom dispatcher forwards verbs to these parts          
-   ///   @param verb - any verb                                               
+   ///   @param verb any verb                                                 
    void Thing::Do(Verb& verb) {
       try {
          // Dispatch to entity first, using reflected and default verbs,
@@ -85,7 +86,7 @@ namespace Langulus::Things
          return verb;
 
       // If verb is still not satisfied, dispatch to ALL parts          
-      for (auto& part : mUnitsList) {
+      for (auto& part : mPartsList) {
          try {
             V local = verb;
             local.ShortCircuit(false);
@@ -136,6 +137,8 @@ namespace Langulus::Things
 
             if (local.IsDone()) {
                verb << Abandon(local.GetOutput());
+
+               // Some verbs are short-circuited                        
                if (local.IsShortCircuited())
                   return;
             }
@@ -144,77 +147,76 @@ namespace Langulus::Things
    }
 
    /// Create/Destroy stuff inside entity's context                           
-   ///   @param verb - creation verb                                          
+   ///   @param verb creation verb                                            
    void Thing::Create(Verb& verb) {
-      if (not verb)
-         return;
-      CreateInner(verb, verb.GetArgument());
+      if (verb)
+         CreateInner(verb.GetOutput(), verb.GetArgument());
    }
 
    /// Pick something from the entity - children, traits, parts, modules      
    /// If this entity doesn't satisfy the query, a search will be performed   
    /// in all parents, climbing the hierarchy                                 
-   ///   @param verb - the selection verb                                     
+   ///   @param verb selection verb                                           
    void Thing::Select(Verb& verb) {
       // Probe every part of the argument and check if it matches       
-      TMany<Tag>    selectedTraits;
-      TMany<Part*> selectedUnits;
-      TMany<Thing*>   selectedEntities;
+      TMany<Tag>    selectedTags;
+      TMany<Part*>  selectedParts;
+      TMany<Thing*> selectedThings;
       bool mismatch = false;
 
-      const auto selectTrait = [&](const TMeta& tag) {
+      const auto selectTag = [&](TMeta const& tag) {
          auto found = GetTag(tag);
          if (not found) {
             mismatch = true;
             return Loop::Break;
          }
 
-         selectedTraits << Abandon(found);
+         selectedTags << Abandon(found);
          return Loop::Continue;
       };
 
-      const auto selectUnit = [&](const DMeta& type) {
-         if (type->Is<Thing>())
+      const auto selectPart = [&](DMeta const& type) {
+         if (type.Is<Thing>())
             return Loop::Continue;
 
-         auto found = GetUnitMeta(type);
+         auto found = GetPartMeta(type);
          if (not found) {
             mismatch = true;
             return Loop::Break;
          }
 
-         selectedUnits << found;
+         selectedParts << found;
          return Loop::Continue;
       };
 
-      const auto selectConstruct = [&](Recipe const& recipe) {
-         if (recipe.Is<Thing>()) {
-            // Find an entity containing construct arguments            
-            // Start with this one                                      
+      const auto selectRecipe = [&](Recipe const& recipe) {
+         if (recipe.GetTarget().Is<Thing>()) {
+            // Find a thing containing recipe arguments.                
+            // Start with this one:                                     
             Verbs::Select selector {recipe.GetDescriptor()};
             Select(selector);
             if (selector.GetOutput()) {
-               selectedEntities << this;
+               selectedThings << this;
                return Loop::Continue;
             }
          }
-         else if (recipe.CastsTo<Things::Part>()) {
-            // Find a part containing construct arguments               
-            if (not selectUnit(recipe.GetTarget()))
+         else if (recipe.CastsTo<Part>()) {
+            // Find a part containing recipe arguments                  
+            if (not selectPart(recipe.GetTarget()))
                return Loop::Break;
 
             // selectedComponents has been populated with results       
             // Filter them additionally by construct arguments          
-            TMany<Things::Part*> filteredSelectedComponents;
-            for (auto& part : selectedUnits) {
+            TMany<Part*> filteredSelectedComponents;
+            for (auto& part : selectedParts) {
                bool localMismatch = false;
-               auto unitBlock = part->GetBlock();
+               auto resolved = part->GetResolved();
                recipe->ForEach(
                   [&](Many const& part) {
                      for (size_t i = 0; i < part.GetCount(); ++i) {
                         auto element = part.GetElementResolved(i);
                         Verbs::Select selector {element};
-                        if (not Flow::DispatchFlat(unitBlock, selector)) {
+                        if (not Flow::DispatchFlat(resolved, selector)) {
                            // Abort on first failure                    
                            localMismatch = true;
                            return Loop::Break;
@@ -232,7 +234,7 @@ namespace Langulus::Things
             }
 
             // Substitute the selected parts with the filtered ones     
-            selectedUnits = Move(filteredSelectedComponents);
+            selectedParts = Move(filteredSelectedComponents);
          }
 
          return Loop::Break;
@@ -240,37 +242,37 @@ namespace Langulus::Things
 
       verb.ForEachDeep(
          [&](Recipe const& recipe) {
-            return selectConstruct(recipe);
+            return selectRecipe(recipe);
          },
          [&](Tag const& tag) {
-            return selectTrait(tag.GetTag());
+            return selectTag(tag.GetTag());
          },
-         [&](const TMeta& tag) {
-            return selectTrait(tag);
+         [&](TMeta const& tag) {
+            return selectTag(tag);
          },
-         [&](const DMeta& type) {
-            return selectUnit(type);
+         [&](DMeta const& type) {
+            return selectPart(type);
          }
       );
 
       if (not mismatch) {
          // We're not seeking an entity, but components/traits          
-         if (selectedTraits) {
+         if (selectedTags) {
             THINGS_SELECTION_VERBOSE_SELF(Logger::Green,
-               "Tag(s) selected: ", selectedTraits);
-            verb << selectedTraits;
+               "Tag(s) selected: ", selectedTags);
+            verb << selectedTags;
          }
 
-         if (selectedUnits) {
+         if (selectedParts) {
             THINGS_SELECTION_VERBOSE_SELF(Logger::Green,
-               "Part(s) selected: ", selectedUnits);
-            verb << selectedUnits;
+               "Part(s) selected: ", selectedParts);
+            verb << selectedParts;
          }
 
-         if (selectedEntities) {
+         if (selectedThings) {
             THINGS_SELECTION_VERBOSE_SELF(Logger::Green,
-               "Entity(s) selected: ", selectedEntities);
-            verb << selectedEntities;
+               "Entity(s) selected: ", selectedThings);
+            verb << selectedThings;
          }
       }
 

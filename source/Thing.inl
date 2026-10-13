@@ -43,24 +43,24 @@ namespace Langulus::Things
 
    /// Inner creation routine                                                 
    ///   @tparam T type of instructions for creation                          
-   ///   @param verb original create verb to output to                        
+   ///   @param output will contain references to all created stuff           
    ///   @param stuff creation instructions                                   
    template<class T>
-   void Thing::CreateInner(Verb& verb, T const& stuff) {
-      if constexpr (CT::Deep<T> or CT::Neat<T>) {
+   void Thing::CreateInner(Many& output, T const& stuff) {
+      if constexpr (CT::Deep<T> /*or CT::Neat<T>*/) {
          // Nest if deep/neat                                           
          stuff.ForEachDeep(
-            [this, &verb](Tag const& tag) {
-               verb << AddTrait(tag);
+            [this, &output](Tag const& tag) {
+               output << AddTag(tag);
             },
-            [this, &verb](Recipe const& construct) {
-               CreateInner(verb, construct);
+            [this, &output](Recipe const& construct) {
+               CreateInner(output, construct);
             },
-            [this, &verb](Neat const& neat) {
-               CreateInner(verb, neat);
+            [this, &output](Neat const& neat) {
+               CreateInner(output, neat);
             },
-            [this, &verb](DMeta const& type) {
-               CreateInner(verb, type);
+            [this, &output](DMeta const& type) {
+               CreateInner(output, type);
             }
          );
       }
@@ -68,25 +68,25 @@ namespace Langulus::Things
          // Instantiate a type without any arguments                    
          if (stuff->template Is<Thing>()) {
             // Instantiate a child Thing                                
-            verb << CreateChild();
+            output << CreateChild();
          }
          else if (stuff->template Is<Runtime>()) {
             // Instantiate a runtime                                    
-            verb << CreateRuntime();
+            output << CreateRuntime();
          }
          else if (stuff->template Is<Temporal>()) {
             // Instantiate a temporal flow                              
-            verb << CreateFlow();
+            output << CreateFlow();
          }
          else if (stuff->template CastsTo<Things::Module>()) {
             // Instantiate a module from the runtime                    
             auto& runtime = GetRuntime();
             auto dependency = runtime->GetDependency(stuff);
-            verb << runtime->InstantiateModule(dependency);
+            output << runtime->InstantiateModule(dependency);
          }
          else {
             // Instantiate anything else                                
-            verb << CreateData(Recipe {stuff});
+            output << CreateData(Recipe {stuff});
          }
       }
       else if constexpr (CT::Recipe<T>) {
@@ -100,25 +100,25 @@ namespace Langulus::Things
 
             if (stuff.template Is<Thing>()) {
                // Instantiate a child Thing                             
-               verb << CreateChild(stuff.GetDescriptor());
+               output << CreateChild(stuff.GetDescriptor());
             }
             else if (stuff.template Is<Runtime>()) {
                // Instantiate a runtime                                 
-               verb << CreateRuntime();
+               output << CreateRuntime();
             }
             else if (stuff.template Is<Temporal>()) {
                // Instantiate a temporal flow                           
-               verb << CreateFlow();
+               output << CreateFlow();
             }
             else if (stuff.template CastsTo<Things::Module>()) {
                // Instantiate a module from the runtime                 
                auto& runtime = GetRuntime();
                auto dependency = runtime->GetDependency(stuff.GetType());
-               verb << runtime->InstantiateModule(dependency, stuff.GetDescriptor());
+               output << runtime->InstantiateModule(dependency, stuff.GetDescriptor());
             }
             else {
                // Instantiate anything else                             
-               verb << CreateData(stuff);
+               output << CreateData(stuff);
             }
          }
       }
@@ -403,7 +403,7 @@ namespace Langulus::Things
    ///   @return the part if found, or nullptr if not                         
    template<CT::Part T, class SELF> requires CT::Decayed<T>
    auto Thing::GetPart(this SELF&& self, CT::Index auto&& offset)
-   -> Tmut<SELF, T*, T const*> {
+   -> LglsMutIf(SELF, T*) {
       if constexpr (not Same<T, Part>)
          return self.GetPartMeta(MetaOf<T>(), LglsFwd(offset));
       else
@@ -429,8 +429,8 @@ namespace Langulus::Things
       ///   @return the part if found, or nullptr if not                      
       template<CT::Part T, class SELF> requires CT::Decayed<T>
       auto Thing::GetPartAs(this SELF&& self, Token const& token, CT::Index auto&& offset)
-      -> Tmut<SELF, T*, T const*> {
-         return dynamic_cast<Tmut<SELF, T*, T const*>>(
+      -> LglsMutIf(SELF, T*) {
+         return dynamic_cast<LglsMutIf(SELF, T*)>(
             self.GetPartMeta(token, LglsFwd(offset))
          );
       }
@@ -447,7 +447,7 @@ namespace Langulus::Things
    ///   @return the tag or nullptr if none found                             
    template<CT::DefineTag T, class SELF>
    auto Thing::GetLocalTag(this SELF&& self, CT::Index auto&& offset)
-   -> Tmut<SELF, Tag*, Tag const*> {
+   -> LglsMutIf(SELF, Tag*) {
       return self.GetLocalTag(MetaTagOf<T>(), offset);
    }
 

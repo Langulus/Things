@@ -6,25 +6,24 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/Thing.hpp>
+#include <Langulus/Describe.hpp>
 #include "Thing.inl"
 
 
 namespace Langulus::Things
 {
-
    /// Default-constructor, always creates a parentless root thing            
-   Thing::Thing() : Resolvable {this} {
+   Thing::Thing() /*: Resolvable {this}*/ {
       THINGS_VERBOSE_SELF("Created (root, ", GetReferences(), " references)");
    }
    
    /// Descriptor-constructor                                                 
-   ///   @param describe - instructions for creating the entity               
-   Thing::Thing(Describe&& describe) : Resolvable {this} {
-      THINGS_VERBOSE_SELF_TAB("Created from descriptor: ", *describe);
-
-      if (*describe) {
-         Verbs::Create creator {&(*describe)};
-         Create(creator);
+   ///   @param describe instructions for creating the thing                  
+   Thing::Thing(Describe&& describe) /*: Resolvable {this}*/ {
+      if (describe) {
+         THINGS_VERBOSE_SELF_TAB("Creating from descriptor: ", describe.what);
+         Many unused_sideeffects;
+         CreateInner(unused_sideeffects, describe.what);
       }
 
       if (mOwner) {
@@ -42,11 +41,11 @@ namespace Langulus::Things
    }
    
    /// Construct as a child of another thing                                  
-   ///   @param parent - the thing that owns this thing                       
-   ///   @param descriptor - instructions for creating the thing              
+   ///   @param parent the thing that owns this thing                         
+   ///   @param descriptor instructions for creating the thing                
    Thing::Thing(Thing* parent, Many const& descriptor)
-      : Resolvable {this}
-      , mOwner     {parent}
+      : /*Resolvable {this}
+      ,*/ mOwner     {parent}
    {
       THINGS_VERBOSE_SELF_TAB("Created manually");
 
@@ -80,15 +79,15 @@ namespace Langulus::Things
    ///   @attention owner is never moved, you're moving only the hierarchy    
    ///      below the parent, however other's parent is notified of the move, 
    ///      because 'other' is removed from its children                      
-   ///   @param other - move that entity                                      
+   ///   @param other move that thing                                         
    Thing::Thing(Thing&& other) noexcept
-      : Resolvable      {this}
-      , mRuntime        {Move(other.mRuntime)}
+      : /*Resolvable      {this}
+      ,*/ mRuntime        {Move(other.mRuntime)}
       , mFlow           {Move(other.mFlow)}
       , mChildren       {Move(other.mChildren)}
-      , mUnitsList      {Move(other.mUnitsList)}
-      , mUnitsAmbiguous {Move(other.mUnitsAmbiguous)}
-      , mTraits         {Move(other.mTraits)}
+      , mPartsList      {Move(other.mPartsList)}
+      , mPartsAmbiguous {Move(other.mPartsAmbiguous)}
+      , mTags           {Move(other.mTags)}
       , mRefreshRequired{true}
    {
       // Remap children                                                 
@@ -96,7 +95,7 @@ namespace Langulus::Things
          child->mOwner = this;
 
       // Remap parts                                                    
-      for (auto& part : mUnitsList)
+      for (auto& part : mPartsList)
          part->ReplaceOwner(&other, this);
 
       // Make sure the losing parent is notified of the change          
@@ -112,13 +111,13 @@ namespace Langulus::Things
    ///      because 'other' is duplicated in its children                     
    ///   @param other - clone that entity                                     
    Thing::Thing(Abandoned<Thing>&& other)
-      : Resolvable      {this}
-      , mRuntime        {Abandon(other->mRuntime)}
+      : /*Resolvable      {this}
+      ,*/ mRuntime        {Abandon(other->mRuntime)}
       , mFlow           {Abandon(other->mFlow)}
       , mChildren       {Abandon(other->mChildren)}
-      , mUnitsList      {Abandon(other->mUnitsList)}
-      , mUnitsAmbiguous {Abandon(other->mUnitsAmbiguous)}
-      , mTraits         {Abandon(other->mTraits)}
+      , mPartsList      {Abandon(other->mPartsList)}
+      , mPartsAmbiguous {Abandon(other->mPartsAmbiguous)}
+      , mTags         {Abandon(other->mTags)}
       , mRefreshRequired{true}
    {
       // Remap children                                                 
@@ -126,7 +125,7 @@ namespace Langulus::Things
          child->mOwner = this;
 
       // Remap parts                                                    
-      for (auto& part : mUnitsList)
+      for (auto& part : mPartsList)
          part->ReplaceOwner(&*other, this);
 
       // Make sure the losing parent is notified of the change          
@@ -142,8 +141,8 @@ namespace Langulus::Things
    ///      because 'other' is duplicated in its children                     
    ///   @param other - clone that entity                                     
    Thing::Thing(Cloned<Thing>&& other)
-      : Resolvable      {this}
-      , mChildren       {Clone(other->mChildren)}
+      : /*Resolvable      {this}
+      ,*/ mChildren       {Clone(other->mChildren)}
       , mRefreshRequired{true}
    {
       TODO();
@@ -178,7 +177,7 @@ namespace Langulus::Things
             }
          }
 
-         for (auto& part : mUnitsList) {
+         for (auto& part : mPartsList) {
             if (part->GetReferences() > 3) {
                Logger::Warning(
                   part, " can't be destroyed yet - has ",
@@ -204,15 +203,15 @@ namespace Langulus::Things
       // dereference those first, so that parts have as small number of 
       // references as possible                                         
       THINGS_VERBOSE_SELF("Tearing off traits (name might change)");
-      mTraits.Reset();
+      mTags.Reset();
 
       // Decouple all parts from this owner because parts might get     
-      // destroyed upon destroying mUnitsList and mUnitsAmbiguous, if   
+      // destroyed upon destroying mPartsList and mPartsAmbiguous, if   
       // the Parts were created on the stack.                           
       // If they still have owners, they will attempt to Decouple in    
-      // Part::~Part from already destroyed mUnitsList/Ambiguous     
-      mUnitsAmbiguous.Reset();
-      for (auto& part : mUnitsList) {
+      // Part::~Part from already destroyed mPartsList/Ambiguous     
+      mPartsAmbiguous.Reset();
+      for (auto& part : mPartsList) {
          THINGS_VERBOSE_SELF(
             "Tearing off part ", part, " at ", part->GetReferences(), " uses...");
          part->mOwners.Remove(this);
@@ -240,16 +239,8 @@ namespace Langulus::Things
    ///           the exact same behavior (actual state is ignored)            
    bool Thing::operator == (const Thing& other) const {
       return mChildren == other.mChildren
-         and mUnitsList == other.mUnitsList
-         and mTraits == other.mTraits;
-   }
-
-   /// Convert to text, by writing a short name or address                    
-   Thing::operator Text() const {
-      const auto name = GetName();
-      if (name)
-         return Text {'#', name};
-      return Resolvable::operator Text();
+         and mPartsList == other.mPartsList
+         and mTags == other.mTags;
    }
 
    /// Dump the entity's hierarchy in log                                     
@@ -257,19 +248,19 @@ namespace Langulus::Things
       const auto tab = Logger::Verbose(
          Logger::White, Logger::Underline, *this, Logger::Tabs {});
 
-      if (mTraits) {
+      if (mTags) {
          const auto tab2 = Logger::Section(Logger::White, Logger::Underline,
-            "Tags (", mTraits.GetCount(), "):");
-         for (auto traitpair : mTraits) {
+            "Tags (", mTags.GetCount(), "):");
+         for (auto traitpair : mTags) {
             for (auto& tag : traitpair.GetValue())
                Logger::Verbose(tag);
          }
       }
 
-      if (mUnitsList) {
+      if (mPartsList) {
          const auto tab2 = Logger::Section(Logger::White, Logger::Underline,
-            "Parts (", mUnitsList.GetCount(), "):");
-         for (auto& part : mUnitsList)
+            "Parts (", mPartsList.GetCount(), "):");
+         for (auto& part : mPartsList)
             Logger::Verbose(*part);
       }
 
@@ -328,7 +319,7 @@ namespace Langulus::Things
       mRefreshRequired = false;
 
       // Refresh all parts                                              
-      for (auto& part : mUnitsList)
+      for (auto& part : mPartsList)
          part->Refresh();
 
       // And cascade down the hierarchy                                 
@@ -343,13 +334,13 @@ namespace Langulus::Things
          child->mOwner.Reset();
 
       // Decouple all parts from this owner                             
-      for (auto& part : mUnitsList)
+      for (auto& part : mPartsList)
          part->mOwners.Remove(this);
 
       mChildren.Reset();
-      mUnitsList.Reset();
-      mUnitsAmbiguous.Reset();
-      mTraits.Reset();
+      mPartsList.Reset();
+      mPartsAmbiguous.Reset();
+      mTags.Reset();
    }
 
    /// Get a part by type and offset                                          
@@ -358,21 +349,21 @@ namespace Langulus::Things
    ///   @param id - the type of the part                                     
    ///   @param index - the part index to seek                                
    ///   @return the part if found, or nullptr if not                         
-   auto Thing::GetUnitMeta(DMeta id, Index index) -> Part* {
+   auto Thing::GetPartMeta(DMeta id, Index index) -> Part* {
       if (id) {
          // Search a typed tag                                        
-         const auto found = mUnitsAmbiguous.FindIt(id);
+         const auto found = mPartsAmbiguous.FindIt(id);
          return found
             ? static_cast<Part*>(found.GetValue()[index])
             : static_cast<Part*>(nullptr);
       }
 
       // Get part by index only                                         
-      return mUnitsList[index];
+      return mPartsList[index];
    }
 
-   auto Thing::GetUnitMeta(DMeta type, Index offset) const -> Part const* {
-      return const_cast<Thing*>(this)->GetUnitMeta(type, offset);
+   auto Thing::GetPartMeta(DMeta type, Index offset) const -> Part const* {
+      return const_cast<Thing*>(this)->GetPartMeta(type, offset);
    }
    
    /// Get a part by type, properties, and offset                             
@@ -382,10 +373,10 @@ namespace Langulus::Things
    ///   @param what - the desired properties of the part                     
    ///   @param index - the part index to seek                                
    ///   @return the part if found, or nullptr if not                         
-   auto Thing::GetUnitExt(DMeta meta, Many const& what, Index index) -> Part* {
+   auto Thing::GetPartExt(DMeta meta, Many const& what, Index index) -> Part* {
       if (meta) {
          // Search a typed part                                         
-         const auto found = mUnitsAmbiguous.FindIt(meta);
+         const auto found = mPartsAmbiguous.FindIt(meta);
          if (found) {
             auto& bucket = found.GetValue();
             if (not what)
@@ -403,7 +394,7 @@ namespace Langulus::Things
       }
       else {
          // Search part by index and properties only                    
-         for (auto& part : mUnitsList) {
+         for (auto& part : mPartsList) {
             if (part->CompareDescriptor(what)) {
                // Match found                                           
                if (index == 0) return part;
@@ -415,8 +406,8 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   auto Thing::GetUnitExt(DMeta meta, Many const& what, Index index) const -> Part const* {
-      return const_cast<Thing*>(this)->GetUnitExt(meta, what, index);
+   auto Thing::GetPartExt(DMeta meta, Many const& what, Index index) const -> Part const* {
+      return const_cast<Thing*>(this)->GetPartExt(meta, what, index);
    }
 
 #if LANGULUS_FEATURE(MANAGED_REFLECTION)
@@ -424,8 +415,8 @@ namespace Langulus::Things
    ///   @param token - the type name of the part                             
    ///   @param offset - the part index                                       
    ///   @return the part if found, or nullptr if not                         
-   auto Thing::GetUnitMeta(Token const& token, Index offset) -> Part* {
-      return GetUnitMeta(RTTI::DisambiguateMeta(token), offset);
+   auto Thing::GetPartMeta(Token const& token, Index offset) -> Part* {
+      return GetPartMeta(RTTI::DisambiguateMeta(token), offset);
    }
 #endif
 
@@ -500,8 +491,8 @@ namespace Langulus::Things
    /// Count the number of matching parts in this entity                      
    ///   @param type - the type of parts to search for                        
    ///   @return the number of matching parts                                 
-   auto Thing::HasUnits(DMeta type) const -> size_t {
-      const auto found = mUnitsAmbiguous.FindIt(type);
+   auto Thing::HasParts(DMeta type) const -> size_t {
+      const auto found = mPartsAmbiguous.FindIt(type);
       return found ? found.GetValue().GetCount() : 0;
    }
 

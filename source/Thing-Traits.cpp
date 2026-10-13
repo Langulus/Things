@@ -59,7 +59,7 @@ namespace Langulus::Things
          // Handle some predefined traits here                          
          if (id.template IsTag<Tags::Part>()) {
             // Get a component                                          
-            auto part = self.GetUnitMeta(DMeta {}, index);
+            auto part = self.GetPartMeta(DMeta {}, index);
             if (part)
                return Tags::Part {part};
             return {};

@@ -16,8 +16,8 @@ namespace Langulus::Things
    ///   @param meta the part type to seek for                                
    ///   @return the gathered parts that match the type                       
    template<Seek SEEK, class SELF>
-   auto SeekInterface::GatherParts(this SELF&& self, DMeta meta) -> TMany<Tmut<SELF, Part*, Part const*>> {
-      TMany<Tmut<SELF, Part*, Part const*>> result;
+   auto SeekInterface::GatherParts(this SELF&& self, DMeta meta) -> TMany<LglsMutIf(SELF, Part*)> {
+      TMany<LglsMutIf(SELF, Part*)> result;
 
       if constexpr (CT::Part<SELF>) {
          // Start seeking from each part owner                          
@@ -27,7 +27,7 @@ namespace Langulus::Things
       else {
          if constexpr (SEEK & Seek::Here) {
             // Seek here if requested                                   
-            auto found = self.mUnitsAmbiguous.Find(meta);
+            auto found = self.mPartsAmbiguous.Find(meta);
             if (found)
                result += found.GetVal();
          }
@@ -49,7 +49,7 @@ namespace Langulus::Things
    }
 
    template<CT::Part P, Seek SEEK, class SELF> requires CT::Decayed<P>
-   auto SeekInterface::GatherParts(this SELF&& self) -> TMany<Tmut<SELF, P*, P const*>> {
+   auto SeekInterface::GatherParts(this SELF&& self) -> TMany<LglsMutIf(SELF, P*)> {
       return self.template GatherParts<SEEK>(MetaDataOf<P>());
    }
 
@@ -190,13 +190,19 @@ namespace Langulus::Things
    
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
       template<Seek SEEK, class SELF>
-      auto SeekInterface::GatherParts(this SELF&& self, Token const& token) -> TMany<Tmut<SELF, Part*, Part const*>> {
-         return self.template GatherParts<SEEK>(RTTI::Registry::GetMetaDataByToken(token));
+      auto SeekInterface::GatherParts(this SELF&& self, Token const& token)
+      -> TMany<LglsMutIf(SELF, Part*)> {
+         return self.template GatherParts<SEEK>(
+            RTTI::Registry::GetMetaDataByToken(token)
+         );
       }
       
       template<Seek SEEK>
-      auto SeekInterface::GatherTags(this auto&& self, Token const& token) -> TagList{
-         return self.template GatherTags<SEEK>(RTTI::Registry::GetMetaTagByToken(token));
+      auto SeekInterface::GatherTags(this auto&& self, Token const& token)
+      -> TagList {
+         return self.template GatherTags<SEEK>(
+            RTTI::Registry::GetMetaTagByToken(token)
+         );
       }
    #endif
 }

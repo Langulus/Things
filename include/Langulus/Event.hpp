@@ -666,7 +666,8 @@ namespace Langulus::CTTI
    /// Rule for serializing events to Text.                                   
    //TODO events use real timestamps, but they should be produced by a flow, and use
    //TODO the flow's time units and relative timestamps. this will make flows much
-   //TODO more deterministic when serialized as well
+   //TODO more deterministic when serialized as well. or maybe not - maybe just serialize events as recipes, 
+   //TODO so they are recreated at their own time, etc. etc,. lots to discuss here
    template<CT::Event E>
    struct SerializationRule<Annies::Text, E> {
       using S = Serializer<Annies::Text>;
@@ -676,9 +677,9 @@ namespace Langulus::CTTI
          out += event.GetEvent();
          out += Serial::OpenScope.Token;
 
-         const bool state_depicted = event.GetEventState();
+         const bool state_depicted = static_cast<bool>(event.GetEventState());
          if (state_depicted)
-            out += event.GetEventState();
+            out += Annies::Text::Named(event.GetEventState());
 
          if (event.GetPayload()) {
             if (state_depicted)

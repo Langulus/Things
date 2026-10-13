@@ -203,7 +203,7 @@ namespace Langulus::Verbs
                   createInner(construct);
                }
             },
-            [&](const DMeta& type) {
+            [&](DMeta const& type) {
                if (type) {
                   VERBOSE_CREATION("Creating: ", Logger::Yellow, type);
                   createInner(Recipe {type});

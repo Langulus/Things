@@ -65,7 +65,7 @@ namespace Langulus::Things
       Many CreateData(Recipe const&);
 
       template<class T>
-      void CreateInner(Verb&, T const&);
+      void CreateInner(Many&, T const&);
 
    public:
       using Code = Flow::Code;
@@ -115,8 +115,8 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       bool operator == (const Thing&) const;
 
-      LANGULUS_API(THINGS)
-      explicit operator Text() const;
+      //LANGULUS_API(THINGS)
+      //explicit operator Text() const;
 
 
       ///                                                                     
@@ -205,7 +205,7 @@ namespace Langulus::Things
       auto GetPartExt(DMeta, Many const&, CT::Index auto&& = 0) const -> Part const*;
 
       template<CT::Part T = Part, class SELF> requires CT::Decayed<T>
-      auto GetPart(this SELF&&, CT::Index auto&& = 0) -> Tmut<SELF, T*, T const*>;
+      auto GetPart(this SELF&&, CT::Index auto&& = 0) -> LglsMutIf(SELF, T*);
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          LANGULUS_API(THINGS)
@@ -214,7 +214,7 @@ namespace Langulus::Things
          auto GetPartMeta(Token const&, CT::Index auto&& = 0)       -> Part*;
 
          template<CT::Part T, class SELF> requires CT::Decayed<T>
-         auto GetPartAs(this SELF&&, Token const&, CT::Index auto&& = 0) -> Tmut<SELF, T*, T const*>;
+         auto GetPartAs(this SELF&&, Token const&, CT::Index auto&& = 0) -> LglsMutIf(SELF, T*);
       #endif
 
    private:
@@ -253,7 +253,7 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       auto GetLocalTag(TMeta, CT::Index auto&& = 0)       -> Tag*;
       template<CT::DefineTag, class SELF>
-      auto GetLocalTag(this SELF&&, CT::Index auto&& = 0) -> Tmut<SELF, Tag*, Tag const*>;
+      auto GetLocalTag(this SELF&&, CT::Index auto&& = 0) -> LglsMutIf(SELF, Tag*);
 
       LANGULUS_API(THINGS)
       void SetName(Text const&);
@@ -262,3 +262,32 @@ namespace Langulus::Things
       Text GetName() const;
    };
 }
+
+/// Convert to text, by writing a short name or address                       
+LANGULUS_MORPHISM_CUSTOM(Things::Thing, {
+   const auto name = from.GetName();
+   if (name)
+      return '#' + name;
+   return Annies::Text::Mention(from);
+}, Annies::Text);
+
+/// ...even if encountered by pointer                                         
+LANGULUS_MORPHISM_CUSTOM(Things::Thing*, {
+   const auto name = from->GetName();
+   if (name)
+      return '#' + name;
+   return Annies::Text::Mention(from);
+}, Annies::Text);
+
+static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing, ::Langulus::Annies::Text>);//TODO move these to test
+static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing*, ::Langulus::Annies::Text>);
+static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing const*, ::Langulus::Annies::Text>);
+static_assert(not ::Langulus::CT::Container<::Langulus::Things::Thing>);
+static_assert(not ::Langulus::CT::Container<::Langulus::Things::Thing*>);
+static_assert(not ::Langulus::CT::Container<::Langulus::Things::Thing const*>);
+static_assert(not ::std::is_fundamental_v<::Langulus::Things::Thing>);
+static_assert(not ::std::is_fundamental_v<::Langulus::Things::Thing*>);
+static_assert(not ::std::is_fundamental_v<::Langulus::Things::Thing const*>);
+static_assert(::fmt::is_formattable<::Langulus::Things::Thing>::value);
+static_assert(not ::fmt::is_formattable<::Langulus::Things::Thing*>::value);        // libfmt never formats pointers
+static_assert(not ::fmt::is_formattable<::Langulus::Things::Thing const*>::value);  // libfmt never formats pointers

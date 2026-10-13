@@ -33,35 +33,35 @@ namespace Langulus::Things
       /// MARK: Seek parts                                                    
       template<Seek = Seek::HereAndAbove, class SELF>
       auto SeekPart(this SELF&&, DMeta, CT::Index auto&& = 0)
-         -> Tmut<SELF, Part*, Part const*>;
+         -> LglsMutIf(SELF, Part*);
 
       template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
       auto SeekPart(this SELF&&, CT::Index auto&& = 0)
-         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
+         -> LglsMutIf(SELF, Decay<T>*);
 
       template<Seek = Seek::HereAndAbove, class SELF>
       auto SeekPartAux(this SELF&&, Many const&, DMeta, CT::Index auto&& = 0)
-         -> Tmut<SELF, Part*, Part const*>;
+         -> LglsMutIf(SELF, Part*);
 
       template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
       auto SeekPartAux(this SELF&&, Many const&, CT::Index auto&& = 0)
-         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
+         -> LglsMutIf(SELF, Decay<T>*);
 
       template<Seek = Seek::HereAndAbove, class SELF>
       auto SeekPartExt(this SELF&&, DMeta, Many const&, CT::Index auto&& = 0)
-         -> Tmut<SELF, Part*, Part const*>;
+         -> LglsMutIf(SELF, Part);
 
       template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
       auto SeekPartExt(this SELF&&, Many const&, CT::Index auto&& = 0)
-         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
+         -> LglsMutIf(SELF, Decay<T>*);
 
       template<Seek = Seek::HereAndAbove, class SELF>
       auto SeekPartAuxExt(this SELF&&, DMeta, Many const&, Many const&, CT::Index auto&& = 0)
-         -> Tmut<SELF, Part*, Part const*>;
+         -> LglsMutIf(SELF, Part*);
 
       template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
       auto SeekPartAuxExt(this SELF&&, Many const&, Many const&, CT::Index auto&& = 0)
-         -> Tmut<SELF, Decay<T>*, Decay<T> const*>;
+         -> LglsMutIf(SELF, Decay<T>*);
 
       ///                                                                     
       /// MARK: Seek tags                                                     
@@ -94,9 +94,12 @@ namespace Langulus::Things
       ///                                                                     
       /// MARK: Gather parts                                                  
       template<Seek = Seek::HereAndAbove, class SELF>
-      auto GatherParts(this SELF&&, DMeta) -> TMany<Tmut<SELF, Part*, Part const*>>;
+      auto GatherParts(this SELF&&, DMeta)
+         -> TMany<LglsMutIf(SELF, Part*)>;
+
       template<CT::Part P, Seek = Seek::HereAndAbove, class SELF> requires CT::Decayed<P>
-      auto GatherParts(this SELF&&) -> TMany<Tmut<SELF, P*, P const*>>;
+      auto GatherParts(this SELF&&)
+         -> TMany<LglsMutIf(SELF, P*)>;
 
       template<Seek = Seek::HereAndAbove>
       auto GatherPartsExt(this auto&&, DMeta, Many const&) -> TMany<Part*>;
@@ -135,7 +138,7 @@ namespace Langulus::Things
       bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, CT::Index auto&& = 0);
 
       template<Seek = Seek::HereAndAbove, class SELF>
-      auto GatherParts(this SELF&&, Token const&) -> TMany<Tmut<SELF, Part*, Part const*>>;
+      auto GatherParts(this SELF&&, Token const&) -> TMany<LglsMutIf(SELF, Part*)>;
       template<Seek = Seek::HereAndAbove>
       auto GatherTags(this auto&&, Token const&) -> TagList;
    #endif

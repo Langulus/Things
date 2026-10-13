@@ -155,8 +155,8 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(*it == part.As<TestUnit1*>());
 
          // Kept once in `part`                                         
-         // Kept once in root.mUnitsList                                
-         // Kept once in root.mUnitsAmbiguous                           
+         // Kept once in root.mPartsList                                
+         // Kept once in root.mPartsAmbiguous                           
          REQUIRE(part.GetUses() == 3);
 
          REQUIRE(Fractalloc::Instance.Find({}, part.As<TestUnit1*>())->GetUses() == 3);
@@ -168,7 +168,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
 
       WHEN("Adding a tag") {
-         auto tag = root.AddTrait(Tags::Count {666});
+         auto tag = root.AddTag(Tags::Count {666});
 
          REQUIRE(tag != nullptr);
 
@@ -192,7 +192,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
 
       WHEN("Set a name tag") {
-         auto tag = root.AddTrait(Tags::Name {"Dimo"});
+         auto tag = root.AddTag(Tags::Name {"Dimo"});
 
          REQUIRE(tag != nullptr);
 
@@ -375,7 +375,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
 
       WHEN("Get a local part by type and index") {
-         auto part = root.GetUnitMeta(MetaOf<TestUnit1>());
+         auto part = root.GetPartMeta(MetaOf<TestUnit1>());
 
          REQUIRE(part);
          REQUIRE(part->Is<TestUnit1>());
@@ -407,13 +407,13 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto replaced = root.ReplaceUnit(root.GetUnit<TestUnit1>(), &replacement);
 
          REQUIRE(replaced == 1);
-         REQUIRE(root.mUnitsList.GetCount() == 2);
-         REQUIRE(root.mUnitsAmbiguous[MetaOf<TestUnit2>()].GetCount() == 2);
-         REQUIRE(root.mUnitsAmbiguous[MetaOf<TestUnit2>()].Contains(&replacement));
+         REQUIRE(root.mPartsList.GetCount() == 2);
+         REQUIRE(root.mPartsAmbiguous[MetaOf<TestUnit2>()].GetCount() == 2);
+         REQUIRE(root.mPartsAmbiguous[MetaOf<TestUnit2>()].Contains(&replacement));
       }*/
 
       WHEN("Count available parts") {
-         auto found = root.HasUnits<TestUnit1>();
+         auto found = root.HasParts<TestUnit1>();
 
          REQUIRE(found == 1);
       }

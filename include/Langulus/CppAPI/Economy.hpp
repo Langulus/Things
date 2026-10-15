@@ -8,6 +8,7 @@
 #pragma once
 #include <Langulus/Vectors/TVector.hpp>
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
 namespace Langulus::Things

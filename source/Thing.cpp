@@ -57,8 +57,8 @@ namespace Langulus::Things
 
       if (descriptor) {
          // Create any subthings/traits/part in this thing              
-         Verbs::Create creator {descriptor};
-         Create(creator);
+         Many unused_sideeffects;
+         CreateInner(unused_sideeffects, descriptor);
       }
 
       if (mOwner) {
@@ -110,7 +110,7 @@ namespace Langulus::Things
    ///      below the parent, however other's parent is notified of the clone,
    ///      because 'other' is duplicated in its children                     
    ///   @param other - clone that entity                                     
-   Thing::Thing(Abandoned<Thing>&& other)
+   Thing::Thing(Abandon<Thing>&& other)
       : /*Resolvable      {this}
       ,*/ mRuntime        {Abandon(other->mRuntime)}
       , mFlow           {Abandon(other->mFlow)}
@@ -140,7 +140,7 @@ namespace Langulus::Things
    ///      below the parent, however other's parent is notified of the clone,
    ///      because 'other' is duplicated in its children                     
    ///   @param other - clone that entity                                     
-   Thing::Thing(Cloned<Thing>&& other)
+   Thing::Thing(Clone<Thing>&& other)
       : /*Resolvable      {this}
       ,*/ mChildren       {Clone(other->mChildren)}
       , mRefreshRequired{true}

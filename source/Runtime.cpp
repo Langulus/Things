@@ -141,27 +141,27 @@ namespace Langulus::Things
       (void)MetaDataOf<Things::InputGatherer>();
       (void)MetaDataOf<Things::InputListener>();
 
-      (void)MetaDataOf<A::Life>();
+      (void)MetaDataOf<Things::Life>();
       (void)MetaDataOf<A::LifeUnit>();
-      (void)MetaDataOf<A::Ecosystem>();
-      (void)MetaDataOf<A::Organism>();
+      (void)MetaDataOf<Things::Ecosystem>();
+      (void)MetaDataOf<Things::Organism>();
 
       (void)MetaDataOf<A::Economy>();
       (void)MetaDataOf<A::EconomyPart>();
-      (void)MetaDataOf<A::Resource>();
+      (void)MetaDataOf<Things::Resource>();
       (void)MetaDataOf<A::ResourceInstance>();
-      (void)MetaDataOf<A::Converter>();
+      (void)MetaDataOf<Things::Converter>();
       (void)MetaDataOf<A::ConverterInstance>();
       (void)MetaDataOf<A::Trader>();
 
       (void)MetaDataOf<A::Network>();
-      (void)MetaDataOf<A::NetworkUnit>();
+      (void)MetaDataOf<Things::NetworkPart>();
       (void)MetaDataOf<A::Client>();
       (void)MetaDataOf<A::Server>();
-      (void)MetaDataOf<A::Shared>();
+      (void)MetaDataOf<Things::Shared>();
 
       (void)MetaDataOf<A::UserModule>();
-      (void)MetaDataOf<A::User>();
+      (void)MetaDataOf<Things::User>();
 
       VERBOSE(this, ": Initialized");
    }

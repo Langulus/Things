@@ -22,34 +22,34 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract network part                                                
    ///                                                                        
-   struct NetworkUnit : virtual Part {
+   struct NetworkPart : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = Network;
-      NetworkUnit() : Resolvable {this} {}
+      NetworkPart() : Resolvable {this} {}
    };
 
    ///                                                                        
    ///   Abstract network client                                              
    ///                                                                        
-   struct Client : virtual NetworkUnit {
-      using CTTI_Bases = NetworkUnit;
+   struct Client : virtual NetworkPart {
+      using CTTI_Bases = NetworkPart;
       Client() : Resolvable {this} {}
    };
    
    ///                                                                        
    ///   Abstract network server                                              
    ///                                                                        
-   struct Server : virtual NetworkUnit {
-      using CTTI_Bases = NetworkUnit;
+   struct Server : virtual NetworkPart {
+      using CTTI_Bases = NetworkPart;
       Server() : Resolvable {this} {}
    };
    
    ///                                                                        
    ///   Abstract network shared object                                       
    ///                                                                        
-   struct Shared : virtual NetworkUnit {
-      using CTTI_Bases = NetworkUnit;
-      using CTTI_Producer = NetworkUnit;
+   struct Shared : virtual NetworkPart {
+      using CTTI_Bases = NetworkPart;
+      using CTTI_Producer = NetworkPart;
       Shared() : Resolvable {this} {}
    };
 }

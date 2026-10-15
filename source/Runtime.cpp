@@ -56,7 +56,7 @@
 
 namespace Langulus::Things
 {
-   TUnorderedMap<Path, Runtime::SharedLibrary> Runtime::mLibraries;
+   TMapUnsorted<Path, Runtime::SharedLibrary> Runtime::mLibraries;
 
    /// Close a shared library handle, unloading it                            
    ///   @param library - the library handle                                  
@@ -114,7 +114,7 @@ namespace Langulus::Things
       (void)MetaDataOf<A::UIInput>();
 
       (void)MetaDataOf<A::FileSystem>();
-      (void)MetaDataOf<A::File>();
+      (void)MetaDataOf<Things::File>();
       (void)MetaDataOf<Things::Folder>();
 
       (void)MetaDataOf<A::GraphicsModule>();
@@ -210,7 +210,7 @@ namespace Langulus::Things
    ///   @param path - explicit relative path                                 
    ///   @param descriptor - module initialization descriptor                 
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModulePath(const Path& path, Many const& descriptor) -> Things::Module* {
+   auto Runtime::InstantiateModulePath(Path const& path, Many const& descriptor) -> Things::Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibraryPath(path);
 
@@ -254,7 +254,7 @@ namespace Langulus::Things
    ///   @param map - [in/out] the map to fill                                
    ///   @param module - the module instance to push                          
    ///   @param type - the type to unregister the module as                   
-   void RegisterAllBases(TUnorderedMap<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
+   void RegisterAllBases(TMapUnsorted<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
       VERBOSE("Registering `", type, '`');
       auto found = map.FindIt(type);
       if (found)
@@ -281,7 +281,7 @@ namespace Langulus::Things
    ///   @param map - [in/out] the map to unregister from                     
    ///   @param module - the module instance to push                          
    ///   @param type - the type to register the module as                     
-   void UnregisterAllBases(TUnorderedMap<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
+   void UnregisterAllBases(TMapUnsorted<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
       for (auto& base : type->mBases) {
          if (base.mType->IsExact<Resolvable>())
             break;
@@ -671,7 +671,7 @@ namespace Langulus::Things
    /// Get a file interface, relying on external modules to find it           
    ///   @param path - the path for the file                                  
    ///   @return the file interface, or nullptr if file doesn't exist         
-   auto Runtime::GetFile(const Path& path) -> Ref<A::File> {
+   auto Runtime::GetFile(Path const& path) -> Ref<Things::File> {
       auto& fileSystems = GetModules<A::FileSystem>();
       LANGULUS_ASSERT(fileSystems, Module,
          "Can't retrieve file `", path, "` - no file system module available");
@@ -681,7 +681,7 @@ namespace Langulus::Things
    /// Get a folder interface, relying on external modules to find it         
    ///   @param path - the path for the folder                                
    ///   @return the folder interface, or nullptr if folder doesn't exist     
-   auto Runtime::GetFolder(const Path& path) -> Ref<Things::Folder> {
+   auto Runtime::GetFolder(Path const& path) -> Ref<Things::Folder> {
       auto& fileSystems = GetModules<A::FileSystem>();
       LANGULUS_ASSERT(fileSystems, Module,
          "Can't retrieve folder `", path, "` - no file system module available");
@@ -690,7 +690,7 @@ namespace Langulus::Things
 
    /// Get the current working path (where the main exe was executed)         
    ///   @return the path                                                     
-   auto Runtime::GetWorkingPath() const -> const Path& {
+   auto Runtime::GetWorkingPath() const -> Path const& {
       auto& fileSystems = GetModules<A::FileSystem>();
       LANGULUS_ASSERT(fileSystems, Module,
          "Can't retrieve working path", " - no file system module available");
@@ -699,7 +699,7 @@ namespace Langulus::Things
 
    /// Get the current data path, like GetWorkingPath() / "data"              
    ///   @return the path                                                     
-   auto Runtime::GetDataPath() const -> const Path& {
+   auto Runtime::GetDataPath() const -> Path const& {
       auto& fileSystems = GetModules<A::FileSystem>();
       LANGULUS_ASSERT(fileSystems, Module,
          "Can't retrieve data path", " - no file system module available");

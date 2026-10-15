@@ -7,16 +7,17 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
-namespace Langulus
+namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract graphics module                                             
    ///                                                                        
    struct GraphicsModule : virtual Module {
       using CTTI_Bases = Module;
-      GraphicsModule() : Resolvable {this}, Module {nullptr} {}
+      GraphicsModule() : /*Resolvable {this},*/ Module {nullptr} {}
    };
 
    ///                                                                        
@@ -24,7 +25,7 @@ namespace Langulus
    ///                                                                        
    struct Graphics : virtual Part {
       using CTTI_Bases = Part;
-      Graphics() : Resolvable {this} {}
+      Graphics() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -32,8 +33,8 @@ namespace Langulus
    ///                                                                        
    struct Renderer : virtual Graphics {
       using CTTI_Producer = GraphicsModule;
-      LANGULUS_BASES(Graphics);
-      Renderer() : Resolvable {this} {}
+      using CTTI_Bases = Graphics;
+      Renderer() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -41,8 +42,8 @@ namespace Langulus
    ///                                                                        
    struct Layer : virtual Graphics {
       using CTTI_Producer = Renderer;
-      LANGULUS_BASES(Graphics);
-      Layer() : Resolvable {this} {}
+      using CTTI_Bases = Graphics;
+      Layer() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -50,8 +51,8 @@ namespace Langulus
    ///                                                                        
    struct Camera : virtual Graphics {
       using CTTI_Producer = Layer;
-      LANGULUS_BASES(Graphics);
-      Camera() : Resolvable {this} {}
+      using CTTI_Bases = Graphics;
+      Camera() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -59,8 +60,8 @@ namespace Langulus
    ///                                                                        
    struct Renderable : virtual Graphics {
       using CTTI_Producer = Layer;
-      LANGULUS_BASES(Graphics);
-      Renderable() : Resolvable {this} {}
+      using CTTI_Bases = Graphics;
+      Renderable() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -68,8 +69,8 @@ namespace Langulus
    ///                                                                        
    struct Light : virtual Graphics {
       using CTTI_Producer = Layer;
-      LANGULUS_BASES(Graphics);
-      Light() : Resolvable {this} {}
+      using CTTI_Bases = Graphics;
+      Light() /*: Resolvable {this}*/ {}
 
       enum Type {
          Directional = 0,
@@ -87,5 +88,5 @@ namespace Langulus::CT
 {
    /// A concept for any kind of a graphics part                              
    template<class T>
-   concept Graphics = DerivedFrom<T, A::Graphics>;
+   concept Graphics = DerivedFrom<T, Things::Graphics>;
 }

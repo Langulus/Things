@@ -416,8 +416,7 @@ namespace Langulus::Things
       ///   @param token part type token                                      
       ///   @param offset optional offset (Nth match)                         
       ///   @return the part if found, or nullptr if not                      
-      inline auto Thing::GetPartMeta(Token const& token, CT::Index auto&& offset) const
-      -> Part const* {
+      auto Thing::GetPartMeta(Token const& token, size_t offset) const -> Part const* {
          return const_cast<Thing*>(this)->GetPartMeta(token, LglsFwd(offset));
       }
 
@@ -437,8 +436,8 @@ namespace Langulus::Things
    #endif
 
    template<CT::DefineTag T>
-   Tag Thing::GetTag(CT::Index auto&& offset) {
-      return GetTag(MetaTagOf<T>(), offset);
+   auto Thing::GetTag(this auto&& self, CT::Index auto&& offset) -> Tag {
+      return self.GetTag(MetaTagOf<T>(), offset);
    }
 
    /// Get local tag by static type and offset                                

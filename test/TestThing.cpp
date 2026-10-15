@@ -26,9 +26,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
       REQUIRE(root.GetOwner() == nullptr);
       REQUIRE(root.GetRuntime() == nullptr);
-      REQUIRE(root.GetRuntime().IsLocked() == false);
+      REQUIRE(root.GetRuntime().IsPinned() == false);
       REQUIRE(root.GetFlow() == nullptr);
-      REQUIRE(root.GetFlow().IsLocked() == false);
+      REQUIRE(root.GetFlow().IsPinned() == false);
       REQUIRE(root.RequiresRefresh() == false);
       REQUIRE(not root.GetChildren());
       REQUIRE(not root.GetUnits());
@@ -43,9 +43,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
       REQUIRE(root.GetOwner() == nullptr);
       REQUIRE(root.GetRuntime() == nullptr);
-      REQUIRE(root.GetRuntime().IsLocked() == false);
+      REQUIRE(root.GetRuntime().IsPinned() == false);
       REQUIRE(root.GetFlow() == nullptr);
-      REQUIRE(root.GetFlow().IsLocked() == false);
+      REQUIRE(root.GetFlow().IsPinned() == false);
       REQUIRE(root.RequiresRefresh() == false);
       REQUIRE(root.GetChildren().GetCount() == 1);
       REQUIRE(root.GetChildren()[0] == &child);
@@ -56,9 +56,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
       REQUIRE(child.GetOwner() == &root);
       REQUIRE(child.GetRuntime() == nullptr);
-      REQUIRE(child.GetRuntime().IsLocked() == false);
+      REQUIRE(child.GetRuntime().IsPinned() == false);
       REQUIRE(child.GetFlow() == nullptr);
-      REQUIRE(child.GetFlow().IsLocked() == false);
+      REQUIRE(child.GetFlow().IsPinned() == false);
       REQUIRE(child.RequiresRefresh() == false);
       REQUIRE(not child.GetChildren());
       REQUIRE(not child.GetUnits());
@@ -74,14 +74,14 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto runtime = root.CreateRuntime();
 
          REQUIRE(root.GetRuntime() == runtime);
-         REQUIRE(root.GetRuntime().IsLocked() == true);
+         REQUIRE(root.GetRuntime().IsPinned() == true);
       }
 
       WHEN("Creating a temporal flow") {
          auto flow = root.CreateFlow();
 
          REQUIRE(root.GetFlow() == flow);
-         REQUIRE(root.GetFlow().IsLocked() == true);
+         REQUIRE(root.GetFlow().IsPinned() == true);
       }
 
       WHEN("Creating an empty child") {
@@ -89,9 +89,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
-         REQUIRE(root.GetRuntime().IsLocked() == false);
+         REQUIRE(root.GetRuntime().IsPinned() == false);
          REQUIRE(root.GetFlow() == nullptr);
-         REQUIRE(root.GetFlow().IsLocked() == false);
+         REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == false);
          REQUIRE(root.GetChildren().GetCount() == 1);
          REQUIRE(not root.GetUnits());
@@ -102,9 +102,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child1 == child);
          REQUIRE(child1->GetOwner() == &root);
          REQUIRE(child1->GetRuntime() == root.GetRuntime());
-         REQUIRE(child1->GetRuntime().IsLocked() == false);
+         REQUIRE(child1->GetRuntime().IsPinned() == false);
          REQUIRE(child1->GetFlow() == root.GetFlow());
-         REQUIRE(child1->GetFlow().IsLocked() == false);
+         REQUIRE(child1->GetFlow().IsPinned() == false);
          REQUIRE(child1->RequiresRefresh() == false);
          REQUIRE(not child1->GetChildren());
          REQUIRE(not child1->GetUnits());
@@ -119,9 +119,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(added == 1);
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
-         REQUIRE(root.GetRuntime().IsLocked() == false);
+         REQUIRE(root.GetRuntime().IsPinned() == false);
          REQUIRE(root.GetFlow() == nullptr);
-         REQUIRE(root.GetFlow().IsLocked() == false);
+         REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().IsEmpty());
          REQUIRE(root.GetUnits().GetCount() == 1);
@@ -141,9 +141,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
-         REQUIRE(root.GetRuntime().IsLocked() == false);
+         REQUIRE(root.GetRuntime().IsPinned() == false);
          REQUIRE(root.GetFlow() == nullptr);
-         REQUIRE(root.GetFlow().IsLocked() == false);
+         REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().IsEmpty());
          REQUIRE(root.GetUnits().GetCount() == 1);
@@ -174,9 +174,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
-         REQUIRE(root.GetRuntime().IsLocked() == false);
+         REQUIRE(root.GetRuntime().IsPinned() == false);
          REQUIRE(root.GetFlow() == nullptr);
-         REQUIRE(root.GetFlow().IsLocked() == false);
+         REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(not root.GetChildren());
          REQUIRE(not root.GetUnits());
@@ -198,9 +198,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);
-         REQUIRE(root.GetRuntime().IsLocked() == false);
+         REQUIRE(root.GetRuntime().IsPinned() == false);
          REQUIRE(root.GetFlow() == nullptr);
-         REQUIRE(root.GetFlow().IsLocked() == false);
+         REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(not root.GetChildren());
          REQUIRE(not root.GetUnits());
@@ -240,9 +240,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() != nullptr);
-         REQUIRE(root.GetRuntime().IsLocked() == true);
+         REQUIRE(root.GetRuntime().IsPinned() == true);
          REQUIRE(root.GetFlow() != nullptr);
-         REQUIRE(root.GetFlow().IsLocked() == true);
+         REQUIRE(root.GetFlow().IsPinned() == true);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().GetCount() == 2);
          REQUIRE(root.GetUnits().GetCount() == 2);
@@ -253,9 +253,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto child1 = root.GetChildren()[0];
          REQUIRE(child1->GetOwner() == &root);
          REQUIRE(child1->GetRuntime() == root.GetRuntime());
-         REQUIRE(child1->GetRuntime().IsLocked() == false);
+         REQUIRE(child1->GetRuntime().IsPinned() == false);
          REQUIRE(child1->GetFlow() == root.GetFlow());
-         REQUIRE(child1->GetFlow().IsLocked() == false);
+         REQUIRE(child1->GetFlow().IsPinned() == false);
          REQUIRE(child1->RequiresRefresh() == true);
          REQUIRE(child1->GetChildren().GetCount() == 2);
          REQUIRE(child1->GetUnits().GetCount() == 2);
@@ -275,9 +275,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto child2 = root.GetChildren()[1];
          REQUIRE(child2->GetOwner() == &root);
          REQUIRE(child2->GetRuntime() == root.GetRuntime());
-         REQUIRE(child2->GetRuntime().IsLocked() == false);
+         REQUIRE(child2->GetRuntime().IsPinned() == false);
          REQUIRE(child2->GetFlow() == root.GetFlow());
-         REQUIRE(child2->GetFlow().IsLocked() == false);
+         REQUIRE(child2->GetFlow().IsPinned() == false);
          REQUIRE(child2->RequiresRefresh() == true);
          REQUIRE(not child2->GetChildren());
          REQUIRE(not child2->GetUnits());
@@ -288,9 +288,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto grandchild1 = child1->GetChildren()[0];
          REQUIRE(grandchild1->GetOwner() == child1);
          REQUIRE(grandchild1->GetRuntime() == root.GetRuntime());
-         REQUIRE(grandchild1->GetRuntime().IsLocked() == false);
+         REQUIRE(grandchild1->GetRuntime().IsPinned() == false);
          REQUIRE(grandchild1->GetFlow() == root.GetFlow());
-         REQUIRE(grandchild1->GetFlow().IsLocked() == false);
+         REQUIRE(grandchild1->GetFlow().IsPinned() == false);
          REQUIRE(grandchild1->RequiresRefresh() == true);
          REQUIRE(not grandchild1->GetChildren());
          REQUIRE(not grandchild1->GetUnits());
@@ -301,9 +301,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto grandchild2 = child1->GetChildren()[1];
          REQUIRE(grandchild2->GetOwner() == child1);
          REQUIRE(grandchild2->GetRuntime() == root.GetRuntime());
-         REQUIRE(grandchild2->GetRuntime().IsLocked() == false);
+         REQUIRE(grandchild2->GetRuntime().IsPinned() == false);
          REQUIRE(grandchild2->GetFlow() == root.GetFlow());
-         REQUIRE(grandchild2->GetFlow().IsLocked() == false);
+         REQUIRE(grandchild2->GetFlow().IsPinned() == false);
          REQUIRE(grandchild2->RequiresRefresh() == true);
          REQUIRE(not grandchild2->GetChildren());
          REQUIRE(not grandchild2->GetUnits());

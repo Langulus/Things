@@ -9,14 +9,12 @@
 #include "Module.hpp"
 #include <Langulus/TMap.hpp>
 #include <Langulus/TRef.hpp>
-#include <Langulus/Text.hpp>
+#include <Langulus/Path.hpp>
 #include <Langulus/HashOf.hpp>
 
 
 namespace Langulus::Things
 {
-   using Path = Annies::Text;
-
    ///                                                                        
    /// MARK: Runtime                                                          
    ///                                                                        
@@ -109,7 +107,7 @@ namespace Langulus::Things
       auto GetOwner() const noexcept { return mOwner; }
 
       LANGULUS_API(THINGS)
-      auto InstantiateModulePath(const Path&, Many const& = {}) -> Module*;
+      auto InstantiateModulePath(Path const&, Many const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
       auto InstantiateModule(Token const&, Many const& = {}) -> Module*;
@@ -137,13 +135,13 @@ namespace Langulus::Things
       #endif
 
       LANGULUS_API(THINGS)
-      auto GetFile(const Path&) -> Ref<Things::File>;
+      auto GetFile(Path const&) -> Ref<Things::File>;
       LANGULUS_API(THINGS)
-      auto GetFolder(const Path&) -> Ref<Things::Folder>;
+      auto GetFolder(Path const&) -> Ref<Things::Folder>;
       LANGULUS_API(THINGS)
-      auto GetWorkingPath() const -> const Path&;
+      auto GetWorkingPath() const -> Path const&;
       LANGULUS_API(THINGS)
-      auto GetDataPath() const -> const Path&;
+      auto GetDataPath() const -> Path const&;
 
       LANGULUS_API(THINGS)
       bool Update(Time);

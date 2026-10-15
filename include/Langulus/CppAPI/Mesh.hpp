@@ -8,7 +8,7 @@
 #pragma once
 #include "Asset.hpp"
 #include <Langulus/Mapping.hpp>
-#include <Langulus/Vectors/TVector.hpp>
+#include <Langulus/Math/Vector.hpp>
 
 
 namespace Langulus::Things
@@ -28,7 +28,7 @@ namespace Langulus::Things
       // Starting index                                                 
       uint32_t mIndexStart = 0;
       // Data topology                                                  
-      DMeta mTopology;
+      RTTI::DMeta mTopology;
       // Double-sidedness                                               
       bool mBilateral = false;
       // Texture mapping mode                                           
@@ -54,7 +54,7 @@ namespace Langulus::Things
    public:
       using CTTI_Bases = Asset;
 
-      Mesh() : Resolvable {this} {}
+      Mesh() /*: Resolvable {this}*/ {}
 
       template<CT::Topology, CT::Topology...>
       bool CheckTopology()    const;

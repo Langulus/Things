@@ -14,14 +14,14 @@ namespace Langulus::Things
    /// Get the current working path (where the main exe was executed)         
    ///   @return the path                                                     
    LANGULUS(INLINED)
-   auto FileSystem::GetWorkingPath() const noexcept -> const Path& {
+   auto FileSystem::GetWorkingPath() const noexcept -> Path const& {
       return mWorkingPath;
    }
 
    /// Get the current data path, like GetWorkingPath() / "data"              
    ///   @return the path                                                     
    LANGULUS(INLINED)
-   auto FileSystem::GetDataPath() const noexcept -> const Path& {
+   auto FileSystem::GetDataPath() const noexcept -> Path const& {
       return mMainDataPath;
    }
    
@@ -43,7 +43,7 @@ namespace Langulus::Things
    /// against all reflected file extensions                                  
    ///   @return the file format                                              
    LANGULUS(INLINED)
-   DMeta File::GetFormat() const noexcept {
+   auto File::GetFormat() const noexcept -> DMeta {
       return mFormat;
    }
 
@@ -57,7 +57,7 @@ namespace Langulus::Things
    /// Get the full path of the file                                          
    ///   @return a reference to the path                                      
    LANGULUS(INLINED)
-   auto File::GetFilePath() const noexcept -> const Path& {
+   auto File::GetFilePath() const noexcept -> Path const& {
       return mFilePath;
    }
 
@@ -87,7 +87,7 @@ namespace Langulus::Things
    /// Get the full path of the folder                                        
    ///   @return a reference to the path                                      
    LANGULUS(INLINED)
-   auto Folder::GetFolderPath() const noexcept -> const Path& {
+   auto Folder::GetFolderPath() const noexcept -> Path const& {
       return mFolderPath;
    }
 }

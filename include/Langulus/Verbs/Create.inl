@@ -220,8 +220,8 @@ namespace Langulus::Verbs
    ///   @param data - the data to set to                                     
    ///   @return true if at least one member in one element was set           
    inline void Create::SetMembers(Many& context, Many const& data) {
-      TUnorderedMap<TMeta, size_t> satisfiedTraits;
-      TUnorderedMap<DMeta, size_t> satisfiedData;
+      TMapUnsorted<TMeta, size_t> satisfiedTraits;
+      TMapUnsorted<DMeta, size_t> satisfiedData;
 
       data.ForEachDeep([&](Many const& group) {
          VERBOSE_CREATION("Manually initializing ", context, " with ", Logger::Cyan, group);

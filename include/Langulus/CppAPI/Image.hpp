@@ -11,8 +11,7 @@
 #include <Langulus/Math/Scale.hpp>
 
 
-
-namespace Langulus
+namespace Langulus::Things
 {
    ///                                                                        
    ///   Universal pixel buffer view                                          
@@ -22,7 +21,7 @@ namespace Langulus
       uint32_t mHeight = 1;
       uint32_t mDepth  = 1;
       uint32_t mFrames = 1;
-      DMeta mFormat {};
+      RTTI::DMeta mFormat {};
       // Reverse RGBA to BGRA                                           
       // This is not a scalable solution and would eventually fail      
       bool mReverseFormat {};
@@ -37,10 +36,8 @@ namespace Langulus
       Hash GetHash() const noexcept;
       auto GetScale() const noexcept -> Math::Scale3;
    };
-}
 
-namespace Langulus::Things
-{
+
    ///                                                                        
    ///   Abstract texture content                                             
    ///                                                                        
@@ -49,8 +46,9 @@ namespace Langulus::Things
       ImageView mView;
 
    public:
-      LANGULUS_BASES(Asset);
-      Image() : Resolvable {this} {}
+      using CTTI_Basses = Asset;
+
+      Image() /*: Resolvable {this}*/ {}
 
       virtual auto GetLOD(const Math::LOD&) const -> Ref<Image> { return {}; }
       virtual auto GetGPUHandle() const noexcept -> void* { return nullptr; }
@@ -62,25 +60,24 @@ namespace Langulus::Things
       template<class F>
       auto ForEachPixel(F&&) const;
 
-      template<template<class> class S, CT::Block B> requires CT::Intent<S<B>>
-      void Upload(S<B>&&);
+      void Upload(CT::Container auto&&);
 
       ///                                                                     
       ///   Iteration                                                         
       ///                                                                     
-      template<bool MUTABLE>
+      /*template<bool MUTABLE>
       struct Iterator;
 
       auto begin()       noexcept -> Iterator<true>;
       auto begin() const noexcept -> Iterator<false>;
-      auto end()   const noexcept -> A::IteratorEnd { return {}; }
+      auto end()   const noexcept -> A::IteratorEnd { return {}; }*/
    };
   
 
    ///                                                                        
    /// Image iterator                                                         
    ///                                                                        
-   template<bool MUTABLE>
+   /*template<bool MUTABLE>
    struct Image::Iterator : A::Iterator {
       static constexpr bool Mutable = MUTABLE;
       using CTTI_Abstract = No;
@@ -120,18 +117,18 @@ namespace Langulus::Things
 
       template<CT::ColorBased T>
       T As() const;
-   };
+   };*/
 
 
    ///                                                                        
    ///   Abstract font content                                                
    ///                                                                        
    struct Font : Image {
-      LANGULUS_BASES(Image);
+      using CTTI_Basses = Image;
 
       Font()
-         : Resolvable   {this}
-         , ProducedFrom {nullptr, {}} {}
+         : /*Resolvable   {this}
+         ,*/ ProducedFrom {nullptr, {}} {}
    };
 }
 

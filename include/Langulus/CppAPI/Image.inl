@@ -9,9 +9,8 @@
 #include "Image.hpp"
 
 
-namespace Langulus
+namespace Langulus::Things
 {
-   
    /// Compare texture views                                                  
    ///   @param rhs - the texture view to compare against                     
    ///   @return true if both views are the same                              
@@ -76,11 +75,8 @@ namespace Langulus
       return {mWidth, mHeight, mDepth};
    }
 
-} // namespace Langulus
 
-namespace Langulus::A
-{
-   
+
    /// Get the pixel format of the texture                                    
    ///   @return the pixel format type                                        
    LANGULUS(INLINED)
@@ -155,16 +151,14 @@ namespace Langulus::A
    /// Upload raw data to the image with intent                               
    ///   @attention deletes any data previously commited                      
    ///   @param data - the block of data                                      
-   template<template<class> class S, CT::Block B>
-   requires CT::Intent<S<B>> LANGULUS(INLINED)
-   void Image::Upload(S<B>&& data) {
+   void Image::Upload(CT::Container auto&& data) {
       // Check if provided data matches the view requirements           
-      LANGULUS_ASSERT(mView.GetBytesize() == data->GetBytesize(), Image,
+      LglsAssert(mView.GetBytesize() == data->GetBytesize(),
          "Data is of the wrong size");
 
       // Reset data and commit the new one                              
       mDataListMap.Reset();
-      Commit<Tags::Color>(data.Forward());
+      Commit<Tags::Color>(LglsFwd(data));
    }
 
    LANGULUS(INLINED)
@@ -323,5 +317,4 @@ namespace Langulus::A
 
       return result;
    }
-
-} // namespace Langulus::A
+}

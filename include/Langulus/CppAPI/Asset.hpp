@@ -35,7 +35,7 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract asset part                                                  
    ///                                                                        
-   struct Asset : virtual Part, virtual ProducedFrom<AssetModule> {
+   struct Asset : virtual Part, virtual Flow::ProducedFrom<AssetModule> {
       using CTTI_Bases     = Part;
       using CTTI_Producer  = AssetModule;      
       using Data           = Many;

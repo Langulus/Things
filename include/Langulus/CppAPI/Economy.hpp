@@ -6,7 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include <Langulus/Vectors/TVector.hpp>
+#include <Langulus/Math/Vector.hpp>
 #include <Langulus/Thing.hpp>
 #include <Langulus/Part.hpp>
 

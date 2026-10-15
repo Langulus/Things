@@ -31,11 +31,11 @@ namespace Langulus::Things
       Path mMainDataPath;
 
    public:
-      virtual auto GetFile  (const Path&) -> Ref<File>   = 0;
-      virtual auto GetFolder(const Path&) -> Ref<Folder> = 0;
+      virtual auto GetFile  (Path const&) -> Ref<Things::File>   = 0;
+      virtual auto GetFolder(Path const&) -> Ref<Things::Folder> = 0;
 
-      auto GetWorkingPath() const noexcept -> const Path&;
-      auto GetDataPath()    const noexcept -> const Path&;
+      auto GetWorkingPath() const noexcept -> Path const&;
+      auto GetDataPath()    const noexcept -> Path const&;
    };
 
 
@@ -62,12 +62,12 @@ namespace Langulus::Things
 
    public:
       virtual auto ReadAs        (DMeta)       const -> Many = 0;
-      virtual auto RelativeFile  (const Path&) const -> Ref<File> = 0;
-      virtual auto RelativeFolder(const Path&) const -> Ref<Folder> = 0;
+      virtual auto RelativeFile  (Path const&) const -> Ref<Things::File> = 0;
+      virtual auto RelativeFolder(Path const&) const -> Ref<Things::Folder> = 0;
       
       auto Exists()      const noexcept -> bool;
       auto IsReadOnly()  const noexcept -> bool;
-      auto GetFilePath() const noexcept -> const Path&;
+      auto GetFilePath() const noexcept -> Path const&;
       auto GetFormat()   const noexcept -> DMeta;
       auto GetBytesize() const noexcept -> size_t;
 
@@ -91,7 +91,7 @@ namespace Langulus::Things
 
          virtual auto Read(Many&) -> size_t = 0;
 
-         auto GetFile() const noexcept -> const Ref<File>& {
+         auto GetFile() const noexcept -> Ref<Things::File> const& {
             return mFile;
          }
       };
@@ -115,7 +115,7 @@ namespace Langulus::Things
 
          virtual auto Write(Many const&) -> size_t = 0;
 
-         auto GetFile() const noexcept -> const Ref<File>& {
+         auto GetFile() const noexcept -> Ref<Things::File> const& {
             return mFile;
          }
       };
@@ -138,12 +138,12 @@ namespace Langulus::Things
       bool mIsReadOnly = false;
 
    public:
-      virtual auto RelativeFile  (const Path&) const -> Ref<File> = 0;
-      virtual auto RelativeFolder(const Path&) const -> Ref<Folder> = 0;
+      virtual auto RelativeFile  (Path const&) const -> Ref<Things::File> = 0;
+      virtual auto RelativeFolder(Path const&) const -> Ref<Things::Folder> = 0;
 
       auto Exists()        const noexcept -> bool;
       auto IsReadOnly()    const noexcept -> bool;
-      auto GetFolderPath() const noexcept -> const Path&;
+      auto GetFolderPath() const noexcept -> Path const&;
    };
 }
 

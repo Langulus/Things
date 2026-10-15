@@ -430,9 +430,9 @@ namespace Langulus::Things
 
       const auto indices = GetDataList<Tags::Index>();
       if (not indices or not *indices)
-         return ForEachVertexInner<false>(A {}, Forward<F>(call));
+         return ForEachVertexInner<false>(A {}, LglsFwd(call));
       else
-         return ForEachVertexInner<true> (A {}, Forward<F>(call));
+         return ForEachVertexInner<true> (A {}, LglsFwd(call));
    }
 
    /// Inner vertex iteration                                                 

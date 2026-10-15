@@ -230,9 +230,9 @@ namespace Langulus::Things
    }
 
    /// Compare two entities                                                   
-   ///   @param other - entity to compare with                                
+   ///   @param other thing to compare with                                   
    ///   @return true if entities are functionally same, that is, they have   
-   ///           the exact same behavior (actual state is ignored)            
+   ///      the exact same behavior (actual state is ignored)                 
    bool Thing::operator == (const Thing& other) const {
       return mChildren == other.mChildren
          and mPartsList == other.mPartsList
@@ -272,7 +272,7 @@ namespace Langulus::Things
    /// Simulate the hierarchy of things for a given period of time, by        
    /// updating all runtimes and flows at and under this Thing                
    /// Also synchronizes changes between all parts, if mRefreshRequired       
-   ///   @param deltaTime - how much time passes for the simulation           
+   ///   @param deltaTime how much time passes for the simulation             
    ///   @return true if no exit was requested by any of the runtimes/flows   
    bool Thing::Update(Time deltaTime) {
       LglsProfile();
@@ -285,7 +285,7 @@ namespace Langulus::Things
          // This will execute any temporally based verbs and scripts    
          // Game logic basically happens in this flow                   
          Many unsusedSideeffects;
-         if (not mFlow->Update(deltaTime, unsusedSideeffects))
+         if (not (*mFlow)->Update(deltaTime, unsusedSideeffects))
             return false;
       }
 
@@ -307,7 +307,8 @@ namespace Langulus::Things
    }
 
    /// Refresh all parts and children down the hierarchy                      
-   ///   @param force - force refresh                                         
+   ///   @param force true to force refresh, otherwise refresh will happen    
+   ///      only if Thing's configuration changed.                            
    void Thing::Refresh(bool force) {
       LglsProfile();
       if (not force and not mRefreshRequired)
@@ -324,7 +325,7 @@ namespace Langulus::Things
          child->Refresh(true);
    }
 
-   /// Reset the entity, clearing all children, parts, tags                 
+   /// Reset the entity, clearing all children, parts, tags                   
    void Thing::Reset() {
       // Decouple all children from this parent                         
       for (auto& child : mChildren)
@@ -343,15 +344,15 @@ namespace Langulus::Things
    /// Get a part by type and offset                                          
    /// If type is nullptr searches only by offset                             
    /// If type is not nullptr, gets the Nth matching part, if any             
-   ///   @param id - the type of the part                                     
-   ///   @param index - the part index to seek                                
+   ///   @param id the type of the part                                       
+   ///   @param index the part index to seek                                  
    ///   @return the part if found, or nullptr if not                         
-   auto Thing::GetPartMeta(DMeta id, Index index) -> Part* {
+   auto Thing::GetPartMeta(DMeta id, size_t index) -> Part* {
       if (id) {
          // Search a typed tag                                        
          const auto found = mPartsAmbiguous.Find(id);
          return found
-            ? static_cast<Part*>(found.GetVal()[index])
+            ? static_cast<Part*>((*found.GetVal())[index])
             : static_cast<Part*>(nullptr);
       }
 
@@ -359,21 +360,21 @@ namespace Langulus::Things
       return mPartsList[index];
    }
 
-   auto Thing::GetPartMeta(DMeta type, Index offset) const -> Part const* {
+   auto Thing::GetPartMeta(DMeta type, size_t offset) const -> Part const* {
       return const_cast<Thing*>(this)->GetPartMeta(type, offset);
    }
    
    /// Get a part by type, properties, and offset                             
    /// If construct's type is nullptr searches only by offset and properties  
    /// If construct's type is not nullptr, gets the Nth matching part, if any 
-   ///   @param meta - the type of the part                                   
-   ///   @param what - the desired properties of the part                     
-   ///   @param index - the part index to seek                                
+   ///   @param meta the type of the part                                     
+   ///   @param what the desired properties of the part                       
+   ///   @param index the part index to seek                                  
    ///   @return the part if found, or nullptr if not                         
-   auto Thing::GetPartExt(DMeta meta, Many const& what, Index index) -> Part* {
+   auto Thing::GetPartExt(DMeta meta, Many const& what, size_t index) -> Part* {
       if (meta) {
          // Search a typed part                                         
-         const auto found = mPartsAmbiguous.FindIt(meta);
+         const auto found = mPartsAmbiguous.Find(meta);
          if (found) {
             auto& bucket = found.GetValue();
             if (not what)
@@ -403,49 +404,49 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   auto Thing::GetPartExt(DMeta meta, Many const& what, Index index) const -> Part const* {
+   auto Thing::GetPartExt(DMeta meta, Many const& what, size_t index) const -> Part const* {
       return const_cast<Thing*>(this)->GetPartExt(meta, what, index);
    }
 
 #if LANGULUS_FEATURE(MANAGED_REFLECTION)
    /// Get a part by token and offset                                         
-   ///   @param token - the type name of the part                             
-   ///   @param offset - the part index                                       
+   ///   @param token the type name of the part                               
+   ///   @param offset the part index                                         
    ///   @return the part if found, or nullptr if not                         
-   auto Thing::GetPartMeta(Token const& token, Index offset) -> Part* {
-      return GetPartMeta(RTTI::DisambiguateMeta(token), offset);
+   auto Thing::GetPartMeta(Token const& token, size_t offset) -> Part* {
+      return GetPartMeta(RTTI::Registry::DisambiguateMeta(token), offset);
    }
 #endif
 
    /// Get the owner                                                          
    ///   @return the owner                                                    
-   auto Thing::GetOwner() const noexcept -> const Ref<Thing>& {
+   auto Thing::GetOwner() const noexcept -> Ref<Thing> const& {
       return mOwner;
    }
 
    /// Get children hierarchy                                                 
    ///   @return the hierarchy                                                
-   auto Thing::GetChildren() const noexcept -> const Hierarchy& {
+   auto Thing::GetChildren() const noexcept -> Hierarchy const& {
       return mChildren;
    }
 
    /// Get a child by index                                                   
    ///   @param id - the index to pick                                        
    ///   @return the child entity, or nullptr of none was found               
-   auto Thing::GetChild(Index offset) -> Thing* {
+   auto Thing::GetChild(size_t offset) -> Thing* {
       return mChildren[offset];
    }
 
-   auto Thing::GetChild(Index offset) const -> const Thing* {
+   auto Thing::GetChild(size_t offset) const -> Thing const* {
       return const_cast<Thing*>(this)->GetChild(offset);
    }
 
-   /// Get child by name and offset (searches for Tags::Name in children)   
+   /// Get child by name and offset (searches for Tags::Name in children)     
    ///   @param name - name to seek                                           
    ///   @param offset - offset to seek                                       
    ///   @return the child entity, or nullptr of none was found               
-   auto Thing::GetNamedChild(Token const& name, Index offset) -> Thing* {
-      Index matches = 0;
+   auto Thing::GetNamedChild(Token const& name, size_t offset) -> Thing* {
+      size_t matches = 0;
       for (auto& child : mChildren) {
          if (child->GetName() == name) {
             if (matches == offset)
@@ -457,7 +458,7 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   auto Thing::GetNamedChild(Token const& name, Index offset) const -> const Thing* {
+   auto Thing::GetNamedChild(Token const& name, size_t offset) const -> const Thing* {
       return const_cast<Thing*>(this)->GetNamedChild(name, offset);
    }
 
@@ -465,7 +466,7 @@ namespace Langulus::Things
    /// runtime, will incorporate the provided one                             
    ///   @param newrt - the new runtime to set                                
    void Thing::ResetRuntime(Runtime* newrt) {
-      if (mRuntime.IsLocked())
+      if (mRuntime.IsPinned())
          return;
 
       mRuntime = newrt;
@@ -477,7 +478,7 @@ namespace Langulus::Things
    /// flow, will incorporate the provided one                                
    ///   @param newrt - the new flow to set                                   
    void Thing::ResetFlow(Temporal* newflow) {
-      if (mFlow.IsLocked())
+      if (mFlow.IsPinned())
          return;
 
       mFlow = newflow;
@@ -489,8 +490,8 @@ namespace Langulus::Things
    ///   @param type - the type of parts to search for                        
    ///   @return the number of matching parts                                 
    auto Thing::HasParts(DMeta type) const -> size_t {
-      const auto found = mPartsAmbiguous.FindIt(type);
-      return found ? found.GetValue().GetCount() : 0;
+      const auto found = mPartsAmbiguous.Find(type);
+      return found ? found.GetVal().GetCount() : 0;
    }
 
    /// Check if all parts in the hierarchy require a Refresh() call           
@@ -514,11 +515,11 @@ namespace Langulus::Things
    /// Create a local runtime for this thing                                  
    ///   @return the new runtime instance, or the old one if already created  
    auto Thing::CreateRuntime() -> Runtime* {
-      if (mRuntime.IsLocked())
+      if (mRuntime.IsPinned())
          return &*mRuntime;
 
-      mRuntime.Get().New(this);
-      mRuntime.Lock();
+      mRuntime.Get().Emplace(this);
+      mRuntime.Pin();
 
       // Dispatch the change to all children                            
       for (auto& child : mChildren)
@@ -531,11 +532,11 @@ namespace Langulus::Things
    /// Create a local flow for this thing                                     
    ///   @return the new flow instance, or the old one, if already created    
    auto Thing::CreateFlow() -> Temporal* {
-      if (mFlow.IsLocked())
+      if (mFlow.IsPinned())
          return &*mFlow;
 
-      mFlow.Get().New();
-      mFlow.Lock();
+      mFlow.Get().Emplace();
+      mFlow.Pin();
 
       // Dispatch the change to all children                            
       for (auto& child : mChildren)
@@ -552,11 +553,10 @@ namespace Langulus::Things
    ///   @param descriptor - instructions for module setup                    
    ///   @return the instantiated module interface                            
    auto Thing::LoadMod(Token const& module, Many const& descriptor) -> Things::Module* {
-      const auto runtime = GetRuntime();
-      LglsAssumeUser(runtime,
-         "No runtime available for loading a module");
+      const auto runtime = **GetRuntime();
+      LglsAssumeUser(runtime, "No runtime available for loading a module");
       const auto instance = runtime->InstantiateModule(module, descriptor);
-      LANGULUS_ASSERT(instance, Module, "Missing module");
+      LglsAssert(instance, "Missing module");
       return instance;
    }
    
@@ -566,12 +566,11 @@ namespace Langulus::Things
    ///   @param path - relative path to the module                            
    ///   @param descriptor - instructions for module setup                    
    ///   @return the instantiated module interface                            
-   auto Thing::LoadModPath(const Path& path, Many const& descriptor) -> Things::Module* {
-      const auto runtime = GetRuntime();
-      LglsAssumeUser(runtime,
-         "No runtime available for loading a module");
+   auto Thing::LoadModPath(Path const& path, Many const& descriptor) -> Things::Module* {
+      const auto runtime = **GetRuntime();
+      LglsAssumeUser(runtime, "No runtime available for loading a module");
       const auto instance = runtime->InstantiateModulePath(path, descriptor);
-      LANGULUS_ASSERT(instance, Module, "Missing module");
+      LglsAssert(instance, "Missing module");
       return instance;
    }
 }

@@ -14,8 +14,8 @@
 SCENARIO("Testing Event", "[event]") {
    (void) MetaDataOf<Event>();
    (void) MetaDataOf<EventState>();
-   (void) MetaTraitOf<Tags::X>();
-   (void) MetaTraitOf<Tags::Y>();
+   (void) MetaTagOf<Tags::X>();
+   (void) MetaTagOf<Tags::Y>();
    (void) MetaVerbOf<Verbs::Add>();
 
    GIVEN("The script: Create Event(Keys::A, EventState::Begin, Data(X(666), Y(999))),"

@@ -90,12 +90,12 @@ namespace Langulus::Things
                result << Tags::Parent {*self.mOwner};
             }
 
-            // Check dynamic traits in the entity                       
+            // Check dynamic tags in the entity                       
             const auto found = self.mTags.Find(tag);
             if (found)
                result += found.GetVal();
 
-            // Then check each part's static traits                     
+            // Then check each part's static tags                     
             for (auto& part : self.mPartsList) {
                size_t index = 0;
                auto t = part->GetMember(tag, index);
@@ -141,7 +141,7 @@ namespace Langulus::Things
       }
       else {
          if constexpr (SEEK & Seek::Here) {
-            // Check dynamic traits in the entity                       
+            // Check dynamic tags in the entity                       
             for (auto tagGroup : self.mTags) {
                for (auto tag : tagGroup.GetValue()) {
                   try { result << tag.template AsCast<D>(); }
@@ -149,7 +149,7 @@ namespace Langulus::Things
                }
             }
 
-            // Then check each part's static traits                     
+            // Then check each part's static tags                     
             for (auto& part : self.mPartsList) {
                size_t index = 0;
                auto t = part->GetMember(TMeta {}, index);

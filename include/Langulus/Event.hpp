@@ -12,7 +12,7 @@
 #include "Langulus/RTTI/Definition.hpp"
 #include <Langulus/Time.hpp>
 #include <Langulus/Many.hpp>
-#include <Langulus/Text.hpp>
+#include <Langulus/SerializeText.hpp>
 #include <Langulus/Describe.hpp>
 #include "Things/Export.hpp"
 
@@ -684,7 +684,7 @@ namespace Langulus::CTTI
          if (event.GetPayload()) {
             if (state_depicted)
                out += Serial::And.Token;
-            out += event.GetPayload();
+            out += event.GetPayload();//TODO this was wrapped in Tag::Data before
          }
 
          out += Serial::CloseScope.Token;

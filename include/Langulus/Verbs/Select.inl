@@ -209,7 +209,7 @@ namespace Langulus::Verbs
    /// Select members by providing either meta data or meta tag             
    ///   @tparam MUTABLE - whether or not selection will be mutable           
    ///   @param context - the thing we're searching in                        
-   ///   @param selectedTags - [out] found traits go here                   
+   ///   @param selectedTags - [out] found tags go here                   
    ///   @param resultingTrait - the type of tag to push to selectedTags  
    ///   @param meta - the filter we'll be using                              
    ///   @param indices - optional indices (i.e. Nth tag of a kind          
@@ -266,7 +266,7 @@ namespace Langulus::Verbs
    ///   @param indices - optional index for tag/verb (Nth tag/verb)      
    ///   @param id - type of data we'll be selecting                          
    ///   @param context - the thing we're searching in                        
-   ///   @param selectedTags - [out] found traits go here                   
+   ///   @param selectedTags - [out] found tags go here                   
    ///   @param selectedVerbs - [out] found verb go here                      
    ///   @return if at least tag/verb has been pushed to outputs            
    template<bool MUTABLE>

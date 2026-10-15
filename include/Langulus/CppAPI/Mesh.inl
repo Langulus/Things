@@ -422,7 +422,7 @@ namespace Langulus::Things
    
    /// Optimized for cycling through the data of all triangles                
    /// Will generate triangles based on indices and topology                  
-   ///   @param call - lambda with the desired triangle traits as arguments   
+   ///   @param call - lambda with the desired triangle tags as arguments   
    ///   @return the number of iterated triangles                             
    size_t Mesh::ForEachVertex(auto&& call) const {
       using F = Deref<decltype(call)>;
@@ -442,7 +442,7 @@ namespace Langulus::Things
    template<bool INDEXED, class...T>
    size_t Mesh::ForEachVertexInner(Types<T...>, auto&& call) const {
       static_assert(CT::Tag<Decay<T>...>,
-         "All iterator arguments must be traits, like Tags::Place, "
+         "All iterator arguments must be tags, like Tags::Place, "
          "Tags::Aim, Tags::Color, etc.");
 
       // Represent iterator arguments as a tuple of disowned Blocks     
@@ -600,7 +600,7 @@ namespace Langulus::Things
          return {};
 
       if (indices->GetCount() == 1) {
-         // Single index source will be used for all vertex traits      
+         // Single index source will be used for all vertex tags      
          return Disown((*indices)[0]);
       }
 
@@ -622,7 +622,7 @@ namespace Langulus::Things
    ///   @return the tuple of arguments for a vertex                          
    template<CT::Topology T, size_t...STREAM_ID>
    auto Mesh::GenerateVertex(size_t i,
-      const auto& data, const auto& indices,
+      auto const& data, auto const& indices,
       std::index_sequence<STREAM_ID...>&&
    ) const {
       return ::std::make_tuple(PickVertex<T>(i,

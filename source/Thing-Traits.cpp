@@ -56,7 +56,7 @@ namespace Langulus::Things
    ///   @return a non-empty tag, if found                                    
    auto Thing::GetTag(this auto&& self, Tag const& id, CT::Index auto&& index) -> Tag {
       if (id.GetTag()) {
-         // Handle some predefined traits here                          
+         // Handle some predefined tags here                          
          if (id.template IsTag<Tags::Part>()) {
             // Get a component                                          
             auto part = self.GetPartMeta(DMeta {}, index);
@@ -81,7 +81,7 @@ namespace Langulus::Things
          }
       }
 
-      // Check dynamic traits in the entity                             
+      // Check dynamic tags in the entity                             
       auto found = self.GetLocalTag(id.GetTag(), index);
       if (found)
          return *found;

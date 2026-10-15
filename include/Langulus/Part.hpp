@@ -66,3 +66,13 @@ namespace Langulus::Things
       void ReplaceOwner(const Thing*, const Thing*);
    };
 }
+
+/// Convert to text, by writing a short name and address                      
+LANGULUS_MORPHISM_CUSTOM(Things::Part, {
+   return Annies::Text::Mention(from);
+}, Annies::Text);
+
+/// ...even if encountered by pointer                                         
+LANGULUS_MORPHISM_CUSTOM(Things::Part*, {
+   return Annies::Text::Mention(from);
+}, Annies::Text);

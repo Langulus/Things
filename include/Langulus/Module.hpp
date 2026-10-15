@@ -22,7 +22,7 @@ namespace Langulus::Things
 
 
    /// Helper function, that reflects and registers a list of any reflection  
-   /// primitives, like data, verbs, and traits.                              
+   /// primitives, like data, verbs, and tags.                              
    /// All types in the list, as well as data member and base types, will     
    /// be associated with the module library. When library unloads, all       
    /// these definitions will be removed, because otherwise they might        

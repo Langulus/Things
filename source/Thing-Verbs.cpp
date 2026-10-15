@@ -153,7 +153,7 @@ namespace Langulus::Things
          CreateInner(verb.GetOutput(), verb.GetArgument());
    }
 
-   /// Pick something from the entity - children, traits, parts, modules      
+   /// Pick something from the entity - children, tags, parts, modules      
    /// If this entity doesn't satisfy the query, a search will be performed   
    /// in all parents, climbing the hierarchy                                 
    ///   @param verb selection verb                                           
@@ -256,7 +256,7 @@ namespace Langulus::Things
       );
 
       if (not mismatch) {
-         // We're not seeking an entity, but components/traits          
+         // We're not seeking an entity, but components/tags          
          if (selectedTags) {
             THINGS_SELECTION_VERBOSE_SELF(Logger::Green,
                "Tag(s) selected: ", selectedTags);

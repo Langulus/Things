@@ -653,7 +653,7 @@ namespace Langulus::Things
    ///   @param dt - delta time between update calls                          
    ///   @return true if no exit was requested by any of the modules          
    bool Runtime::Update(Time dt) {
-      LANGULUS(PROFILE);
+      LglsProfile();
       for (auto pair : mModules) {
          for (auto module : pair.GetValue()) {
             if (not module->Update(dt))

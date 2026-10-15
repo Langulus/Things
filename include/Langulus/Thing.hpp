@@ -141,7 +141,7 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       auto LoadMod(Token const&, Many const& = {}) -> Module*;
       LANGULUS_API(THINGS)
-      auto LoadModPath(const Path&, Many const& = {}) -> Module*;
+      auto LoadModPath(Path const&, Many const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
       auto GetOwner() const noexcept -> const Ref<Thing>&;
@@ -150,16 +150,14 @@ namespace Langulus::Things
       auto GetChildren() const noexcept -> const Hierarchy&;
 
       LANGULUS_API(THINGS)
-      auto GetChild(CT::Index auto&& = 0) -> Thing*;
+      auto GetChild(size_t = 0) -> Thing*;
+      LANGULUS_API(THINGS)
+      auto GetChild(size_t = 0) const -> const Thing*;
 
       LANGULUS_API(THINGS)
-      auto GetChild(CT::Index auto&& = 0) const -> const Thing*;
-
+      auto GetNamedChild(Token const&, size_t = 0) -> Thing*;
       LANGULUS_API(THINGS)
-      auto GetNamedChild(Token const&, CT::Index auto&& = 0) -> Thing*;
-
-      LANGULUS_API(THINGS)
-      auto GetNamedChild(Token const&, CT::Index auto&& = 0) const -> const Thing*;
+      auto GetNamedChild(Token const&, size_t = 0) const -> const Thing*;
 
       LANGULUS_API(THINGS)
       void DumpHierarchy() const;
@@ -192,28 +190,28 @@ namespace Langulus::Things
       auto HasParts() const -> size_t;
 
       LANGULUS_API(THINGS)
-      auto GetParts() const noexcept -> const PartList&;
+      auto GetParts() const noexcept -> PartList const&;
       LANGULUS_API(THINGS)
-      auto GetPartsMap() const noexcept -> const PartMap&;
+      auto GetPartsMap() const noexcept -> PartMap const&;
 
       LANGULUS_API(THINGS)
-      auto GetPartMeta(DMeta, CT::Index auto&& = 0)       -> Part*;
+      auto GetPartMeta(DMeta, size_t = 0)       -> Part*;
       LANGULUS_API(THINGS)
-      auto GetPartMeta(DMeta, CT::Index auto&& = 0) const -> Part const*;
+      auto GetPartMeta(DMeta, size_t = 0) const -> Part const*;
 
       LANGULUS_API(THINGS)
-      auto GetPartExt(DMeta, Many const&, CT::Index auto&& = 0)       -> Part*;
+      auto GetPartExt(DMeta, Many const&, size_t = 0)       -> Part*;
       LANGULUS_API(THINGS)
-      auto GetPartExt(DMeta, Many const&, CT::Index auto&& = 0) const -> Part const*;
+      auto GetPartExt(DMeta, Many const&, size_t = 0) const -> Part const*;
 
       template<CT::Part T = Part, class SELF> requires CT::Decayed<T>
       auto GetPart(this SELF&&, CT::Index auto&& = 0) -> LglsMutIf(SELF, T*);
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
          LANGULUS_API(THINGS)
-         auto GetPartMeta(Token const&, CT::Index auto&& = 0) const -> Part const*;
+         auto GetPartMeta(Token const&, size_t = 0) const -> Part const*;
          LANGULUS_API(THINGS)
-         auto GetPartMeta(Token const&, CT::Index auto&& = 0)       -> Part*;
+         auto GetPartMeta(Token const&, size_t = 0)       -> Part*;
 
          template<CT::Part T, class SELF> requires CT::Decayed<T>
          auto GetPartAs(this SELF&&, Token const&, CT::Index auto&& = 0) -> LglsMutIf(SELF, T*);
@@ -238,22 +236,24 @@ namespace Langulus::Things
       size_t HasTags(Tag const&) const;
 
       LANGULUS_API(THINGS)
-      auto GetTags() const noexcept -> const TagMap&;
+      auto GetTags() const noexcept -> TagMap const&;
       LANGULUS_API(THINGS)
-      auto GetTag(TMeta, CT::Index auto&& = 0) const -> Tag;
+      auto GetTag(TMeta, size_t = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(TMeta, CT::Index auto&& = 0)       -> Tag;
+      auto GetTag(TMeta, size_t = 0)       -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(Tag const&, CT::Index auto&& = 0) const -> Tag;
+      auto GetTag(Tag const&, size_t = 0) const -> Tag;
       LANGULUS_API(THINGS)
-      auto GetTag(Tag const&, CT::Index auto&& = 0)       -> Tag;
+      auto GetTag(Tag const&, size_t = 0)       -> Tag;
+
       template<CT::DefineTag>
-      auto GetTag(CT::Index auto&& = 0) -> Tag;
+      auto GetTag(this auto&&, CT::Index auto&& = 0) -> Tag;
 
       LANGULUS_API(THINGS)
-      auto GetLocalTag(TMeta, CT::Index auto&& = 0) const -> Tag const*;
+      auto GetLocalTag(TMeta, size_t = 0) const -> Tag const*;
       LANGULUS_API(THINGS)
-      auto GetLocalTag(TMeta, CT::Index auto&& = 0)       -> Tag*;
+      auto GetLocalTag(TMeta, size_t = 0)       -> Tag*;
+      
       template<CT::DefineTag, class SELF>
       auto GetLocalTag(this SELF&&, CT::Index auto&& = 0) -> LglsMutIf(SELF, Tag*);
 

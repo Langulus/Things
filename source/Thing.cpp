@@ -6,7 +6,9 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/Thing.hpp>
+#include <Langulus/Temporal.hpp>
 #include <Langulus/Describe.hpp>
+#include <Langulus/Profiler.hpp>
 #include "Thing.inl"
 
 
@@ -56,7 +58,7 @@ namespace Langulus::Things
       }
 
       if (descriptor) {
-         // Create any subthings/traits/part in this thing              
+         // Create any subthings/tags/part in this thing              
          Many unused_sideeffects;
          CreateInner(unused_sideeffects, descriptor);
       }
@@ -79,7 +81,7 @@ namespace Langulus::Things
    ///   @attention owner is never moved, you're moving only the hierarchy    
    ///      below the parent, however other's parent is notified of the move, 
    ///      because 'other' is removed from its children                      
-   ///   @param other move that thing                                         
+   ///   @param other thing to move                                           
    Thing::Thing(Thing&& other) noexcept
       : /*Resolvable      {this}
       ,*/ mRuntime        {Move(other.mRuntime)}
@@ -106,10 +108,7 @@ namespace Langulus::Things
    }
    
    /// Abandon constructor                                                    
-   ///   @attention owner is never cloned, you're moving only the hierarchy   
-   ///      below the parent, however other's parent is notified of the clone,
-   ///      because 'other' is duplicated in its children                     
-   ///   @param other - clone that entity                                     
+   ///   @param other thing to abandon                                        
    Thing::Thing(Abandon<Thing>&& other)
       : /*Resolvable      {this}
       ,*/ mRuntime        {Abandon(other->mRuntime)}
@@ -126,20 +125,17 @@ namespace Langulus::Things
 
       // Remap parts                                                    
       for (auto& part : mPartsList)
-         part->ReplaceOwner(&*other, this);
+         part->ReplaceOwner(&other.what, this);
 
       // Make sure the losing parent is notified of the change          
       if (other->mOwner)
-         other->mOwner->RemoveChild(&*other);
+         other->mOwner->RemoveChild(&other.what);
 
       THINGS_VERBOSE_SELF("Abandoned from ", *other);
    }
 
    /// Clone constructor                                                      
-   ///   @attention owner is never cloned, you're moving only the hierarchy   
-   ///      below the parent, however other's parent is notified of the clone,
-   ///      because 'other' is duplicated in its children                     
-   ///   @param other - clone that entity                                     
+   ///   @param other thing to clone                                          
    Thing::Thing(Clone<Thing>&& other)
       : /*Resolvable      {this}
       ,*/ mChildren       {Clone(other->mChildren)}
@@ -147,7 +143,7 @@ namespace Langulus::Things
    {
       TODO();
       //TODO clone flow and runtime if pinned, recreate modules if new runtime, 
-      // recreate parts and traits, then recreate children
+      // recreate parts and tags, then recreate children
       THINGS_VERBOSE_SELF("Cloned from ", *other);
    }
 
@@ -199,22 +195,22 @@ namespace Langulus::Things
       // in the hierarchy: the owner's mChildren                        
       mOwner.Reset();
 
-      // Tags might be exposing members in parts. Make sure we        
+      // Tags might be exposing members in parts. Make sure we          
       // dereference those first, so that parts have as small number of 
       // references as possible                                         
-      THINGS_VERBOSE_SELF("Tearing off traits (name might change)");
+      THINGS_VERBOSE_SELF("Tearing off tags (name might change)");
       mTags.Reset();
 
       // Decouple all parts from this owner because parts might get     
       // destroyed upon destroying mPartsList and mPartsAmbiguous, if   
       // the Parts were created on the stack.                           
       // If they still have owners, they will attempt to Decouple in    
-      // Part::~Part from already destroyed mPartsList/Ambiguous     
+      // Part::~Part from already destroyed mPartsList/Ambiguous        
       mPartsAmbiguous.Reset();
       for (auto& part : mPartsList) {
          THINGS_VERBOSE_SELF(
             "Tearing off part ", part, " at ", part->GetReferences(), " uses...");
-         part->mOwners.Remove(this);
+         part->mOwners.Erase(this);
 
          if (part->mOwners.IsEmpty())
             part->mOwners.Reset();
@@ -224,11 +220,11 @@ namespace Langulus::Things
       for (auto& child : mChildren)
          child->Teardown();
 
-      if (not mFlow.IsLocked())
-         mFlow.Reset();
+      if (not mFlow.IsPinned())
+         (*mFlow).Reset();
 
-      if (not mRuntime.IsLocked())
-         mRuntime.Reset();
+      if (not mRuntime.IsPinned())
+         (*mRuntime).Reset();
 
       THINGS_VERBOSE_SELF("Teardown complete: ", GetReferences(), " uses remain");
    }
@@ -245,14 +241,15 @@ namespace Langulus::Things
 
    /// Dump the entity's hierarchy in log                                     
    void Thing::DumpHierarchy() const {
-      const auto tab = Logger::Verbose(
-         Logger::White, Logger::Underline, *this, Logger::Tabs {});
+      const auto tab = Logger::VerboseScoped(
+         Logger::White, Logger::Underline, *this
+      );
 
       if (mTags) {
          const auto tab2 = Logger::Section(Logger::White, Logger::Underline,
             "Tags (", mTags.GetCount(), "):");
-         for (auto traitpair : mTags) {
-            for (auto& tag : traitpair.GetValue())
+         for (auto tagpair : mTags) {
+            for (auto& tag : tagpair.GetVal())
                Logger::Verbose(tag);
          }
       }
@@ -278,12 +275,12 @@ namespace Langulus::Things
    ///   @param deltaTime - how much time passes for the simulation           
    ///   @return true if no exit was requested by any of the runtimes/flows   
    bool Thing::Update(Time deltaTime) {
-      LANGULUS(PROFILE);
+      LglsProfile();
 
       // Refresh the hierarchy on any changes before updating anything  
       Refresh();
 
-      if (mFlow.IsLocked()) {
+      if (mFlow.IsPinned()) {
          // This thing owns its flow, so we need to update it here      
          // This will execute any temporally based verbs and scripts    
          // Game logic basically happens in this flow                   
@@ -292,7 +289,7 @@ namespace Langulus::Things
             return false;
       }
 
-      if (mRuntime.IsLocked()) {
+      if (mRuntime.IsPinned()) {
          // This thing owns its runtime, so we need to update it here   
          // This is where modules are updated in parallel, physical     
          // simulations happen, images get rendered, etc.               
@@ -312,7 +309,7 @@ namespace Langulus::Things
    /// Refresh all parts and children down the hierarchy                      
    ///   @param force - force refresh                                         
    void Thing::Refresh(bool force) {
-      LANGULUS(PROFILE);
+      LglsProfile();
       if (not force and not mRefreshRequired)
          return;
 
@@ -327,7 +324,7 @@ namespace Langulus::Things
          child->Refresh(true);
    }
 
-   /// Reset the entity, clearing all children, parts, traits                 
+   /// Reset the entity, clearing all children, parts, tags                 
    void Thing::Reset() {
       // Decouple all children from this parent                         
       for (auto& child : mChildren)
@@ -335,7 +332,7 @@ namespace Langulus::Things
 
       // Decouple all parts from this owner                             
       for (auto& part : mPartsList)
-         part->mOwners.Remove(this);
+         part->mOwners.Erase(this);
 
       mChildren.Reset();
       mPartsList.Reset();
@@ -352,9 +349,9 @@ namespace Langulus::Things
    auto Thing::GetPartMeta(DMeta id, Index index) -> Part* {
       if (id) {
          // Search a typed tag                                        
-         const auto found = mPartsAmbiguous.FindIt(id);
+         const auto found = mPartsAmbiguous.Find(id);
          return found
-            ? static_cast<Part*>(found.GetValue()[index])
+            ? static_cast<Part*>(found.GetVal()[index])
             : static_cast<Part*>(nullptr);
       }
 
@@ -577,5 +574,4 @@ namespace Langulus::Things
       LANGULUS_ASSERT(instance, Module, "Missing module");
       return instance;
    }
-
-} // namespace Langulus::Entry
+}

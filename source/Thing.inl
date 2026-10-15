@@ -245,7 +245,7 @@ namespace Langulus::Things
 
       // We must guarantee, that no part is coupled to entities with    
       // different runtimes!                                            
-      for (const auto& owners : part->mOwners) {
+      for (auto const& owners : part->mOwners) {
          LglsAssert(owners->GetRuntime() == GetRuntime(),
             "Coupling a part to multiple runtimes is not allowed"
          );

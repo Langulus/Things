@@ -315,7 +315,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
    }
 
-   GIVEN("A complex hierarchy with runtime, flow, parts, and traits") {
+   GIVEN("A complex hierarchy with runtime, flow, parts, and tags") {
       TestType descriptor {
          Tags::Name {"Root"},
          Recipe::From<Runtime>(),

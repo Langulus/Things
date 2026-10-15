@@ -108,7 +108,7 @@ namespace Langulus::Things
       auto PickVertex(size_t i, const CT::DefineTag auto& data, const CT::DefineTag auto& indices) const;
 
       template<CT::Topology, size_t...STREAM_ID>
-      auto GenerateVertex(size_t i, const auto& data, const auto& indices, std::index_sequence<STREAM_ID...>&&) const;
+      auto GenerateVertex(size_t i, auto const& data, auto const& indices, std::index_sequence<STREAM_ID...>&&) const;
    };
 }
 

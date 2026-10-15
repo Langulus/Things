@@ -12,7 +12,7 @@
 namespace Langulus::A
 {
    
-   /// Get input traits for a given rate (const)                              
+   /// Get input tags for a given rate (const)                              
    ///   @param rate - the rate                                               
    ///   @return the input tag list                                         
    LANGULUS(INLINED)
@@ -20,7 +20,7 @@ namespace Langulus::A
       return GetInputs(rate.GetInputIndex());
    }
 
-   /// Get input traits for a given input offset (const)                      
+   /// Get input tags for a given input offset (const)                      
    ///   @attention offset must be in the range [0; Rate::InputCount)         
    ///   @param rate - the input offset                                       
    ///   @return the input tag list                                         
@@ -31,7 +31,7 @@ namespace Langulus::A
       return mInputs[rate];
    }
 
-   /// Get output traits for a given rate (const)                             
+   /// Get output tags for a given rate (const)                             
    ///   @param rate - the rate                                               
    ///   @return the output tag list                                        
    LANGULUS(INLINED)
@@ -39,7 +39,7 @@ namespace Langulus::A
       return GetOutputs(rate.GetInputIndex());
    }
 
-   /// Get output traits for a given input offset (const)                     
+   /// Get output tags for a given input offset (const)                     
    ///   @attention offset must be in the range [0; Rate::InputCount)         
    ///   @param rate - the input offset                                       
    ///   @return the output tag list                                        

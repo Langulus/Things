@@ -55,14 +55,24 @@ namespace Langulus::Things
       template<CT::DefineTag>
       void Commit(auto&&);
 
-      template<CT::DefineTag>
-      auto* GetData(this auto&&, size_t = 0) noexcept;
-      auto* GetData(this auto&&, TMeta = {}, size_t = 0) noexcept;
+      template<CT::DefineTag, class C>
+      auto GetData(this C&&, size_t = 0) noexcept
+         -> LglsMutIf(C, Data*);
 
-      template<CT::DefineTag>
-      auto* GetDataList(this auto&&) noexcept;
-      auto* GetDataList(this auto&&, TMeta = {}) noexcept;
-      auto& GetDataListMap(this auto&&) noexcept;
+      template<class C>
+      auto GetData(this C&&, TMeta = {}, size_t = 0) noexcept
+         -> LglsMutIf(C, Data*);
+
+      template<CT::DefineTag, class C>
+      auto GetDataList(this C&&) noexcept
+         -> LglsMutIf(C, DataList*);
+
+      template<class C>
+      auto GetDataList(this C&&, TMeta = {}) noexcept
+         -> LglsMutIf(C, DataList*);
+
+      template<class C>
+      auto GetDataListMap(this C&&) noexcept -> LglsMutIf(C, DataListMap&);
    };
 }
 

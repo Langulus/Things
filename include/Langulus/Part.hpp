@@ -7,6 +7,7 @@
 ///                                                                           
 #pragma once
 #include "Hierarchy.hpp"
+#include <Langulus/Text.hpp>
 
 
 namespace Langulus::Things

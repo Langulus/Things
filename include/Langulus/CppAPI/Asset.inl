@@ -13,16 +13,17 @@ namespace Langulus::Things
 {
    /// Retrieve the asset module's repository folder                          
    ///   @return a reference to the folder interface                          
-   LANGULUS(INLINED)
-   auto AssetModule::GetFolder() const noexcept -> const Ref<Things::Folder>& {
+   inline auto AssetModule::GetFolder() const noexcept
+   -> Ref<Things::Folder> const& {
       return mFolder;
    }
 
    /// Get the entire content data map                                        
    ///   @attention this doesn't generate any data                            
    ///   @return a reference to the contents                                  
-   LANGULUS(INLINED)
-   auto& Asset::GetDataListMap(this auto&& self) noexcept {
+   template<class C>
+   auto Asset::GetDataListMap(this C&& self) noexcept
+   -> LglsMutIf(C, DataListMap&) {
       return self.mDataListMap;
    }
 
@@ -30,8 +31,9 @@ namespace Langulus::Things
    ///   @tparam T the tag to search for                                      
    ///   @param index the Nth data associated to the tag                      
    ///   @return a pointer to the data entry, or nullptr if none exists       
-   template<CT::DefineTag T> LANGULUS(INLINED)
-   auto* Asset::GetData(this auto&& self, size_t index) noexcept {
+   template<CT::DefineTag T, class C>
+   auto Asset::GetData(this C&& self, size_t index) noexcept
+   -> LglsMutIf(C, Data*) {
       return self.GetData(MetaTagOf<T>(), index);
    }
 
@@ -39,9 +41,10 @@ namespace Langulus::Things
    ///   @param tag the tag to search for                                     
    ///   @param index the Nth data associated to the tag                      
    ///   @return a pointer to the data entry, or nullptr if none exists       
-   LANGULUS(INLINED)
-   auto* Asset::GetData(this auto&& self, TMeta tag, size_t index) noexcept {
-      if (not self.Generate(tag, index))
+   template<class C>
+   auto Asset::GetData(this C&& self, TMeta tag, size_t index) noexcept
+   -> LglsMutIf(C, Data*) {
+      if (not DecvqAllCast(self).Generate(tag, index))
          return nullptr;
 
       const auto datalist = self.GetDataList(tag);
@@ -53,17 +56,19 @@ namespace Langulus::Things
    /// Get a data list from the contents                                      
    ///   @tparam T the tag to search for                                      
    ///   @return a pointer to the data list, or nullptr if none exists        
-   template<CT::DefineTag T> LANGULUS(INLINED)
-   auto* Asset::GetDataList(this auto&& self) noexcept {
+   template<CT::DefineTag T, class C>
+   auto Asset::GetDataList(this C&& self) noexcept
+   -> LglsMutIf(C, DataList*) {
       return self.GetDataList(MetaTagOf<T>());
    }
 
    /// Get a data list from the contents                                      
    ///   @param tag the tag to search for                                     
    ///   @return a pointer to the data list, or nullptr if none exists        
-   LANGULUS(INLINED)
-   auto* Asset::GetDataList(this auto&& self, TMeta tag) noexcept {
-      if (not self.Generate(tag))
+   template<class C>
+   auto Asset::GetDataList(this C&& self, TMeta tag) noexcept
+   -> LglsMutIf(C, DataList*) {
+      if (not DecvqAllCast(self).Generate(tag))
          return nullptr;
 
       const auto found = self.mDataListMap.Find(tag);

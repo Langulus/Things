@@ -41,7 +41,7 @@ namespace Langulus::Things
    ///   @return the size in bytes                                            
    LANGULUS(INLINED)
    size_t ImageView::GetPixelBytesize() const noexcept {
-      return mFormat ? mFormat->mSize : size_t {0};
+      return mFormat.GetSize();
    }
 
    /// Get the bytesize of the entire image across all dimensions             
@@ -54,8 +54,8 @@ namespace Langulus::Things
    /// Get the number of channels inside the color format                     
    ///   @return the number of channels                                       
    LANGULUS(INLINED)
-   uint32_t ImageView::GetChannelCount() const noexcept {
-      return static_cast<uint32_t>(mFormat->GetMemberCount());
+   size_t ImageView::GetChannelCount() const noexcept {
+      return mFormat.GetMembers().size();
    }
    
    /// Get the hash of a normalized descriptor (cached)                       
@@ -121,7 +121,7 @@ namespace Langulus::Things
       static_assert(CT::Constant<A>, "Color iterator must be constant");
       static_assert(CT::Dense<A>, "Color iterator must be dense");
 
-      LglsAssumeDev(mView.mFormat->IsSimilar<A>(),
+      LglsAssumeDev(mView.mFormat.IsSame(MetaDataOf<A>()),
          "Iterator type is not compatible with contained color data");
 
       // Iterate using the desired color type                           
@@ -161,7 +161,7 @@ namespace Langulus::Things
       Commit<Tags::Color>(LglsFwd(data));
    }
 
-   LANGULUS(INLINED)
+   /*LANGULUS(INLINED)
    auto Image::begin() noexcept -> Iterator<true> {
       return {
          this,
@@ -177,12 +177,12 @@ namespace Langulus::Things
          reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRaw()),
          reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRawEnd())
       };
-   }
+   }*/
 
    /// Construct an iterator                                                  
    ///   @param start - the current iterator position                         
    ///   @param end - the ending marker                                       
-   template<bool M> LANGULUS(INLINED)
+   /*template<bool M> LANGULUS(INLINED)
    constexpr Image::Iterator<M>::Iterator(Image* image, Byte const* it, Byte const* end) noexcept
       : mValue {it}
       , mEnd   {end}
@@ -316,5 +316,5 @@ namespace Langulus::Things
       }
 
       return result;
-   }
+   }*/
 }

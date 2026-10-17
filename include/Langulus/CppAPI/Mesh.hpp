@@ -61,8 +61,9 @@ namespace Langulus::Things
       auto GetTopology()      const noexcept -> DMeta;
       auto GetTextureMapper() const noexcept -> MapModeType;
 
-      auto GetView() const noexcept -> MeshView const&;
-      auto GetView()       noexcept -> MeshView&;
+      auto& GetView(this auto&& self) noexcept {
+         return self.mView;
+      }
 
       virtual auto GetLOD(const Math::LOD&) const -> Ref<Mesh> = 0;
 
@@ -70,21 +71,21 @@ namespace Langulus::Things
       bool MadeOfPoints() const noexcept;
       auto GetPointCount() const -> size_t;
       template<CT::DefineTag>
-      Many GetPointTrait(size_t) const;
+      Many GetPointTag(size_t) const;
 
       // Line utilities                                                 
       bool MadeOfLines() const noexcept;
       auto GetLineCount() const -> size_t;
       auto GetLineIndices(size_t) const -> Vec2u;
       template<CT::DefineTag>
-      Many GetLineTrait(size_t) const;
+      Many GetLineTag(size_t) const;
 
       // Triangle utilities                                             
       bool MadeOfTriangles() const noexcept;
       auto GetTriangleCount() const -> size_t;
       auto GetTriangleIndices(size_t) const -> Vec3u;
       template<CT::DefineTag>
-      Many GetTriangleTrait(size_t) const;
+      Many GetTriangleTag(size_t) const;
 
       ///                                                                     
       ///   Iteration                                                         
@@ -95,7 +96,7 @@ namespace Langulus::Things
       Vec2u InnerGetIndices(const Data*, const Vec2u&) const;
       Vec3u InnerGetIndices(const Data*, const Vec3u&) const;
 
-      template<bool INDEXED, class...T>
+      template<bool INDEXED, CT::DefineTag...T>
       size_t ForEachVertexInner(Types<T...>, auto&& call) const;
 
       template<CT::DefineTag T>

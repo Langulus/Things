@@ -20,7 +20,7 @@ namespace Langulus::Things
    ///                                                                        
    struct PhysicalModule : virtual Module {
       using CTTI_Bases = Module;
-      PhysicalModule() : Resolvable {this}, Module {nullptr} {}
+      PhysicalModule() : /*Resolvable {this},*/ Module {nullptr} {}
    };
 
    ///                                                                        
@@ -28,7 +28,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Physical : virtual Part {
       using CTTI_Bases = Part;
-      Physical() : Resolvable {this} {}
+      Physical() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -37,7 +37,7 @@ namespace Langulus::Things
    struct World : virtual Physical {
       using CTTI_Bases = Physical;
       using CTTI_Producer = PhysicalModule;
-      World() : Resolvable {this} {}
+      World() /*: Resolvable {this}*/ {}
    };
    
    ///                                                                        
@@ -46,7 +46,7 @@ namespace Langulus::Things
    struct Instance : virtual Physical {
       using CTTI_Bases = Physical;
       using CTTI_Producer = World;
-      Instance() : Resolvable {this} {}
+      Instance() /*: Resolvable {this}*/ {}
 
       using LOD   = Math::LOD;
       using Level = Math::Level;
@@ -68,7 +68,7 @@ namespace Langulus::Things
    struct Bond : virtual Physical {
       using CTTI_Bases = Physical;
       using CTTI_Producer = World;
-      Bond() : Resolvable {this} {}
+      Bond() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -77,7 +77,7 @@ namespace Langulus::Things
    struct Particles : virtual Physical {
       using CTTI_Bases = Physical;
       using CTTI_Producer = World;
-      Particles() : Resolvable {this} {}
+      Particles() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -86,7 +86,7 @@ namespace Langulus::Things
    struct Field : virtual Physical {
       using CTTI_Bases = Physical;
       using CTTI_Producer = World;
-      Field() : Resolvable {this} {}
+      Field() /*: Resolvable {this}*/ {}
    };
 }
 

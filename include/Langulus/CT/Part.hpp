@@ -22,7 +22,8 @@ namespace Langulus::CTTI
    struct Part;
 
    /// Anything inheriting the Things::Part interface is considered CT::Part  
-   template<class T> requires CT::DerivedFrom<T, Things::Part>
+   ///   @attention ignores first level of indirection                        
+   template<class T> requires CT::DerivedFrom<Deptr<T>, Things::Part>
    struct Part<T> {};
 }
 

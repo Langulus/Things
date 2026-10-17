@@ -20,7 +20,7 @@ namespace Langulus::Things
    ///                                                                        
    struct PlatformModule : virtual Module {
       using CTTI_Bases = Module;
-      PlatformModule() : Resolvable {this}, Module {nullptr} {}
+      PlatformModule() : /*Resolvable {this},*/ Module {nullptr} {}
    };
 
    ///                                                                        
@@ -28,7 +28,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Platform : virtual Part {
       using CTTI_Bases = Part;
-      Platform() : Resolvable {this} {}
+      Platform() /*: Resolvable {this}*/ {}
    };
    
    ///                                                                        

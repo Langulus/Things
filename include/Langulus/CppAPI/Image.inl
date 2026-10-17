@@ -7,12 +7,13 @@
 ///                                                                           
 #pragma once
 #include "Image.hpp"
+#include <Langulus/Color.hpp>
 
 
 namespace Langulus::Things
 {
    /// Compare texture views                                                  
-   ///   @param rhs - the texture view to compare against                     
+   ///   @param rhs the texture view to compare against                       
    ///   @return true if both views are the same                              
    LANGULUS(INLINED)
    bool ImageView::operator == (const ImageView& rhs) const noexcept {
@@ -99,8 +100,8 @@ namespace Langulus::Things
    }
 
    /// Execute a function for each pixel, represented by a desired type       
-   ///   @tparam F - the function signature (deducible)                       
-   ///   @param call - the function to execute for each pixel                 
+   ///   @tparam F the function signature (deducible)                         
+   ///   @param call the function to execute for each pixel                   
    ///   @return the number of pixels that were iterated                      
    template<class F>
    auto Image::ForEachPixel(F&& call) const {
@@ -108,10 +109,10 @@ namespace Langulus::Things
 
       LglsAssumeDev(pixels and *pixels,
          "No color data", " in ", Self());
-      LglsAssumeDev(pixels->IsDense(),
+      LglsAssumeDev(not pixels->IsSparse(),
          "Image data is not dense", " for ", Self());
       LglsAssumeDev(
-         pixels->CastsTo<Bytes>() or pixels->CastsTo<Math::Color>(),
+         pixels->CastsTo<Bytes>() or pixels->CastsTo<Color>(),
          "Image doesn't contain pixel data", 
          " - contains ", pixels->GetType(), " instead");
 
@@ -127,8 +128,8 @@ namespace Langulus::Things
       // Iterate using the desired color type                           
       [[maybe_unused]] size_t counter = 0;
       auto data = pixels->CastsTo<Bytes>()
-         ? pixels->Get<Bytes>().GetRaw<A>()
-         : pixels->GetRaw<A>();
+         ? pixels->As<Bytes>().GetRawAs<A>()
+         : pixels->GetRawAs<A>();
       const auto dataEnd = data + mView.GetPixelCount();
 
       while (data != dataEnd) {
@@ -150,7 +151,7 @@ namespace Langulus::Things
 
    /// Upload raw data to the image with intent                               
    ///   @attention deletes any data previously commited                      
-   ///   @param data - the block of data                                      
+   ///   @param data the block of data                                        
    void Image::Upload(CT::Container auto&& data) {
       // Check if provided data matches the view requirements           
       LglsAssert(mView.GetBytesize() == data->GetBytesize(),

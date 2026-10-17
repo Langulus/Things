@@ -22,14 +22,14 @@ namespace Langulus::Things
 
 
    /// Helper function, that reflects and registers a list of any reflection  
-   /// primitives, like data, verbs, and tags.                              
+   /// primitives, like data, verbs, and tags.                                
    /// All types in the list, as well as data member and base types, will     
    /// be associated with the module library. When library unloads, all       
    /// these definitions will be removed, because otherwise they might        
    /// contain lambdas, that no longer will exist after shared object unload. 
    /// This is possible only when managed reflection feature is enabled.      
    /// If it is not, it is your resposibility to manage these dependencies.   
-   ///   @param list - a set of all the registered types. Be aware, these     
+   ///   @param list a set of all the registered types. Be aware, these       
    ///      do not include bases and members, but only intentionally exposed  
    ///      types. Bases and members will still be exported if not yet        
    ///      reflected, and associated with the currently set RTTI boundary.   
@@ -116,20 +116,20 @@ namespace Langulus::CT
 
 
 /// Convenience macro for implementing module entry and exit points           
-///   @param m - the type of the module interface, must inherit Module        
-///   @param prio - the priority of the module                                
-///   @param name - the module identifier token                               
-///   @param info - information string literal about the module               
-///   @param depo - relative path for the module, under Data/Modules/         
-///   @param cat - module category, i.e. some abstract type                   
-///   @param ... - a type list to reflect upon module load                    
+///   @param m the type of the module interface, must inherit Module          
+///   @param prio the priority of the module                                  
+///   @param name the module identifier token                                 
+///   @param info information string literal about the module                 
+///   @param depo relative path for the module, under Data/Modules/           
+///   @param cat module category, i.e. some abstract type                     
+///   @param ... a type list to reflect upon module load                      
 #define LANGULUS_DEFINE_MODULE(m, prio, name, info, depo, cat, ...) \
    extern "C" { \
       LANGULUS_EXPORT() \
-      void LANGULUS_MODULE_ENTRY() (::Langulus::DMeta& meta, ::Langulus::MetaList& list) { \
+      void LANGULUS_MODULE_ENTRY() (::Langulus::RTTI::DMeta& meta, ::Langulus::Things::MetaList& list) { \
          using DM = ::Langulus::Decay<m>; \
          meta = ::Langulus::MetaDataOf<DM>(); \
-         ::Langulus::RegisterTypeList<DM, ::Langulus::Decay<cat>, __VA_ARGS__>(list); \
+         ::Langulus::Things::RegisterTypeList<DM, ::Langulus::Decay<cat>, __VA_ARGS__>(list); \
       } \
       \
       LANGULUS_EXPORT() \

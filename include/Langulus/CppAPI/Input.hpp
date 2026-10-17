@@ -17,7 +17,7 @@ namespace Langulus::Things
    ///                                                                        
    struct InputModule : virtual Module {
       using CTTI_Bases = Module;
-      InputModule() : Resolvable {this}, Module {nullptr} {}
+      InputModule() : /*Resolvable {this},*/ Module {nullptr} {}
    };
 
    ///                                                                        
@@ -25,7 +25,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Input : virtual Part {
       using CTTI_Bases = Part;
-      Input() : Resolvable {this} {}
+      Input() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -40,23 +40,23 @@ namespace Langulus::Things
       EventList mEventQueue;
 
    public:
-      InputGatherer() : Resolvable {this} {}
+      InputGatherer() /*: Resolvable {this}*/ {}
 
       void PushEvent(const Event& e) {
-         const auto foundEvent = mEventQueue.FindIt(e.mType);
+         const auto foundEvent = mEventQueue.Find(e.GetEvent());
          if (foundEvent) {
-            const auto foundState = foundEvent.GetValue().FindIt(e.mState);
+            const auto foundState = foundEvent.GetValue().Find(e.GetEventState());
             if (foundState) {
                // Event already exists, merge payload                   
-               foundState.GetValue().mPayload += e.mPayload;
+               foundState.GetValue().mPayload += e.GetPayload();
                return;
             }
-            foundEvent.GetValue().Insert(e.mState, e);
+            foundEvent.GetValue().Insert(e.GetEventState(), e);
          }
          else {
-            mEventQueue.Insert(e.mType);
-            auto& newGroup = mEventQueue[e.mType];
-            newGroup.Insert(e.mState, e);
+            mEventQueue.Insert(e.GetEvent());
+            auto& newGroup = mEventQueue[e.GetEvent()];
+            newGroup.Insert(e.GetEventState(), e);
          }
       }
    };
@@ -68,6 +68,6 @@ namespace Langulus::Things
       using CTTI_Bases = Input;
       using CTTI_Producer = InputGatherer;
       
-      InputListener() : Resolvable {this} {}
+      InputListener() /*: Resolvable {this}*/ {}
    };
 }

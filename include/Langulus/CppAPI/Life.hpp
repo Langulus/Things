@@ -16,7 +16,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Life : virtual Module {
       using CTTI_Bases = Module;
-      Life() : Resolvable {this}, Module {nullptr} {}
+      Life() : /*Resolvable {this},*/ Module {nullptr} {}
    };
 
    ///                                                                        
@@ -25,7 +25,7 @@ namespace Langulus::Things
    struct LifeUnit : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = Life;
-      LifeUnit() : Resolvable {this} {}
+      LifeUnit() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -33,7 +33,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Ecosystem : virtual LifeUnit {
       using CTTI_Bases = LifeUnit;
-      Ecosystem() : Resolvable {this} {}
+      Ecosystem() /*: Resolvable {this}*/ {}
    };
    
    ///                                                                        
@@ -42,6 +42,6 @@ namespace Langulus::Things
    struct Organism : virtual LifeUnit {
       using CTTI_Bases = LifeUnit;
       using CTTI_Producer = Ecosystem;
-      Organism() : Resolvable {this} {}
+      Organism() /*: Resolvable {this}*/ {}
    };
 }

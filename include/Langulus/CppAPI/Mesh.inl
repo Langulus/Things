@@ -300,8 +300,8 @@ namespace Langulus::Things
          soughtDecayed = *soughtt;
 
       Many result;
-      result.InsertRange(soughtDecayed.GetElement(indices[0]));
-      result.InsertRange(soughtDecayed.GetElement(indices[1]));
+      result.Concat(soughtDecayed.GetHandle() + indices[0]);
+      result.Concat(soughtDecayed.GetHandle() + indices[1]);
       return result;
    }
    
@@ -390,9 +390,9 @@ namespace Langulus::Things
          soughtDecayed = *soughtt;
 
       Many result;
-      result.InsertRange(soughtDecayed.GetElement(indices[0]));
-      result.InsertRange(soughtDecayed.GetElement(indices[1]));
-      result.InsertRange(soughtDecayed.GetElement(indices[2]));
+      result.Concat(soughtDecayed.GetHandle() + indices[0]);
+      result.Concat(soughtDecayed.GetHandle() + indices[1]);
+      result.Concat(soughtDecayed.GetHandle() + indices[2]);
       return result;
    }
    
@@ -609,7 +609,7 @@ namespace Langulus::Things
    ///   @param indices the index stream                                      
    ///   @return the selected element                                         
    template<CT::Topology T>
-   auto Mesh::PickVertex(size_t i, const CT::Tag auto& stream, const CT::Tag auto& indices) const {
+   auto Mesh::PickVertex(size_t i, const CT::DefineTag auto& stream, const CT::DefineTag auto& indices) const {
       LglsAssumeDev(mView.mIndexCount,
          "PickVertex can be used only on indexed geometry");
 
@@ -626,7 +626,7 @@ namespace Langulus::Things
          if (indices.template IsExact<uint32_t>())
             return stream.Select(indices.template GetRaw<uint32_t>()[i], 1);
          else if (indices.template IsExact<uint64_t>())
-            return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[i]), 1);
+            return stream.Select(indices.template GetRaw<uint64_t>()[i], 1);
          else if (indices.template IsExact<uint16_t>())
             return stream.Select(indices.template GetRaw<uint16_t>()[i], 1);
          else if (indices.template IsExact<uint8_t>())
@@ -641,7 +641,7 @@ namespace Langulus::Things
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
@@ -654,7 +654,7 @@ namespace Langulus::Things
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
@@ -667,7 +667,7 @@ namespace Langulus::Things
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
@@ -680,7 +680,7 @@ namespace Langulus::Things
             if (indices.template IsExact<uint32_t>())
                return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(static_cast<size_t>(indices.template GetRaw<uint64_t>()[p_i]), 1);
+               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
                return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())

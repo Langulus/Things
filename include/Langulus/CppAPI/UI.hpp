@@ -7,6 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
 namespace Langulus::Things
@@ -16,7 +17,7 @@ namespace Langulus::Things
    ///                                                                        
    struct UIModule : virtual Module {
       using CTTI_Bases = Module;
-      UIModule() : Resolvable {this}, Things::Module {nullptr} {}
+      UIModule() : /*Resolvable {this},*/ Things::Module {nullptr} {}
    };
 
    ///                                                                        
@@ -25,7 +26,7 @@ namespace Langulus::Things
    struct UIUnit : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = UIModule;
-      UIUnit() : Resolvable {this} {}
+      UIUnit() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -33,7 +34,7 @@ namespace Langulus::Things
    ///                                                                        
    struct UISystem : virtual UIUnit {
       using CTTI_Bases = UIUnit;
-      UISystem() : Resolvable {this} {}
+      UISystem() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -42,7 +43,7 @@ namespace Langulus::Things
    struct UIButton : virtual UIUnit {
       using CTTI_Bases = UIUnit;
       using CTTI_Producer = UISystem;
-      UIButton() : Resolvable {this} {}
+      UIButton() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -51,7 +52,7 @@ namespace Langulus::Things
    struct UILabel : virtual UIUnit {
       using CTTI_Bases = UIUnit;
       using CTTI_Producer = UISystem;
-      UILabel() : Resolvable {this} {}
+      UILabel() /*: Resolvable {this}*/ {}
    };
 
    ///                                                                        
@@ -60,6 +61,6 @@ namespace Langulus::Things
    struct UIInput : virtual UIUnit {
       using CTTI_Bases = UIUnit;
       using CTTI_Producer = UISystem;
-      UIInput() : Resolvable {this} {}
+      UIInput() /*: Resolvable {this}*/ {}
    };
 }

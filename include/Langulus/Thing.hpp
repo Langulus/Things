@@ -235,12 +235,19 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       size_t HasTags(Tag const&) const;
 
-      LANGULUS_API(THINGS)
-      auto GetTags() const noexcept -> TagMap const&;
-      LANGULUS_API(THINGS)
-      auto GetTag(TMeta, size_t = 0) const -> Tag;
-      LANGULUS_API(THINGS)
-      auto GetTag(TMeta, size_t = 0)       -> Tag;
+      /// Get all tags associated with this thing                             
+      auto GetTags() const noexcept -> TagMap const& { //TODO should we allow mutation from outside? what's the worse that can happen? :P
+         return mTags;
+      }
+
+      /// Get a tag by type                                                   
+      ///   @param tag tag id                                                 
+      ///   @param offset Nth result to use                                   
+      ///   @return a filled tag if found, empty if not                       
+      auto GetTag(this auto&& self, TMeta meta, size_t offset = 0) -> Tag {
+         return self.GetTag(Tag::From(meta), offset);
+      }
+
       LANGULUS_API(THINGS)
       auto GetTag(Tag const&, size_t = 0) const -> Tag;
       LANGULUS_API(THINGS)

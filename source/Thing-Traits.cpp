@@ -11,14 +11,6 @@
 
 namespace Langulus::Things
 {
-   /// Get a tag by type                                                      
-   ///   @param tag tag id                                                    
-   ///   @param offset Nth result to use                                      
-   ///   @return a filled tag if found, empty if not                          
-   auto Thing::GetTag(this auto&& self, TMeta tag, CT::Index auto&& offset) -> Tag {
-      return self.GetTag(Tag::FromMeta(tag, nullptr), LglsFwd(offset));
-   }
-
    /// Get a tag from this entity's tag list                                  
    ///   @param id the tag to search for                                      
    ///   @param index the index of the tag we seek                            

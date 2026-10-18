@@ -202,7 +202,7 @@ namespace Langulus::Things
 
          IF_LANGULUS_MANAGED_MEMORY(Allocator::CollectGarbage());
          IF_LANGULUS_MEMORY_STATISTICS(Allocator::DumpPools());
-         LANGULUS_OOPS(Destruct, "Can't unload last module(s)");
+         LglsError("Can't unload last module(s)");
       }
    }
 
@@ -672,37 +672,37 @@ namespace Langulus::Things
    ///   @param path - the path for the file                                  
    ///   @return the file interface, or nullptr if file doesn't exist         
    auto Runtime::GetFile(Path const& path) -> Ref<Things::File> {
-      auto& fileSystems = GetModules<A::FileSystem>();
-      LANGULUS_ASSERT(fileSystems, Module,
+      auto& fileSystems = GetModules<Things::FileSystem>();
+      LglsAssert(fileSystems,
          "Can't retrieve file `", path, "` - no file system module available");
-      return fileSystems.template As<A::FileSystem*>()->GetFile(path);
+      return fileSystems.template As<Things::FileSystem*>()->GetFile(path);
    }
    
    /// Get a folder interface, relying on external modules to find it         
    ///   @param path - the path for the folder                                
    ///   @return the folder interface, or nullptr if folder doesn't exist     
    auto Runtime::GetFolder(Path const& path) -> Ref<Things::Folder> {
-      auto& fileSystems = GetModules<A::FileSystem>();
-      LANGULUS_ASSERT(fileSystems, Module,
+      auto& fileSystems = GetModules<Things::FileSystem>();
+      LglsAssert(fileSystems,
          "Can't retrieve folder `", path, "` - no file system module available");
-      return fileSystems.template As<A::FileSystem*>()->GetFolder(path);
+      return fileSystems.template As<Things::FileSystem*>()->GetFolder(path);
    }
 
    /// Get the current working path (where the main exe was executed)         
    ///   @return the path                                                     
    auto Runtime::GetWorkingPath() const -> Path const& {
-      auto& fileSystems = GetModules<A::FileSystem>();
-      LANGULUS_ASSERT(fileSystems, Module,
+      auto& fileSystems = GetModules<Things::FileSystem>();
+      LglsAssert(fileSystems,
          "Can't retrieve working path", " - no file system module available");
-      return fileSystems.template As<A::FileSystem*>()->GetWorkingPath();
+      return fileSystems.template As<Things::FileSystem*>()->GetWorkingPath();
    }
 
    /// Get the current data path, like GetWorkingPath() / "data"              
    ///   @return the path                                                     
    auto Runtime::GetDataPath() const -> Path const& {
-      auto& fileSystems = GetModules<A::FileSystem>();
-      LANGULUS_ASSERT(fileSystems, Module,
+      auto& fileSystems = GetModules<Things::FileSystem>();
+      LglsAssert(fileSystems,
          "Can't retrieve data path", " - no file system module available");
-      return fileSystems.template As<A::FileSystem*>()->GetDataPath();
+      return fileSystems.template As<Things::FileSystem*>()->GetDataPath();
    }
 }

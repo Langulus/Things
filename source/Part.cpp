@@ -31,8 +31,9 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    // First we compare tags only, all of them must be present           
    bool mismatch = false;
    size_t memberOffset = 0;
-   descriptor.ForEachDeep([&](const Annies::Tag& tag) {
-      if (not GetMember(tag.GetTag(), memberOffset).Compare(tag.GetData())) {
+   auto self = GetResolved();
+   descriptor.ForEachDeep([&self,&memberOffset,&mismatch](const Annies::Tag& tag) {
+      if (not self.GetMember(tag.GetTag(), memberOffset).Compare(tag.GetData())) {
          mismatch = true;
          return Loop::Break;
       }
@@ -44,8 +45,8 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    // Then we run another check based on data types, again - all        
    // of them must be present, either as tags or in other form          
    memberOffset = 0;
-   descriptor.ForEachDeep([&](Many const& anythingElse) {
-      if (not GetMember(TMeta {}, memberOffset).Compare(anythingElse)) {
+   descriptor.ForEachDeep([&self,&memberOffset,&mismatch](Many const& anythingElse) {
+      if (not self.GetMember(TMeta {}, memberOffset).Compare(anythingElse)) {
          mismatch = true;
          return Loop::Break;
       }
@@ -121,10 +122,8 @@ void Part::Decouple(const Thing* entity) {
 ///   @param replaceThis owner to replace                                     
 ///   @param withThis entity to replace it with                               
 void Part::ReplaceOwner(const Thing* replaceThis, const Thing* withThis) {
-   LglsAssumeDev(replaceThis != withThis,
-      "Pointers are the same");
-   LglsAssumeDev(replaceThis and withThis,
-      "Nullptr not allowed");
+   LglsAssumeDev(replaceThis !=  withThis, "Pointers are the same");
+   LglsAssumeDev(replaceThis and withThis, "Nullptr not allowed");
 
    auto found = mOwners.Find(replaceThis);
    if (found)

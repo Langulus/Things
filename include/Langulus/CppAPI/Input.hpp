@@ -7,6 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 #include <Langulus/Event.hpp>
 
 
@@ -37,7 +38,7 @@ namespace Langulus::Things
 
    protected:
       // Accumulated events, dispatched on each Update() to listeners   
-      EventList mEventQueue;
+      TMapUnsorted<RTTI::DMeta, TMapUnsorted<EventState, Event>> mEventQueue;
 
    public:
       InputGatherer() /*: Resolvable {this}*/ {}
@@ -45,18 +46,17 @@ namespace Langulus::Things
       void PushEvent(const Event& e) {
          const auto foundEvent = mEventQueue.Find(e.GetEvent());
          if (foundEvent) {
-            const auto foundState = foundEvent.GetValue().Find(e.GetEventState());
+            const auto foundState = foundEvent.GetVal().Find(e.GetEventState());
             if (foundState) {
                // Event already exists, merge payload                   
-               foundState.GetValue().mPayload += e.GetPayload();
+               foundState.GetVal().mPayload += e.GetPayload();
                return;
             }
-            foundEvent.GetValue().Insert(e.GetEventState(), e);
+            foundEvent.GetVal().Merge(e.GetEventState(), e);
          }
          else {
-            mEventQueue.Insert(e.GetEvent());
-            auto& newGroup = mEventQueue[e.GetEvent()];
-            newGroup.Insert(e.GetEventState(), e);
+            auto& newGroup = mEventQueue.Merge(e.GetEvent());
+            newGroup.Merge(e.GetEventState(), e);
          }
       }
    };

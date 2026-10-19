@@ -33,7 +33,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       REQUIRE(not root.GetChildren());
       REQUIRE(not root.GetUnits());
       REQUIRE(not root.GetUnitsMap());
-      REQUIRE(not root.GetTraits());
+      REQUIRE(not root.GetTags());
       REQUIRE(root.GetReferences() == 1);
    }
 
@@ -51,7 +51,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       REQUIRE(root.GetChildren()[0] == &child);
       REQUIRE(not root.GetUnits());
       REQUIRE(not root.GetUnitsMap());
-      REQUIRE(not root.GetTraits());
+      REQUIRE(not root.GetTags());
       REQUIRE(root.GetReferences() == 1);
 
       REQUIRE(child.GetOwner() == &root);
@@ -63,7 +63,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       REQUIRE(not child.GetChildren());
       REQUIRE(not child.GetUnits());
       REQUIRE(not child.GetUnitsMap());
-      REQUIRE(not child.GetTraits());
+      REQUIRE(not child.GetTags());
       REQUIRE(child.GetReferences() == 1);
    }
    
@@ -95,7 +95,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.RequiresRefresh() == false);
          REQUIRE(root.GetChildren().GetCount() == 1);
          REQUIRE(not root.GetUnits());
-         REQUIRE(not root.GetTraits());
+         REQUIRE(not root.GetTags());
          REQUIRE(root.GetReferences() == 1);
 
          auto child1 = root.GetChildren()[0];
@@ -108,7 +108,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child1->RequiresRefresh() == false);
          REQUIRE(not child1->GetChildren());
          REQUIRE(not child1->GetUnits());
-         REQUIRE(not child1->GetTraits());
+         REQUIRE(not child1->GetTags());
          REQUIRE(child1->GetReferences() == 2);
       }
 
@@ -125,7 +125,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().IsEmpty());
          REQUIRE(root.GetUnits().GetCount() == 1);
-         REQUIRE(root.GetTraits().IsEmpty());
+         REQUIRE(root.GetTags().IsEmpty());
          REQUIRE(root.GetReferences() == 1);
 
          auto it = root.GetUnits().begin();
@@ -147,7 +147,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().IsEmpty());
          REQUIRE(root.GetUnits().GetCount() == 1);
-         REQUIRE(root.GetTraits().IsEmpty());
+         REQUIRE(root.GetTags().IsEmpty());
          REQUIRE(root.GetReferences() == 1);
 
          auto it = root.GetUnits().begin();
@@ -181,10 +181,10 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(not root.GetChildren());
          REQUIRE(not root.GetUnits());
          REQUIRE(not root.GetUnitsMap());
-         REQUIRE(root.GetTraits().GetCount() == 1);
+         REQUIRE(root.GetTags().GetCount() == 1);
          REQUIRE(root.GetReferences() == 1);
 
-         auto it = root.GetTraits().begin();
+         auto it = root.GetTags().begin();
          REQUIRE(it.GetKey() == MetaOf<Tags::Count>());
          REQUIRE(it.GetValue().GetCount() == 1);
          REQUIRE(it.GetValue()[0] == Tags::Count {666});
@@ -205,11 +205,11 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(not root.GetChildren());
          REQUIRE(not root.GetUnits());
          REQUIRE(not root.GetUnitsMap());
-         REQUIRE(root.GetTraits().GetCount() == 1);
+         REQUIRE(root.GetTags().GetCount() == 1);
          REQUIRE(root.GetName() == "Dimo");
          REQUIRE(root.GetReferences() == 1);
 
-         auto it = root.GetTraits().begin();
+         auto it = root.GetTags().begin();
          REQUIRE(it.GetKey() == MetaOf<Tags::Name>());
          REQUIRE(it.GetValue().GetCount() == 1);
          REQUIRE(it.GetValue()[0] == Tags::Name {"Dimo"});
@@ -246,7 +246,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().GetCount() == 2);
          REQUIRE(root.GetUnits().GetCount() == 2);
-         REQUIRE(root.GetTraits().GetCount() == 1);
+         REQUIRE(root.GetTags().GetCount() == 1);
          REQUIRE(root.GetName() == "Root");
          REQUIRE(root.GetReferences() == 1);
 
@@ -259,7 +259,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child1->RequiresRefresh() == true);
          REQUIRE(child1->GetChildren().GetCount() == 2);
          REQUIRE(child1->GetUnits().GetCount() == 2);
-         REQUIRE(child1->GetTraits().GetCount() == 1);
+         REQUIRE(child1->GetTags().GetCount() == 1);
          REQUIRE(child1->GetName() == "Child1");
 
          // the child1 container has 1 reference
@@ -281,7 +281,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child2->RequiresRefresh() == true);
          REQUIRE(not child2->GetChildren());
          REQUIRE(not child2->GetUnits());
-         REQUIRE(child2->GetTraits().GetCount() == 1);
+         REQUIRE(child2->GetTags().GetCount() == 1);
          REQUIRE(child2->GetName() == "Child2");
          REQUIRE(child2->GetReferences() == 1);
 
@@ -294,7 +294,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(grandchild1->RequiresRefresh() == true);
          REQUIRE(not grandchild1->GetChildren());
          REQUIRE(not grandchild1->GetUnits());
-         REQUIRE(grandchild1->GetTraits().GetCount() == 1);
+         REQUIRE(grandchild1->GetTags().GetCount() == 1);
          REQUIRE(grandchild1->GetName() == "GrandChild1");
          REQUIRE(grandchild1->GetReferences() == 1);
 
@@ -307,7 +307,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(grandchild2->RequiresRefresh() == true);
          REQUIRE(not grandchild2->GetChildren());
          REQUIRE(not grandchild2->GetUnits());
-         REQUIRE(grandchild2->GetTraits().GetCount() == 1);
+         REQUIRE(grandchild2->GetTags().GetCount() == 1);
          REQUIRE(grandchild2->GetName() == "GrandChild2");
          REQUIRE(grandchild2->GetReferences() == 1);
 

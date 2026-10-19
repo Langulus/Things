@@ -14,7 +14,7 @@ using namespace Langulus::Things;
 /// Part destructor decouples part from all owners                            
 Part::~Part() {
    for (auto entity : mOwners)
-      Decouple(entity);
+      Decouple(*entity);
 }
 
 /// Default part selection simply relays to the owner                         

@@ -364,19 +364,19 @@ namespace Langulus::Things
       return const_cast<Thing*>(this)->GetPartMeta(type, offset);
    }
    
-   /// Get a part by type, properties, and offset                             
-   /// If construct's type is nullptr searches only by offset and properties  
-   /// If construct's type is not nullptr, gets the Nth matching part, if any 
+   /// Get a part by type, properties, and offset.                            
+   /// If target type is nullptr, searches only by offset and properties.     
+   /// Otherwise gets the Nth matching part, if any.                          
    ///   @param meta the type of the part                                     
    ///   @param what the desired properties of the part                       
-   ///   @param index the part index to seek                                  
-   ///   @return the part if found, or nullptr if not                         
+   ///   @param index the Nth match to return                                 
+   ///   @return the part if found, nullptr otherwise                         
    auto Thing::GetPartExt(DMeta meta, Many const& what, size_t index) -> Part* {
       if (meta) {
          // Search a typed part                                         
          const auto found = mPartsAmbiguous.Find(meta);
          if (found) {
-            auto& bucket = found.GetValue();
+            auto& bucket = *found.GetVal();
             if (not what)
                return bucket[index];
 
@@ -384,7 +384,7 @@ namespace Langulus::Things
             for (auto& part : bucket) {
                if (part->CompareDescriptor(what)) {
                   // Match found                                        
-                  if (index == 0) return part;
+                  if (index == 0) return *part;
                   else --index;
                }
             }
@@ -395,7 +395,7 @@ namespace Langulus::Things
          for (auto& part : mPartsList) {
             if (part->CompareDescriptor(what)) {
                // Match found                                           
-               if (index == 0) return part;
+               if (index == 0) return *part;
                else --index;
             }
          }

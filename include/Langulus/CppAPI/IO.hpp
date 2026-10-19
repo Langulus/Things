@@ -22,17 +22,17 @@ namespace Langulus::Things
       using CTTI_Bases = Module;
 
    protected:
-      // Working directory path                                         
+      // Working directory path.                                        
       // This is the only full path that is exposed to the system,      
-      // unless LANGULUS(PARANOID) is enabled                           
+      // unless LANGULUS(PARANOID) is enabled.                          
       Path mWorkingPath;
-      // Main data directory, for both reading and writing              
-      // Relative to mWorkingPath                                       
+      // Main data directory, for both reading and writing.             
+      // Relative to mWorkingPath.                                      
       Path mMainDataPath;
 
    public:
-      virtual auto GetFile  (Path const&) -> Ref<Things::File>   = 0;
-      virtual auto GetFolder(Path const&) -> Ref<Things::Folder> = 0;
+      virtual auto GetFile  (Path const&) const -> Ref<Things::File>   = 0;
+      virtual auto GetFolder(Path const&) const -> Ref<Things::Folder> = 0;
 
       auto GetWorkingPath() const noexcept -> Path const&;
       auto GetDataPath()    const noexcept -> Path const&;

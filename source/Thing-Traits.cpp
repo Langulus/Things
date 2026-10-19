@@ -15,16 +15,16 @@ namespace Langulus::Things
    ///   @param id the tag to search for                                      
    ///   @param index the index of the tag we seek                            
    ///   @return a pointer to the tag, or nullptr if not found                
-   auto Thing::GetLocalTag(this auto&& self, TMeta id, CT::Index auto&& index) -> Tag* {
+   auto Thing::GetLocalTag(this auto&& self, TMeta id, size_t index) -> Tag* {
       if (id) {
-         // Search a typed tag                                        
+         // Search a typed tag                                          
          const auto found = self.mTags.Find(id);
          if (found)
             return &(found.GetValue()[index]);
          return nullptr;
       }
 
-      // Search tag by index                                          
+      // Search tag by index                                            
       Tag* found {};
       if (index.IsArithmetic()) {
          auto offset = index.GetOffsetUnsafe();
@@ -46,9 +46,9 @@ namespace Langulus::Things
    ///   @param id tag to match                                               
    ///   @param index offset of result to use                                 
    ///   @return a non-empty tag, if found                                    
-   auto Thing::GetTag(this auto&& self, Tag const& id, CT::Index auto&& index) -> Tag {
+   auto Thing::GetTag(this auto&& self, Tag const& id, size_t index) -> Tag {
       if (id.GetTag()) {
-         // Handle some predefined tags here                          
+         // Handle some predefined tags here                            
          if (id.template IsTag<Tags::Part>()) {
             // Get a component                                          
             auto part = self.GetPartMeta(DMeta {}, index);
@@ -73,7 +73,7 @@ namespace Langulus::Things
          }
       }
 
-      // Check dynamic tags in the entity                             
+      // Check dynamic tags in the entity                               
       auto found = self.GetLocalTag(id.GetTag(), index);
       if (found)
          return *found;
@@ -133,7 +133,7 @@ namespace Langulus::Things
    }
 
    /// A fast check whether tags of the given type are inside this entity     
-   ///   @param tag - type of tag to check                                    
+   ///   @param tag type of tag to check                                      
    ///   @return the number of matching tags                                  
    auto Thing::HasTags(TMeta tag) const -> size_t {
       const auto found = mTags.Find(tag);
@@ -141,7 +141,7 @@ namespace Langulus::Things
    }
 
    /// A fast check whether tags of the given type and value are inside       
-   ///   @param tag - tag to search for                                       
+   ///   @param tag tag to search for                                         
    ///   @return the number of matching tags                                  
    auto Thing::HasTags(Tag const& tag) const -> size_t {
       const auto found = mTags.Find(tag.GetTag());
@@ -156,11 +156,6 @@ namespace Langulus::Things
       return counter;
    }
    
-   /// Get map of tags                                                        
-   auto Thing::GetTags() const noexcept -> TagMap const& {
-      return mTags;
-   }
-
    /// Add/overwrite entity's name tag                                        
    ///   @param name the name to set                                          
    void Thing::SetName(Text const& name) {

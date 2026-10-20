@@ -7,6 +7,7 @@
 ///                                                                           
 #include <Langulus/Thing.hpp>
 #include <Langulus/TTable.hpp>
+#include <Langulus/MetaOf.hpp>
 
 #include <Langulus/CppAPI/Asset.hpp>
 #include <Langulus/CppAPI/Graphics.hpp>
@@ -56,11 +57,10 @@
 
 namespace
 {
-   using Langulus::TMapUnsorted;
-   using Langulus::Path;
-   using Langulus::Runtime;
+   using namespace Langulus;
    using Langulus::RTTI::DMeta;
-   using Langulus::Module;
+   using Langulus::Things::ModList;
+   using ModMap = Runtime::ModMap;
 
    /// Loaded shared libraries, indexed by filename.                          
    /// This is a static registry - all Runtimes use the same shared           
@@ -71,26 +71,18 @@ namespace
    ///   @param map [in/out] the map to fill                                  
    ///   @param module the module instance to push                            
    ///   @param type the type to unregister the module as                     
-   void RegisterAllBases(TMapUnsorted<DMeta, ModList>& map, Module* module, DMeta type) {
+   void RegisterAllBases(ModMap& map, Module* module, DMeta type) {
       VERBOSE("Registering `", type, '`');
       auto found = map.Find(type);
       if (found)
          (*found.GetVal()).Insert(module);
-      else {
-         // We always prefer 'type' definition that is in the main      
-         // boundary, to avoid segfaults when unloading libraries from  
-         // mModulesByType - it is indexed by a DMeta                   
-         auto localDefinition = RTTI::GetMetaData(type->mToken, RTTI::MainBoundary);
-         if (localDefinition)
-            map.Insert(localDefinition, module);
-         else
-            map.Insert(type, module);
-      }
+      else
+         map.Merge(type, module);
 
-      for (auto& base : type->mBases) {
-         if (base.mType->IsExact<Resolvable>())
-            break;
-         RegisterAllBases(map, module, base.mType);
+      for (auto& base : type.GetBases()) {
+         //if (base.type.IsExact<Resolvable>())//TODO explain why is this exception here?
+         //   break;
+         RegisterAllBases(map, module, base.type);
       }
    }
 
@@ -98,19 +90,19 @@ namespace
    ///   @param map [in/out] the map to unregister from                       
    ///   @param module the module instance to push                            
    ///   @param type the type to register the module as                       
-   void UnregisterAllBases(TMapUnsorted<DMeta, ModList>& map, Things::Module* module, DMeta type) {
-      for (auto& base : type->mBases) {
-         if (base.mType->IsExact<Resolvable>())
-            break;
-         UnregisterAllBases(map, module, base.mType);
+   void UnregisterAllBases(ModMap& map, Module* module, DMeta type) {
+      for (auto& base : type.GetBases()) {
+         //if (base.mType->IsExact<Resolvable>())//TODO explain why is this exception here?
+         //   break;
+         UnregisterAllBases(map, module, base.type);
       }
 
-      const auto found = map.FindIt(type);
+      const auto found = map.Find(type);
       if (found) {
-         auto& list = found.GetValue();
-         if (list.Remove(module) and not list) {
+         auto& list = *found.GetVal();
+         if (list.Erase(module) and not list) {
             VERBOSE("Unregistering `", type, '`');
-            map.RemoveIt(found);
+            map.EraseHandle(found);
             if (not map)
                map.Reset();
          }
@@ -121,7 +113,7 @@ namespace
 namespace Langulus::Things
 {
    /// Close a shared library handle, unloading it                            
-   ///   @param library - the library handle                                  
+   ///   @param library the library handle                                    
    #if LANGULUS_OS(WINDOWS)
       void UnloadSharedLibrary(HMODULE library) {
          FreeLibrary(library);
@@ -133,7 +125,7 @@ namespace Langulus::Things
    #endif
 
    /// Runtime construction                                                   
-   ///   @param owner - the owner of the runtime                              
+   ///   @param owner the owner of the runtime                                
    Runtime::Runtime(Thing* owner) noexcept
       : mOwner {owner} {
       VERBOSE(this, ": Initializing...");
@@ -314,8 +306,8 @@ namespace Langulus::Things
    }
    
    /// Create a module instance or return an already instantiated one         
-   ///   @param library - the library handle                                  
-   ///   @param descriptor - module initialization descriptor                 
+   ///   @param library the library handle                                    
+   ///   @param descriptor module initialization descriptor                   
    ///   @return the new module instance                                      
    auto Runtime::InstantiateModule(const SharedLibrary& library, Many const& descriptor) -> Things::Module* {
       if (not library.IsValid())
@@ -374,7 +366,7 @@ namespace Langulus::Things
    }
 
    /// Load a shared library for a module using explicit path                 
-   ///   @param path - the relative path to the library                       
+   ///   @param path the relative path to the library                         
    ///   @return the shared library handle                                    
    LANGULUS(NOINLINE)
    auto Runtime::LoadSharedLibraryPath(Path path) -> SharedLibrary {
@@ -520,7 +512,7 @@ namespace Langulus::Things
    }
    
    /// Load a shared library for a module by cross-platform name              
-   ///   @param name - the name for the dynamic library - the filename will   
+   ///   @param name the name for the dynamic library - the filename will     
    ///      be derived from it, by prefixing with `LangulusMod`, and          
    ///      suffixing with `.so` or `.dll` depending on platform              
    ///   @attention the name should correspond to the RTTI::Boundary it uses  
@@ -545,7 +537,7 @@ namespace Langulus::Things
    }
 
    /// Unload a DLL/SO extension module                                       
-   ///   @param library - the library handle to unload                        
+   ///   @param library the library handle to unload                          
    ///   @return true if shared library was unloaded successfully             
    LANGULUS(NOINLINE)
    bool Runtime::UnloadSharedLibrary(const SharedLibrary& library) {
@@ -620,7 +612,7 @@ namespace Langulus::Things
    }
 
    /// Get the dependency module of a given type                              
-   ///   @param type - the type to search for                                 
+   ///   @param type the type to search for                                   
    ///   @return the shared library handle, you should check if it's valid    
    auto Runtime::GetDependency(DMeta type) const noexcept -> SharedLibrary {
       if (type->mLibraryName == RTTI::MainBoundary)
@@ -634,7 +626,7 @@ namespace Langulus::Things
    }
 
    /// Get a module instance by type                                          
-   ///   @param type - the type to search for                                 
+   ///   @param type the type to search for                                   
    ///   @return the module instance                                          
    auto Runtime::GetModules(DMeta type) const noexcept -> const ModuleList& {
       auto found = mModulesByType.FindIt(type);
@@ -647,14 +639,14 @@ namespace Langulus::Things
 
 #if LANGULUS_FEATURE(MANAGED_REFLECTION)
    /// Get the dependency module of a given type by token                     
-   ///   @param token - type token                                            
+   ///   @param token type token                                              
    ///   @return the shared library handle, you should check if it's valid    
    auto Runtime::GetDependencyToken(Token const& token) const noexcept -> SharedLibrary {
       return GetDependency(RTTI::GetMetaData(token));
    }
 
    /// Get a module instance by type token                                    
-   ///   @param token - type token                                            
+   ///   @param token type token                                              
    ///   @return the module instance, or nullptr if not found                 
    auto Runtime::GetModulesToken(Token const& token) const noexcept -> const ModuleList& {
       return GetModules(RTTI::GetMetaData(token));
@@ -663,7 +655,7 @@ namespace Langulus::Things
 
    /// Update the runtime, by updating all module instantiations by order of  
    /// their priority                                                         
-   ///   @param dt - delta time between update calls                          
+   ///   @param dt delta time between update calls                            
    ///   @return true if no exit was requested by any of the modules          
    bool Runtime::Update(Time dt) {
       LglsProfile();
@@ -675,14 +667,9 @@ namespace Langulus::Things
       }
       return true;
    }
-
-   /// Stringify the runtime, for debugging purposes                          
-   /*Runtime::operator Text() const {
-      return IdentityOf(this);
-   }*/
    
    /// Get a file interface, relying on external modules to find it           
-   ///   @param path - the path for the file                                  
+   ///   @param path the path for the file                                    
    ///   @return the file interface, or nullptr if file doesn't exist         
    auto Runtime::GetFile(Path const& path) -> Ref<Things::File> {
       auto& fileSystems = GetModules<Things::FileSystem>();
@@ -692,7 +679,7 @@ namespace Langulus::Things
    }
    
    /// Get a folder interface, relying on external modules to find it         
-   ///   @param path - the path for the folder                                
+   ///   @param path the path for the folder                                  
    ///   @return the folder interface, or nullptr if folder doesn't exist     
    auto Runtime::GetFolder(Path const& path) -> Ref<Things::Folder> {
       auto& fileSystems = GetModules<Things::FileSystem>();

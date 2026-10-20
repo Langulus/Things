@@ -28,13 +28,14 @@ namespace Langulus::Things
    ///                                                                        
    struct Runtime final {
       using DMeta = RTTI::DMeta;
+      using ModMap = TMapUnsorted<DMeta, ModList>;
 
       ///                                                                     
       ///   Library handle                                                    
       ///                                                                     
       class SharedLibrary {
-      //friend struct Runtime;
-      //protected:
+         friend struct Runtime;
+         
          // Library handle, returned by dlopen or LoadLibrary           
          uintptr_t mHandle {};
          // Exported entry function, that registers library types       
@@ -86,7 +87,7 @@ namespace Langulus::Things
       // Instantiated modules, sorted by priority                       
       TMapSorted<Real, ModList> mModules;
       // Instantiated modules, indexed by type                          
-      TMapUnsorted<DMeta, ModList> mModulesByType;
+      ModMap mModulesByType;
 
       LANGULUS_API(THINGS)
       auto LoadSharedLibraryPath(Path) -> SharedLibrary;

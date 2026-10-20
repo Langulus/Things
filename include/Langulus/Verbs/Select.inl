@@ -86,10 +86,10 @@ namespace Langulus::CTTI
          // Scan verb argument for anything but indices                 
          verb.ForEachDeep([&](Many const& group) {
             group.ForEach(
-               [&](Recipe const& construct) {
-                  VERBOSE_SELECT("Selecting construct: ", construct.GetDescriptor());
+               [&](Recipe const& recipe) {
+                  VERBOSE_SELECT("Selecting recipe: ", recipe.GetDescriptor());
                   containsOnlyIndices = false;
-                  auto nested = verb.Fork(construct.GetDescriptor());
+                  auto nested = verb.Fork(recipe.GetDescriptor());
                   ExecuteDefault(context, nested);
                   verb << Abandon(nested.GetOutput());
                },

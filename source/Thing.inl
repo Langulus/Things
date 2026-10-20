@@ -53,8 +53,8 @@ namespace Langulus::Things
             [this, &output](Tag const& tag) {
                output << AddTag(tag);
             },
-            [this, &output](Recipe const& construct) {
-               CreateInner(output, construct);
+            [this, &output](Recipe const& recipe) {
+               CreateInner(output, recipe);
             },
             [this, &output](Neat const& neat) {
                CreateInner(output, neat);
@@ -238,7 +238,7 @@ namespace Langulus::Things
    template<bool TWOSIDED>
    size_t Thing::AddPart(Part* part) {
       // Check if the part instance is already registered here          
-      const auto meta = part->GetResolved().GetType();
+      const auto meta = part->GetResolved().type;//GetType();
       const auto found = mPartsAmbiguous.Find(meta);
       if (found and (*found.GetVal()).Find(part))
          return 0;
@@ -279,7 +279,7 @@ namespace Langulus::Things
    ///   @return 1 if part has been removed                                   
    template<bool TWOSIDED>
    size_t Thing::RemovePart(Part* part) {
-      const auto meta = part->GetResolved().GetType();
+      const auto meta = part->GetResolved().type;//GetType();
       const auto foundType = mPartsAmbiguous.Find(meta);
       if (not foundType)
          return 0;
@@ -367,7 +367,7 @@ namespace Langulus::Things
    /// in the hierarchy                                                       
    ///   @tparam T the part to create                                         
    ///   @tparam A... arguments for the part's creation                       
-   ///   @param arguments... the arguments to provide for construct           
+   ///   @param arguments... the arguments to provide for recipe           
    ///   @return the created part(s)                                          
    template<CT::Part T, class...A>
    Many Thing::CreatePart(A&&...arguments) {
@@ -389,7 +389,7 @@ namespace Langulus::Things
    /// in the hierarchy                                                       
    ///   @tparam A... arguments for the part's creation                       
    ///   @param token the part type token                                     
-   ///   @param arguments... the arguments to provide for construct           
+   ///   @param arguments... the arguments to provide for recipe           
    ///   @return the created part(s)                                          
    template<class...A>
    Many Thing::CreatePartToken(Token const& token, A&&...arguments) {
@@ -450,10 +450,10 @@ namespace Langulus::Things
       return self.GetLocalTag(MetaTagOf<T>(), offset);
    }
 
-   /// Produce constructs (including parts) from the hierarchy                
-   ///   @attention assumes construct has a valid type                        
+   /// Produce recipes (including parts) from the hierarchy                
+   ///   @attention assumes recipe has a valid type                        
    ///   @tparam SEEK what part of the hierarchy to use for the creation      
-   ///   @param construct instructions for the creation of the data           
+   ///   @param recipe instructions for the creation of the data           
    ///   @return created data                                                 
    template<Seek SEEK>
    Many Thing::CreateData(Recipe const& recipe) {

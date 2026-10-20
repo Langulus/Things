@@ -70,7 +70,7 @@ namespace Langulus::Verbs
    ///   @param verb - the creation/destruction verb                          
    ///   @return true if verb was satisfied                                   
    inline bool Create::ExecuteDefault(Many&, Verb& verb) {
-      // Attempt creating/destroying constructs                         
+      // Attempt creating/destroying recipes                         
       verb.ForEachDeep([&](Recipe const& recipe) {
          if (recipe.GetProducer()) {
             // Creation of customly produced type hit default creation, 
@@ -197,10 +197,10 @@ namespace Langulus::Verbs
          }
 
          group.ForEach(
-            [&](Recipe const& construct) {
-               if (construct.GetTarget() and construct.GetCharge().mMass > 0) {
-                  VERBOSE_CREATION("Creating: ", Logger::Yellow, construct);
-                  createInner(construct);
+            [&](Recipe const& recipe) {
+               if (recipe.GetTarget() and recipe.GetCharge().mMass > 0) {
+                  VERBOSE_CREATION("Creating: ", Logger::Yellow, recipe);
+                  createInner(recipe);
                }
             },
             [&](DMeta const& type) {

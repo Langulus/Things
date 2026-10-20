@@ -21,7 +21,6 @@ namespace Langulus
 {
    ///                                                                        
    /// MARK: Event state                                                      
-   ///                                                                        
    struct EventState {
       using CTTI_POD       = Yup;
       using CTTI_Nullable  = Yup;
@@ -130,8 +129,7 @@ namespace Langulus
    ///   Simply a named container, that has some of the conventional data     
    /// associated with events, like event type, state and timestamp moved     
    /// to the stack, for less allocations and faster runtime retrieval.       
-   ///   Events are often used as arguments for Verbs::Interact.              
-   ///                                                                        
+   ///   Events are often used as arguments for Verbs::Emit.                  
    struct Event : Annies::Inner::EventBase {
       using CTTI_ReflectAs = Event;
       using CTTI_Event     = Yup;
@@ -206,7 +204,7 @@ namespace Langulus
    
       /// Get the payload of the event                                        
       Many GetPayload() const noexcept {
-         return Many {Annies::Inner::Absorb{}, *this};
+         return Many {Annies::Absorb, *this};
       }
    
       /// Construction that either absorbs the provided containers, or        
@@ -287,11 +285,10 @@ namespace Langulus
       }
    };
 
-   //using EventList = TMapUnsorted<DMeta, TMapUnsorted<EventState, Event>>;
-
+   /// MARK: Macros                                                           
    /// Define an event specialization in ::Langulus::Events namespace         
-   ///   @param EVENT - name of the event type                                
-   ///   @param INFOSTRING - info string for the event                        
+   ///   @param EVENT name of the event type                                  
+   ///   @param INFOSTRING info string for the event                          
    #define LANGULUS_DEFINE_EVENT(EVENT, INFOSTRING) \
       namespace Langulus::Events { \
          struct EVENT : Event { \
@@ -313,8 +310,8 @@ namespace Langulus
       }
 
    /// Define an event specialization in ::Langulus::Keys namespace           
-   ///   @param EVENT - name of the key type                                  
-   ///   @param INFOSTRING - info string for the key                          
+   ///   @param EVENT name of the key type                                    
+   ///   @param INFOSTRING info string for the key                            
    #define LANGULUS_DEFINE_KEY(EVENT, INFOSTRING) \
       namespace Langulus::Keys { \
          struct EVENT : Event { \
@@ -336,7 +333,7 @@ namespace Langulus
       }
 }
 
-
+/// MARK: Events                                                              
 LANGULUS_DEFINE_EVENT(WindowClose,
    "An event that occurs when native window closes")
 LANGULUS_DEFINE_EVENT(WindowFileDrop,
@@ -367,6 +364,7 @@ LANGULUS_DEFINE_EVENT(MouseMove,
 LANGULUS_DEFINE_EVENT(MouseScroll,
    "An event that occurs when mouse scrolls in any direction inside the window")
 
+/// MARK: Keys                                                                
 LANGULUS_DEFINE_KEY(Space,
    "The event of pressing/releasing the space bar")
 LANGULUS_DEFINE_KEY(Apostrophe,
@@ -661,6 +659,7 @@ LANGULUS_DEFINE_KEY(Joystick16,
    "The event of pressing/releasing the joystick #16 key")
 
 
+/// MARK: Morphisms                                                           
 namespace Langulus::CTTI
 {
    /// Rule for serializing events to Text.                                   

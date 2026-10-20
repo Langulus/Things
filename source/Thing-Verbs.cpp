@@ -153,7 +153,7 @@ namespace Langulus::Things
          CreateInner(verb.GetOutput(), verb.GetArgument());
    }
 
-   /// Pick something from the entity - children, tags, parts, modules      
+   /// Pick something from the entity - children, tags, parts, modules        
    /// If this entity doesn't satisfy the query, a search will be performed   
    /// in all parents, climbing the hierarchy                                 
    ///   @param verb selection verb                                           
@@ -206,7 +206,7 @@ namespace Langulus::Things
                return Loop::Break;
 
             // selectedComponents has been populated with results       
-            // Filter them additionally by construct arguments          
+            // Filter them additionally by recipe arguments          
             TMany<Part*> filteredSelectedComponents;
             for (auto& part : selectedParts) {
                bool localMismatch = false;

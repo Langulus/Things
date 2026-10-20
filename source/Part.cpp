@@ -31,9 +31,9 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    // First we compare tags only, all of them must be present           
    bool mismatch = false;
    size_t memberOffset = 0;
-   auto self = GetResolved();
-   descriptor.ForEachDeep([&self,&memberOffset,&mismatch](const Annies::Tag& tag) {
-      if (not self.GetMember(tag.GetTag(), memberOffset).Compare(tag.GetData())) {
+   auto concrete = Many {Annies::Absorb, GetResolved()};
+   descriptor.ForEachDeep([&concrete,&memberOffset,&mismatch](const Annies::Tag& tag) {
+      if (not concrete.GetMember(tag.GetTag(), memberOffset).Compare(tag.GetData())) {
          mismatch = true;
          return Loop::Break;
       }
@@ -45,8 +45,8 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    // Then we run another check based on data types, again - all        
    // of them must be present, either as tags or in other form          
    memberOffset = 0;
-   descriptor.ForEachDeep([&self,&memberOffset,&mismatch](Many const& anythingElse) {
-      if (not self.GetMember(TMeta {}, memberOffset).Compare(anythingElse)) {
+   descriptor.ForEachDeep([&concrete,&memberOffset,&mismatch](Many const& anythingElse) {
+      if (not concrete.GetMember(TMeta {}, memberOffset).Compare(anythingElse)) {
          mismatch = true;
          return Loop::Break;
       }

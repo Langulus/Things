@@ -16,7 +16,7 @@ namespace Langulus::Things
    ///                                                                        
    struct UserModule : virtual Module {
       using CTTI_Bases = Module;
-      UserModule() : Resolvable {this}, Module {nullptr} {}
+      UserModule() : /*Resolvable {this},*/ Module {nullptr} {}
    };
 
    ///                                                                        
@@ -25,6 +25,6 @@ namespace Langulus::Things
    struct User : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = UserModule;
-      User() : Resolvable {this} {}
+      User() /*: Resolvable {this}*/ {}
    };
 }

@@ -12,6 +12,7 @@
 #include <Langulus/TRef.hpp>
 #include <Langulus/Recipe.hpp>
 #include <Langulus/Code.hpp>
+#include <Langulus/Temporal.hpp>
 
 #include <Langulus/Verbs/Do.hpp>
 #include <Langulus/Verbs/Create.hpp>

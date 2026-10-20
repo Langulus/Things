@@ -71,7 +71,7 @@ namespace Langulus::Things
 /// Convert to text, by writing a short name and address                      
 LANGULUS_MORPHISM_CONCEPT_CUSTOM(CT::Part, {
    auto& dense = DenseCast(from);
-   return Annies::Text::Mention(dense.GetResolved().GetName(), dense);
+   return Annies::Text::Mention(dense.GetResolved().type.GetName(), dense);
 }, Annies::Text);
 
 /// ...even if encountered by pointer                                         

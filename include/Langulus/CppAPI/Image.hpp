@@ -7,7 +7,7 @@
 ///                                                                           
 #pragma once
 #include "Asset.hpp"
-#include <Langulus/Color.hpp>
+#include <Langulus/Math/Color.hpp>
 #include <Langulus/Math/Scale.hpp>
 
 

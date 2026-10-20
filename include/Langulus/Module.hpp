@@ -103,6 +103,13 @@ namespace Langulus::CT
    concept Module = DerivedFrom<T, Things::Module>;
 }
 
+namespace Langulus
+{
+   using Things::Module;
+   using Things::MetaList;
+   using Things::TagList;
+   using Things::ModList;
+}
 
 /// Name of module entry function                                             
 #define LANGULUS_MODULE_ENTRY()           LangulusModuleEntryPoint

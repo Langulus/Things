@@ -7,7 +7,7 @@
 ///                                                                           
 #pragma once
 #include "Asset.hpp"
-#include <Langulus/Mapping.hpp>
+#include <Langulus/Math/Mapping.hpp>
 #include <Langulus/Math/Vector.hpp>
 
 

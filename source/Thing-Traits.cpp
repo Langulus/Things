@@ -5,6 +5,7 @@
 ///                                                                           
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
+#include <Langulus/TTable.hpp>
 #include <Langulus/Thing.hpp>
 #include "Thing.inl"
 
@@ -15,73 +16,76 @@ namespace Langulus::Things
    ///   @param id the tag to search for                                      
    ///   @param index the index of the tag we seek                            
    ///   @return a pointer to the tag, or nullptr if not found                
-   auto Thing::GetLocalTag(this auto&& self, TMeta id, size_t index) -> Tag* {
+   auto Thing::GetLocalTag(TMeta id, size_t index) -> Tag* {
       if (id) {
          // Search a typed tag                                          
-         const auto found = self.mTags.Find(id);
+         const auto found = mTags.Find(id);
          if (found)
-            return &(found.GetValue()[index]);
+            return &((*found.GetVal())[index]);
          return nullptr;
       }
 
       // Search tag by index                                            
-      Tag* found {};
-      if (index.IsArithmetic()) {
-         auto offset = index.GetOffsetUnsafe();
-         self.mTags.ForEachValue([&](TMany<Tag>& list) noexcept {
-            if (offset < list.GetCount()) {
-               found = &list[offset];
-               return Loop::Break;
-            }
+      Tag* found = nullptr;
+      for (TMany<Tag>& taglist : InValuesOf(mTags)) {
+         if (index < taglist.GetCount()) {
+            found = &taglist[index];
+            break;
+         }
 
-            offset -= list.GetCount();
-            return Loop::Continue;
-         });
+         index -= taglist.GetCount();
       }
-
       return found;
+   }
+
+   auto Thing::GetLocalTag(TMeta id, size_t index) const -> Tag const* {
+      return const_cast<Thing*>(this)->GetLocalTag(id, index);
    }
 
    /// Get a tag by type and contents                                         
    ///   @param id tag to match                                               
    ///   @param index offset of result to use                                 
    ///   @return a non-empty tag, if found                                    
-   auto Thing::GetTag(this auto&& self, Tag const& id, size_t index) -> Tag {
+   auto Thing::GetTag(Tag const& id, size_t index) -> Tag {
       if (id.GetTag()) {
          // Handle some predefined tags here                            
          if (id.template IsTag<Tags::Part>()) {
             // Get a component                                          
-            auto part = self.GetPartMeta(DMeta {}, index);
+            auto part = GetPartMeta(DMeta {}, index);
             if (part)
                return Tags::Part {part};
             return {};
          }
          else if (id.template IsTag<Tags::Child>()) {
             // Get a child entity                                       
-            auto child = self.GetChild(index);
+            auto child = GetChild(index);
             if (child)
                return Tags::Child {child};
             return {};
          }
          else if (id.template IsTag<Tags::Runtime>()) {
             // Get the nearest runtime                                  
-            return Tags::Runtime {&(*self.mRuntime)};
+            return Tags::Runtime {&(*mRuntime)};
          }
          else if (id.template IsTag<Tags::Parent>()) {
             // Get the parent                                           
-            return Tags::Parent {&(*self.mOwner)};
+            return Tags::Parent {&(*mOwner)};
          }
       }
 
       // Check dynamic tags in the entity                               
-      auto found = self.GetLocalTag(id.GetTag(), index);
+      auto found = GetLocalTag(id.GetTag(), index);
       if (found)
          return *found;
 
       // Nothing was found                                              
       return {};
    }
-   
+
+   auto Thing::GetTag(Tag const& id, size_t index) const -> Tag {
+      return const_cast<Thing*>(this)->GetTag(id, index);
+   }
+
    /// Add a new tag to the thing                                             
    ///   @param tag tag to shallow copy                                       
    ///   @return the new tag instance                                         

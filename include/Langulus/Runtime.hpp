@@ -27,7 +27,6 @@ namespace Langulus::Things
    /// children, modules, parts, etc.                                         
    ///                                                                        
    struct Runtime final {
-   private:
       using DMeta = RTTI::DMeta;
 
       ///                                                                     
@@ -81,12 +80,9 @@ namespace Langulus::Things
          }
       };
       
+   private:
       // The owner of the runtime                                       
       Thing* mOwner {};
-      // Loaded shared libraries, indexed by filename                   
-      // This is a static registry - all Runtimes use the same shared   
-      // library objects, but manage their own module instantiations    
-      static TMapUnsorted<Path, SharedLibrary> mLibraries;
       // Instantiated modules, sorted by priority                       
       TMapSorted<Real, ModList> mModules;
       // Instantiated modules, indexed by type                          
@@ -146,7 +142,21 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       bool Update(Time);
 
-      LANGULUS_API(THINGS)
-      explicit operator Text() const;
+      //LANGULUS_API(THINGS)
+      //explicit operator Text() const;
    };
 }
+
+namespace Langulus
+{
+   using Things::Runtime;
+}
+
+/// Convert to text, by writing a short name and address                      
+LANGULUS_MORPHISM_CUSTOM(Runtime, {
+   return Annies::Text::Mention(from);
+}, Annies::Text);
+
+LANGULUS_MORPHISM_CUSTOM(Runtime*, {
+   return Annies::Text::Mention(*from);
+}, Annies::Text);

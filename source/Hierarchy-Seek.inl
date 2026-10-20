@@ -214,7 +214,7 @@ namespace Langulus::Things
       // Scan descriptor even if hierarchy is empty                     
       aux.ForEachDeep([&](Part const* u) {
          if (u->GetResolved().CastsTo(meta)) {
-            //TODO check construct arguments
+            //TODO check recipe arguments
             // Found match                                              
             if (offset == 0) {
                // We're done                                            

@@ -7,7 +7,7 @@
 ///                                                                           
 #pragma once
 #include "Image.hpp"
-#include <Langulus/Color.hpp>
+#include <Langulus/Math/Color.hpp>
 
 
 namespace Langulus::Things
@@ -108,11 +108,11 @@ namespace Langulus::Things
       auto pixels = GetData<Tags::Color>();
 
       LglsAssumeDev(pixels and *pixels,
-         "No color data", " in ", Self());
+         "No color data", " in ", this);
       LglsAssumeDev(not pixels->IsSparse(),
-         "Image data is not dense", " for ", Self());
+         "Image data is not dense", " for ", this);
       LglsAssumeDev(
-         pixels->CastsTo<Bytes>() or pixels->CastsTo<Color>(),
+         pixels->CastsTo<Bytes>() or pixels->CastsTo<Math::Color>(),
          "Image doesn't contain pixel data", 
          " - contains ", pixels->GetType(), " instead");
 

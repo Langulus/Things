@@ -6,9 +6,12 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include <Langulus/Thing.hpp>
-#include <Langulus/Part.hpp>
-#include <Langulus/Event.hpp>
+#include "../Thing.hpp"
+#include "../Part.hpp"
+#include "../Event.hpp"
+#include <Langulus/TMap.hpp>
+#include <Langulus/MetaOf.hpp>
+#include <utility>
 
 
 namespace Langulus::Things
@@ -38,25 +41,22 @@ namespace Langulus::Things
 
    protected:
       // Accumulated events, dispatched on each Update() to listeners   
-      TMapUnsorted<RTTI::DMeta, TMapUnsorted<EventState, Event>> mEventQueue;
+      TMapUnsorted<::std::pair<RTTI::DMeta, EventState>, Event> mEventQueue;
 
    public:
       InputGatherer() /*: Resolvable {this}*/ {}
 
-      void PushEvent(const Event& e) {
-         const auto foundEvent = mEventQueue.Find(e.GetEvent());
-         if (foundEvent) {
-            const auto foundState = foundEvent.GetVal().Find(e.GetEventState());
-            if (foundState) {
-               // Event already exists, merge payload                   
-               foundState.GetVal().mPayload += e.GetPayload();
-               return;
-            }
-            foundEvent.GetVal().Merge(e.GetEventState(), e);
+      /// Push an event to the queue                                          
+      void PushEvent(Event const& e) {
+         const auto pair  = ::std::pair {e.GetEvent(), e.GetEventState()};
+         const auto found = mEventQueue.Find(pair);
+         if (found) {
+            // Event-state pair already exists, merge payload           
+            (*found.GetVal()).Concat(e.GetPayload());
          }
          else {
-            auto& newGroup = mEventQueue.Merge(e.GetEvent());
-            newGroup.Merge(e.GetEventState(), e);
+            // Event-state pair doesn't exist yet                       
+            mEventQueue.Merge(pair, e);
          }
       }
    };

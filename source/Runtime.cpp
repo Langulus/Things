@@ -6,6 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/Thing.hpp>
+#include <Langulus/TTable.hpp>
 
 #include <Langulus/CppAPI/Asset.hpp>
 #include <Langulus/CppAPI/Graphics.hpp>
@@ -53,11 +54,72 @@
    #define VERBOSE(...) LANGULUS(NOOP)
 #endif
 
+namespace
+{
+   using Langulus::TMapUnsorted;
+   using Langulus::Path;
+   using Langulus::Runtime;
+   using Langulus::RTTI::DMeta;
+   using Langulus::Module;
+
+   /// Loaded shared libraries, indexed by filename.                          
+   /// This is a static registry - all Runtimes use the same shared           
+   /// library objects, but manage their own module instantiations.           
+   TMapUnsorted<Path, Runtime::SharedLibrary> gLibraries;
+
+   /// Register by all bases in mModulesByType                                
+   ///   @param map [in/out] the map to fill                                  
+   ///   @param module the module instance to push                            
+   ///   @param type the type to unregister the module as                     
+   void RegisterAllBases(TMapUnsorted<DMeta, ModList>& map, Module* module, DMeta type) {
+      VERBOSE("Registering `", type, '`');
+      auto found = map.Find(type);
+      if (found)
+         (*found.GetVal()).Insert(module);
+      else {
+         // We always prefer 'type' definition that is in the main      
+         // boundary, to avoid segfaults when unloading libraries from  
+         // mModulesByType - it is indexed by a DMeta                   
+         auto localDefinition = RTTI::GetMetaData(type->mToken, RTTI::MainBoundary);
+         if (localDefinition)
+            map.Insert(localDefinition, module);
+         else
+            map.Insert(type, module);
+      }
+
+      for (auto& base : type->mBases) {
+         if (base.mType->IsExact<Resolvable>())
+            break;
+         RegisterAllBases(map, module, base.mType);
+      }
+   }
+
+   /// Unregister by all bases in mModulesByType (in reverse order)           
+   ///   @param map [in/out] the map to unregister from                       
+   ///   @param module the module instance to push                            
+   ///   @param type the type to register the module as                       
+   void UnregisterAllBases(TMapUnsorted<DMeta, ModList>& map, Things::Module* module, DMeta type) {
+      for (auto& base : type->mBases) {
+         if (base.mType->IsExact<Resolvable>())
+            break;
+         UnregisterAllBases(map, module, base.mType);
+      }
+
+      const auto found = map.FindIt(type);
+      if (found) {
+         auto& list = found.GetValue();
+         if (list.Remove(module) and not list) {
+            VERBOSE("Unregistering `", type, '`');
+            map.RemoveIt(found);
+            if (not map)
+               map.Reset();
+         }
+      }
+   }
+}
 
 namespace Langulus::Things
 {
-   TMapUnsorted<Path, Runtime::SharedLibrary> Runtime::mLibraries;
-
    /// Close a shared library handle, unloading it                            
    ///   @param library - the library handle                                  
    #if LANGULUS_OS(WINDOWS)
@@ -77,7 +139,7 @@ namespace Langulus::Things
       VERBOSE(this, ": Initializing...");
 
       // Reflect fundamentals                                           
-      (void)MetaDataOf<A::Number>();
+      /*(void)MetaDataOf<A::Number>();
       (void)MetaDataOf<A::Integer>();
       (void)MetaDataOf<A::Signed>();
       (void)MetaDataOf<A::Unsigned>();
@@ -96,29 +158,29 @@ namespace Langulus::Things
       // So we make sure that the base modules are defined here         
       (void)MetaDataOf<Thing>();
 
-      (void)MetaDataOf<A::PlatformModule>();
-      (void)MetaDataOf<A::Platform>();
+      (void)MetaDataOf<Things::PlatformModule>();
+      (void)MetaDataOf<Things::Platform>();
       (void)MetaDataOf<Things::Window>();
-      (void)MetaDataOf<A::Cursor>();
+      (void)MetaDataOf<Things::Cursor>();
 
-      (void)MetaDataOf<A::PhysicalModule>();
-      (void)MetaDataOf<A::Physical>();
-      (void)MetaDataOf<A::World>();
+      (void)MetaDataOf<Things::PhysicalModule>();
+      (void)MetaDataOf<Things::Physical>();
+      (void)MetaDataOf<Things::World>();
       (void)MetaDataOf<Things::Instance>();
 
-      (void)MetaDataOf<A::UIModule>();
-      (void)MetaDataOf<A::UIUnit>();
-      (void)MetaDataOf<A::UISystem>();
-      (void)MetaDataOf<A::UIButton>();
-      (void)MetaDataOf<A::UILabel>();
-      (void)MetaDataOf<A::UIInput>();
+      (void)MetaDataOf<Things::UIModule>();
+      (void)MetaDataOf<Things::UIUnit>();
+      (void)MetaDataOf<Things::UISystem>();
+      (void)MetaDataOf<Things::UIButton>();
+      (void)MetaDataOf<Things::UILabel>();
+      (void)MetaDataOf<Things::UIInput>();
 
-      (void)MetaDataOf<A::FileSystem>();
+      (void)MetaDataOf<Things::FileSystem>();
       (void)MetaDataOf<Things::File>();
       (void)MetaDataOf<Things::Folder>();
 
-      (void)MetaDataOf<A::GraphicsModule>();
-      (void)MetaDataOf<A::Graphics>();
+      (void)MetaDataOf<Things::GraphicsModule>();
+      (void)MetaDataOf<Things::Graphics>();
       (void)MetaDataOf<Things::Renderer>();
       (void)MetaDataOf<Things::Layer>();
       (void)MetaDataOf<Things::Camera>();
@@ -128,40 +190,40 @@ namespace Langulus::Things
       (void)MetaDataOf<Things::AssetModule>();
       (void)MetaDataOf<Things::Asset>();
       (void)MetaDataOf<Things::Image>();
-      (void)MetaDataOf<A::Font>();
-      (void)MetaDataOf<A::Material>();
+      (void)MetaDataOf<Things::Font>();
+      (void)MetaDataOf<Things::Material>();
       (void)MetaDataOf<Things::Mesh>();
 
-      (void)MetaDataOf<A::AIModule>();
+      (void)MetaDataOf<Things::AIModule>();
       (void)MetaDataOf<Things::AIPart>();
       (void)MetaDataOf<Things::Mind>();
 
-      (void)MetaDataOf<A::InputModule>();
-      (void)MetaDataOf<A::Input>();
+      (void)MetaDataOf<Things::InputModule>();
+      (void)MetaDataOf<Things::Input>();
       (void)MetaDataOf<Things::InputGatherer>();
       (void)MetaDataOf<Things::InputListener>();
 
       (void)MetaDataOf<Things::Life>();
-      (void)MetaDataOf<A::LifeUnit>();
+      (void)MetaDataOf<Things::LifeUnit>();
       (void)MetaDataOf<Things::Ecosystem>();
       (void)MetaDataOf<Things::Organism>();
 
-      (void)MetaDataOf<A::Economy>();
-      (void)MetaDataOf<A::EconomyPart>();
+      (void)MetaDataOf<Things::Economy>();
+      (void)MetaDataOf<Things::EconomyPart>();
       (void)MetaDataOf<Things::Resource>();
-      (void)MetaDataOf<A::ResourceInstance>();
+      (void)MetaDataOf<Things::ResourceInstance>();
       (void)MetaDataOf<Things::Converter>();
-      (void)MetaDataOf<A::ConverterInstance>();
-      (void)MetaDataOf<A::Trader>();
+      (void)MetaDataOf<Things::ConverterInstance>();
+      (void)MetaDataOf<Things::Trader>();
 
-      (void)MetaDataOf<A::Network>();
+      (void)MetaDataOf<Things::Network>();
       (void)MetaDataOf<Things::NetworkPart>();
-      (void)MetaDataOf<A::Client>();
-      (void)MetaDataOf<A::Server>();
+      (void)MetaDataOf<Things::Client>();
+      (void)MetaDataOf<Things::Server>();
       (void)MetaDataOf<Things::Shared>();
 
-      (void)MetaDataOf<A::UserModule>();
-      (void)MetaDataOf<Things::User>();
+      (void)MetaDataOf<Things::UserModule>();
+      (void)MetaDataOf<Things::User>();*/
 
       VERBOSE(this, ": Initialized");
    }
@@ -171,19 +233,20 @@ namespace Langulus::Things
       VERBOSE(this, ": Shutting down...");
 
       // First-stage destruction: tear down any potential circular      
-      // references                                                     
-      for (auto list : mModules) {
-         for (auto& mod : list.GetValue())
-            mod->Teardown();
+      // references. This minimizes references and destroys no longer   
+      // referenced data.                                               
+      for (auto& modlist : InValuesOf(mModules)) {
+         for (auto& mod : modlist)
+            (*mod)->Teardown();
       }
 
       // Second-stage destruction: cycle through N libraries N^2        
       // times, unloading anything that is no longer in use each time   
-      auto attempts = mLibraries.GetCount();
+      auto attempts = gLibraries.GetCount();
       while (attempts) {
-         for (auto library : KeepIterator(mLibraries)) {
-            if (UnloadSharedLibrary(library.GetValue()))
-               library = mLibraries.RemoveIt(library);
+         for (auto library : gLibraries) {
+            if (UnloadSharedLibrary(*library.GetVal()))
+               library = gLibraries.EraseHandle(library);
          }
 
          --attempts;
@@ -192,9 +255,9 @@ namespace Langulus::Things
       // If after all attempts there's still active libraries, then     
       // something is definitely not right. This will always result in  
       // a crash, since we can't really throw inside a destructor.      
-      if (mLibraries) {
+      if (gLibraries) {
          Logger::Error(this, ": Can't unload last module(s): ");
-         for (auto library : mLibraries)
+         for (auto library : gLibraries)
             Logger::Append(library.GetKey(), " ");
 
          Logger::Error(this, ": This likely involves a memory leak "
@@ -207,8 +270,8 @@ namespace Langulus::Things
    }
 
    /// Create a module instance or return an already instantiated one         
-   ///   @param path - explicit relative path                                 
-   ///   @param descriptor - module initialization descriptor                 
+   ///   @param path explicit relative path                                   
+   ///   @param descriptor module initialization descriptor                   
    ///   @return the new module instance                                      
    auto Runtime::InstantiateModulePath(Path const& path, Many const& descriptor) -> Things::Module* {
       // Load the library if not loaded yet                             
@@ -229,8 +292,8 @@ namespace Langulus::Things
    }
    
    /// Create a module instance or return an already instantiated one         
-   ///   @param name - module name                                            
-   ///   @param descriptor - module initialization descriptor                 
+   ///   @param name module name                                              
+   ///   @param descriptor module initialization descriptor                   
    ///   @return the new module instance                                      
    auto Runtime::InstantiateModule(Token const& name, Many const& descriptor) -> Things::Module* {
       // Load the library if not loaded yet                             
@@ -250,56 +313,6 @@ namespace Langulus::Things
       return instance;
    }
    
-   /// Register by all bases in mModulesByType                                
-   ///   @param map - [in/out] the map to fill                                
-   ///   @param module - the module instance to push                          
-   ///   @param type - the type to unregister the module as                   
-   void RegisterAllBases(TMapUnsorted<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
-      VERBOSE("Registering `", type, '`');
-      auto found = map.FindIt(type);
-      if (found)
-         found.GetValue() << module;
-      else {
-         // We always prefer 'type' definition that is in the main      
-         // boundary, to avoid segfaults when unloading libraries from  
-         // mModulesByType - it is indexed by a DMeta                   
-         auto localDefinition = RTTI::GetMetaData(type->mToken, RTTI::MainBoundary);
-         if (localDefinition)
-            map.Insert(localDefinition, module);
-         else
-            map.Insert(type, module);
-      }
-
-      for (auto& base : type->mBases) {
-         if (base.mType->IsExact<Resolvable>())
-            break;
-         RegisterAllBases(map, module, base.mType);
-      }
-   }
-
-   /// Unregister by all bases in mModulesByType (in reverse order)           
-   ///   @param map - [in/out] the map to unregister from                     
-   ///   @param module - the module instance to push                          
-   ///   @param type - the type to register the module as                     
-   void UnregisterAllBases(TMapUnsorted<DMeta, ModuleList>& map, Things::Module* module, DMeta type) {
-      for (auto& base : type->mBases) {
-         if (base.mType->IsExact<Resolvable>())
-            break;
-         UnregisterAllBases(map, module, base.mType);
-      }
-
-      const auto found = map.FindIt(type);
-      if (found) {
-         auto& list = found.GetValue();
-         if (list.Remove(module) and not list) {
-            VERBOSE("Unregistering `", type, '`');
-            map.RemoveIt(found);
-            if (not map)
-               map.Reset();
-         }
-      }
-   }
-
    /// Create a module instance or return an already instantiated one         
    ///   @param library - the library handle                                  
    ///   @param descriptor - module initialization descriptor                 
@@ -369,7 +382,7 @@ namespace Langulus::Things
       path = path.Terminate();
 
       // Check if this library is already loaded                        
-      const auto preloaded = mLibraries.FindIt(path);
+      const auto preloaded = gLibraries.FindIt(path);
       if (preloaded)
          return preloaded.GetValue();
 
@@ -466,7 +479,7 @@ namespace Langulus::Things
 
          // Test if the boundary conflicts with any of the previously   
          // loaded libraries                                            
-         for (auto lib : mLibraries) {
+         for (auto lib : gLibraries) {
             if (lib.GetValue().mBoundary == library.mBoundary) {
                Logger::Error(
                   "The library `", path, "` boundary `", library.mBoundary,
@@ -479,7 +492,7 @@ namespace Langulus::Things
          }
 
          // Library is properly registered                              
-         mLibraries.Insert(path, library);
+         gLibraries.Insert(path, library);
 
          // Do some info logging                                        
          Logger::Info("Module `", library.mInfo()->mName, 
@@ -495,9 +508,9 @@ namespace Langulus::Things
          // Make sure we end up in an invariant state                   
          Logger::Error("Could not enter `", path, "` due to an exception");
          if (UnloadSharedLibrary(library))
-            mLibraries.RemoveKey(path);
-         if (not mLibraries)
-            mLibraries.Reset();
+            gLibraries.RemoveKey(path);
+         if (not gLibraries)
+            gLibraries.Reset();
          return {};
       }
 
@@ -613,7 +626,7 @@ namespace Langulus::Things
       if (type->mLibraryName == RTTI::MainBoundary)
          return {};
 
-      for (auto library : mLibraries) {
+      for (auto library : gLibraries) {
          if (library.GetValue().mBoundary == type->mLibraryName)
             return library.GetValue();
       }
@@ -664,9 +677,9 @@ namespace Langulus::Things
    }
 
    /// Stringify the runtime, for debugging purposes                          
-   Runtime::operator Text() const {
+   /*Runtime::operator Text() const {
       return IdentityOf(this);
-   }
+   }*/
    
    /// Get a file interface, relying on external modules to find it           
    ///   @param path - the path for the file                                  

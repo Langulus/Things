@@ -7,7 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Producible.hpp>
-#include <Langulus/LOD.hpp>
+#include <Langulus/Math/LOD.hpp>
 #include "IO.hpp"
 
 

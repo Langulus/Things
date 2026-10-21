@@ -27,12 +27,11 @@ namespace Langulus::Things
 
 
    ///                                                                        
-   ///   Thing                                                                
+   ///   MARK: Thing                                                          
    ///                                                                        
-   /// The primary composable type. Its functionality comes from its parts    
+   ///   The primary composable type. Its functionality comes from its parts  
    /// and children/owner's parts. The Thing is an aggregate of tags,         
    /// parts, and subthings.                                                  
-   ///                                                                        
    struct Thing final : Downcastable, Referenced, SeekInterface {
       using CTTI_Named     = Yes<"Thing">;
       using CTTI_Abstract  = No;
@@ -123,8 +122,7 @@ namespace Langulus::Things
 
 
       ///                                                                     
-      ///   Hierarchy management                                              
-      ///                                                                     
+      /// MARK: Hierarchy management                                          
       LANGULUS_API(THINGS)
       auto CreateRuntime() -> Runtime*;
 
@@ -165,8 +163,7 @@ namespace Langulus::Things
 
 
       ///                                                                     
-      ///   Part management                                                   
-      ///                                                                     
+      /// MARK: Part management                                               
       template<bool TWOSIDED = true>
       size_t AddPart(Part*);
       template<bool TWOSIDED = true>
@@ -224,8 +221,7 @@ namespace Langulus::Things
 
    public:
       ///                                                                     
-      ///   Tag management                                                    
-      ///                                                                     
+      /// MARK: Tag management                                                
       LANGULUS_API(THINGS) auto AddTag(Tag) -> Tag*;
 
       LANGULUS_API(THINGS) size_t RemoveTag(TMeta);
@@ -273,6 +269,8 @@ namespace Langulus::Things
    };
 }
 
+
+/// MARK: Morphisms                                                           
 /// Convert to text, by writing a short name or address                       
 LANGULUS_MORPHISM_CUSTOM(Things::Thing, {
    const auto name = from.GetName();
@@ -288,6 +286,7 @@ LANGULUS_MORPHISM_CUSTOM(Things::Thing*, {
       return '#' + name;
    return Annies::Text::Mention(from);
 }, Annies::Text);
+
 
 static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing, ::Langulus::Annies::Text>);//TODO move these to test
 static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing*, ::Langulus::Annies::Text>);

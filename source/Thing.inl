@@ -560,7 +560,7 @@ namespace Langulus::Things
          // descriptor is resposible for registering it with the parent 
          // via the Tags::Parent tag                                    
          auto creator = Verbs::Create{descriptor};
-         if (creator.RunStateless())
+         if (creator.RunUnary())
             return Abandon(creator.GetOutput());
       }
 

@@ -58,7 +58,7 @@ namespace Langulus::Things
       }
 
       if (descriptor) {
-         // Create any subthings/tags/part in this thing              
+         // Create any subthings/tags/part in this thing                
          Many unused_sideeffects;
          CreateInner(unused_sideeffects, descriptor);
       }
@@ -349,7 +349,7 @@ namespace Langulus::Things
    ///   @return the part if found, or nullptr if not                         
    auto Thing::GetPartMeta(DMeta id, size_t index) -> Part* {
       if (id) {
-         // Search a typed tag                                        
+         // Search a typed tag                                          
          const auto found = mPartsAmbiguous.Find(id);
          return found
             ? static_cast<Part*>((*found.GetVal())[index])
@@ -431,7 +431,7 @@ namespace Langulus::Things
    }
 
    /// Get a child by index                                                   
-   ///   @param id - the index to pick                                        
+   ///   @param id the index to pick                                          
    ///   @return the child entity, or nullptr of none was found               
    auto Thing::GetChild(size_t offset) -> Thing* {
       return mChildren[offset];
@@ -442,15 +442,15 @@ namespace Langulus::Things
    }
 
    /// Get child by name and offset (searches for Tags::Name in children)     
-   ///   @param name - name to seek                                           
-   ///   @param offset - offset to seek                                       
+   ///   @param name name to seek                                             
+   ///   @param offset offset to seek                                         
    ///   @return the child entity, or nullptr of none was found               
    auto Thing::GetNamedChild(Token const& name, size_t offset) -> Thing* {
       size_t matches = 0;
       for (auto& child : mChildren) {
          if (child->GetName() == name) {
             if (matches == offset)
-               return child;
+               return *child;
             ++matches;
          }
       }
@@ -464,7 +464,7 @@ namespace Langulus::Things
 
    /// Do a cascading runtime reset - all children that do not have own       
    /// runtime, will incorporate the provided one                             
-   ///   @param newrt - the new runtime to set                                
+   ///   @param newrt the new runtime to set                                  
    void Thing::ResetRuntime(Runtime* newrt) {
       if (mRuntime.IsPinned())
          return;
@@ -476,7 +476,7 @@ namespace Langulus::Things
 
    /// Do a cascading temporal flow reset - all children that do not have own 
    /// flow, will incorporate the provided one                                
-   ///   @param newrt - the new flow to set                                   
+   ///   @param newflow the new flow to set                                   
    void Thing::ResetFlow(Temporal* newflow) {
       if (mFlow.IsPinned())
          return;
@@ -487,7 +487,7 @@ namespace Langulus::Things
    }
 
    /// Count the number of matching parts in this entity                      
-   ///   @param type - the type of parts to search for                        
+   ///   @param type the type of parts to search for                          
    ///   @return the number of matching parts                                 
    auto Thing::HasParts(DMeta type) const -> size_t {
       const auto found = mPartsAmbiguous.Find(type);
@@ -516,41 +516,41 @@ namespace Langulus::Things
    ///   @return the new runtime instance, or the old one if already created  
    auto Thing::CreateRuntime() -> Runtime* {
       if (mRuntime.IsPinned())
-         return &*mRuntime;
+         return *mRuntime;
 
       mRuntime.Get().Emplace(this);
       mRuntime.Pin();
 
       // Dispatch the change to all children                            
       for (auto& child : mChildren)
-         child->ResetRuntime(&*mRuntime);
+         child->ResetRuntime(*mRuntime);
 
       THINGS_VERBOSE_SELF("New runtime: ", &*mRuntime);
-      return &*mRuntime;
+      return *mRuntime;
    }
 
    /// Create a local flow for this thing                                     
    ///   @return the new flow instance, or the old one, if already created    
    auto Thing::CreateFlow() -> Temporal* {
       if (mFlow.IsPinned())
-         return &*mFlow;
+         return *mFlow;
 
-      mFlow.Get().Emplace();
+      mFlow.Emplace();
       mFlow.Pin();
 
       // Dispatch the change to all children                            
       for (auto& child : mChildren)
-         child->ResetFlow(&*mFlow);
+         child->ResetFlow(*mFlow);
 
-      THINGS_VERBOSE_SELF("New flow: ", &*mFlow);
-      return &*mFlow;
+      THINGS_VERBOSE_SELF("New flow: ", *mFlow);
+      return *mFlow;
    }
 
    /// Uses the current runtime to load a shared library module, and          
    /// instantiate it for use, if not yet instantiated                        
    ///   @attention assumes a runtime is available in the hierarchy           
-   ///   @param module - name of the module                                   
-   ///   @param descriptor - instructions for module setup                    
+   ///   @param module name of the module                                     
+   ///   @param descriptor instructions for module setup                      
    ///   @return the instantiated module interface                            
    auto Thing::LoadMod(Token const& module, Many const& descriptor) -> Things::Module* {
       const auto runtime = **GetRuntime();
@@ -563,8 +563,8 @@ namespace Langulus::Things
    /// Uses the current runtime to load a shared library module, and          
    /// instantiate it for use, if not yet instantiated                        
    ///   @attention assumes a runtime is available in the hierarchy           
-   ///   @param path - relative path to the module                            
-   ///   @param descriptor - instructions for module setup                    
+   ///   @param path relative path to the module                              
+   ///   @param descriptor instructions for module setup                      
    ///   @return the instantiated module interface                            
    auto Thing::LoadModPath(Path const& path, Many const& descriptor) -> Things::Module* {
       const auto runtime = **GetRuntime();

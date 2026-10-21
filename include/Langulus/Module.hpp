@@ -9,7 +9,7 @@
 #include <Langulus/TSet.hpp>
 #include <Langulus/TMany.hpp>
 #include <Langulus/MetaOf.hpp>
-#include <Langulus/Resolvable.hpp>
+#include <Langulus/Downcastable.hpp>
 #include <Langulus/Time.hpp>
 #include "Things/Export.hpp"
 
@@ -45,9 +45,9 @@ namespace Langulus::Things
    ///                                                                        
    ///   External module interface                                            
    ///                                                                        
-   struct Module : public virtual Resolvable {
+   struct Module : virtual Downcastable {
       using CTTI_Producer = Runtime;
-      using CTTI_Bases    = Resolvable;
+      using CTTI_Bases    = Downcastable;
 
    private:
       // Runtime that owns the module instance                          
@@ -55,15 +55,15 @@ namespace Langulus::Things
 
    public:
       Module(Runtime* runtime) assumptious
-         : /*Resolvable {this}
-         ,*/ mRuntime   {runtime} {}
+         : Downcastable {this}
+         , mRuntime     {runtime} {}
 
       Module() noexcept = delete;
-      Module(const Module&) = delete;
+      Module(Module const&) = delete;
       Module(Module&&) = delete;
       virtual ~Module() {}
       
-      Module& operator = (const Module&) noexcept = delete;
+      Module& operator = (Module const&) noexcept = delete;
       Module& operator = (Module&&) noexcept = delete;
 
       struct Info {

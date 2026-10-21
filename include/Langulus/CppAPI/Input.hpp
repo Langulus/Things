@@ -21,7 +21,7 @@ namespace Langulus::Things
    ///                                                                        
    struct InputModule : virtual Module {
       using CTTI_Bases = Module;
-      InputModule() : /*Resolvable {this},*/ Module {nullptr} {}
+      InputModule() : Downcastable {this}, Module {nullptr} {}
    };
 
    ///                                                                        
@@ -29,7 +29,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Input : virtual Part {
       using CTTI_Bases = Part;
-      Input() /*: Resolvable {this}*/ {}
+      Input() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -44,7 +44,7 @@ namespace Langulus::Things
       TMapUnsorted<::std::pair<RTTI::DMeta, EventState>, Event> mEventQueue;
 
    public:
-      InputGatherer() /*: Resolvable {this}*/ {}
+      InputGatherer() : Downcastable {this} {}
 
       /// Push an event to the queue                                          
       void PushEvent(Event const& e) {
@@ -68,6 +68,6 @@ namespace Langulus::Things
       using CTTI_Bases = Input;
       using CTTI_Producer = InputGatherer;
       
-      InputListener() /*: Resolvable {this}*/ {}
+      InputListener() : Downcastable {this} {}
    };
 }

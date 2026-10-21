@@ -17,7 +17,7 @@ namespace Langulus::Things
    ///                                                                        
    struct GraphicsModule : virtual Module {
       using CTTI_Bases = Module;
-      GraphicsModule() : /*Resolvable {this},*/ Module {nullptr} {}
+      GraphicsModule() : Downcastable {this}, Module {nullptr} {}
    };
 
    ///                                                                        
@@ -25,7 +25,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Graphics : virtual Part {
       using CTTI_Bases = Part;
-      Graphics() /*: Resolvable {this}*/ {}
+      Graphics() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -34,7 +34,7 @@ namespace Langulus::Things
    struct Renderer : virtual Graphics {
       using CTTI_Producer = GraphicsModule;
       using CTTI_Bases = Graphics;
-      Renderer() /*: Resolvable {this}*/ {}
+      Renderer() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -43,7 +43,7 @@ namespace Langulus::Things
    struct Layer : virtual Graphics {
       using CTTI_Producer = Renderer;
       using CTTI_Bases = Graphics;
-      Layer() /*: Resolvable {this}*/ {}
+      Layer() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -52,7 +52,7 @@ namespace Langulus::Things
    struct Camera : virtual Graphics {
       using CTTI_Producer = Layer;
       using CTTI_Bases = Graphics;
-      Camera() /*: Resolvable {this}*/ {}
+      Camera() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -61,7 +61,7 @@ namespace Langulus::Things
    struct Renderable : virtual Graphics {
       using CTTI_Producer = Layer;
       using CTTI_Bases = Graphics;
-      Renderable() /*: Resolvable {this}*/ {}
+      Renderable() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -70,7 +70,7 @@ namespace Langulus::Things
    struct Light : virtual Graphics {
       using CTTI_Producer = Layer;
       using CTTI_Bases = Graphics;
-      Light() /*: Resolvable {this}*/ {}
+      Light() : Downcastable {this} {}
 
       enum Type {
          Directional = 0,

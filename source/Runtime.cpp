@@ -9,7 +9,7 @@
 #include <Langulus/TTable.hpp>
 #include <Langulus/MetaOf.hpp>
 
-#include <Langulus/CppAPI/Asset.hpp>
+#include <Langulus/CppAPI/Art.hpp>
 #include <Langulus/CppAPI/Graphics.hpp>
 #include <Langulus/CppAPI/Image.hpp>
 #include <Langulus/CppAPI/IO.hpp>
@@ -62,6 +62,17 @@ namespace
    using Langulus::Things::ModList;
    using ModMap = Runtime::ModMap;
 
+
+   /// Close a shared library handle, unloading it                            
+   ///   @param library the library handle                                    
+   void UnloadSharedLibraryInner(uintptr_t library) {
+      #if LANGULUS_OS(WINDOWS)
+         FreeLibrary(reinterpret_cast<HMODULE>(library));
+      #else
+         dlclose(reinterpret_cast<void*>(library));
+      #endif
+   }
+
    /// Loaded shared libraries, indexed by filename.                          
    /// This is a static registry - all Runtimes use the same shared           
    /// library objects, but manage their own module instantiations.           
@@ -102,7 +113,7 @@ namespace
          auto& list = *found.GetVal();
          if (list.Erase(module) and not list) {
             VERBOSE("Unregistering `", type, '`');
-            map.EraseHandle(found);
+            (void) map.Erase(found);
             if (not map)
                map.Reset();
          }
@@ -112,18 +123,6 @@ namespace
 
 namespace Langulus::Things
 {
-   /// Close a shared library handle, unloading it                            
-   ///   @param library the library handle                                    
-   #if LANGULUS_OS(WINDOWS)
-      void UnloadSharedLibrary(HMODULE library) {
-         FreeLibrary(library);
-      }
-   #else
-      void UnloadSharedLibrary(void* library) {
-         dlclose(library);
-      }
-   #endif
-
    /// Runtime construction                                                   
    ///   @param owner the owner of the runtime                                
    Runtime::Runtime(Thing* owner) noexcept
@@ -238,7 +237,7 @@ namespace Langulus::Things
       while (attempts) {
          for (auto library : gLibraries) {
             if (UnloadSharedLibrary(*library.GetVal()))
-               library = gLibraries.EraseHandle(library);
+               library = gLibraries.Erase(library);
          }
 
          --attempts;
@@ -263,21 +262,21 @@ namespace Langulus::Things
 
    /// Create a module instance or return an already instantiated one         
    ///   @param path explicit relative path                                   
-   ///   @param descriptor module initialization descriptor                   
+   ///   @param d module initialization descriptor                            
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModulePath(Path const& path, Many const& descriptor) -> Things::Module* {
+   auto Runtime::InstantiateModulePath(Path const& path, Many const& d) -> Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibraryPath(path);
 
       // Check if module is already instantiated                        
       auto& foundModules = GetModules(library.mModuleType);
       if (foundModules)
-         return foundModules[0];
+         return const_cast<Module*>(foundModules[0]);
 
       // A module instance doesn't exist yet, so instantiate it         
       VERBOSE(this, ": Module `", path, "` is not instantiated yet"
          ", so attempting to create it...");
-      const auto instance = InstantiateModule(library, descriptor);
+      const auto instance = InstantiateModule(library, d);
       if (not instance)
          (void) UnloadSharedLibrary(library);
       return instance;
@@ -285,21 +284,21 @@ namespace Langulus::Things
    
    /// Create a module instance or return an already instantiated one         
    ///   @param name module name                                              
-   ///   @param descriptor module initialization descriptor                   
+   ///   @param d module initialization descriptor                            
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(Token const& name, Many const& descriptor) -> Things::Module* {
+   auto Runtime::InstantiateModule(Token const& name, Many const& d) -> Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibrary(name);
 
       // Check if module is already instantiated                        
       auto& foundModules = GetModules(library.mModuleType);
       if (foundModules)
-         return foundModules[0];
+         return const_cast<Module*>(foundModules[0]);
 
       // A module instance doesn't exist yet, so instantiate it         
       VERBOSE(this, ": Module `", name, "` is not instantiated yet"
          ", so attempting to create it...");
-      const auto instance = InstantiateModule(library, descriptor);
+      const auto instance = InstantiateModule(library, d);
       if (not instance)
          (void) UnloadSharedLibrary(library);
       return instance;
@@ -307,9 +306,9 @@ namespace Langulus::Things
    
    /// Create a module instance or return an already instantiated one         
    ///   @param library the library handle                                    
-   ///   @param descriptor module initialization descriptor                   
+   ///   @param d module initialization descriptor                            
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(const SharedLibrary& library, Many const& descriptor) -> Things::Module* {
+   auto Runtime::InstantiateModule(const SharedLibrary& library, Many const& d) -> Module* {
       if (not library.IsValid())
          return nullptr;
 
@@ -317,7 +316,7 @@ namespace Langulus::Things
       const auto info = library.mInfo();
       Things::Module* module {};
 
-      try { module = library.mCreator(this, descriptor); }
+      try { module = library.mCreator(this, d); }
       catch (...) {
          Logger::Error("Module `", info->mName,
             "` creator has thrown an exception");
@@ -332,11 +331,11 @@ namespace Langulus::Things
 
       // Register the module in the various maps, for fast retrieval    
       try {
-         auto found = mModules.FindIt(info->mPriority);
+         auto found = mModules.Find(info->mPriority);
          if (found)
-            found.GetValue() << module;
+            (*found.GetVal()).Insert(module);
          else
-            mModules.Insert(info->mPriority, ModuleList {module});
+            mModules.Merge(info->mPriority, ModList {module});
 
          RegisterAllBases(mModulesByType, module, module->GetType());
       }
@@ -344,11 +343,11 @@ namespace Langulus::Things
          Logger::Error("Registering module `", info->mName, "` failed");
 
          // Make sure we end up in an invariant state                   
-         auto found = mModules.FindIt(info->mPriority);
+         const auto found = mModules.Find(info->mPriority);
          if (found) {
-            found.GetValue().Remove(module);
-            if (not found.GetValue())
-               mModules.RemoveIt(found);
+            (*found.GetVal()).Erase(module);
+            if (not *found.GetVal())
+               (void) mModules.Erase(found);
          }
 
          if (not mModules)
@@ -370,13 +369,10 @@ namespace Langulus::Things
    ///   @return the shared library handle                                    
    LANGULUS(NOINLINE)
    auto Runtime::LoadSharedLibraryPath(Path path) -> SharedLibrary {
-      // Make sure string ends with terminator                          
-      path = path.Terminate();
-
       // Check if this library is already loaded                        
-      const auto preloaded = gLibraries.FindIt(path);
+      const auto preloaded = gLibraries.Find(path);
       if (preloaded)
-         return preloaded.GetValue();
+         return *preloaded.GetVal();
 
       // Load the library                                               
       #if LANGULUS_OS(WINDOWS)
@@ -415,7 +411,7 @@ namespace Langulus::Things
             dlsym(dll, LANGULUS_MODULE_CREATE_TOKEN()));
          library.mInfo = reinterpret_cast<Things::Module::InfoFunction>(
             dlsym(dll, LANGULUS_MODULE_INFO_TOKEN()));
-      #endif   
+      #endif
 
       if (not library.mEntry) {
          Logger::Error("Module `", path, "` has no valid entry point - ",
@@ -438,9 +434,17 @@ namespace Langulus::Things
          return {};
       }
 
-      // Link the module - this shall merge RTTI definitions            
+      LglsDisableWarningPush
+      LglsDisableWarning_MicrosoftCast
+         library.mBoundary = RTTI::GetBoundaryOf(library.mEntry);
+      LglsDisableWarningPop
+
+      LglsAssert(library.mBoundary != RTTI::GetMainBoundary(),
+         "Shared library reports main boundary");
+
+      // Link the module - this shall merge RTTI definitions.           
       // It might throw if out of memory or on meta collision, while    
-      // registering new types on the other side                        
+      // registering new types on the other side.                       
       try {
          // Invoke the entry point, it should reflect external data     
          MetaList types;
@@ -448,12 +452,12 @@ namespace Langulus::Things
          if (types.IsEmpty()) {
             Logger::Error("A module must register at least one type"
                " - the module instantiation type");
-            (void)UnloadSharedLibrary(library);
+            (void) UnloadSharedLibrary(library);
             return {};
          }
 
          // Make sure all registered types have the proper boundary     
-         bool firstType = true;
+         /*bool firstType = true;
          for (auto externalType : types) {
             if (firstType)
                library.mBoundary = externalType->mLibraryName;
@@ -467,24 +471,26 @@ namespace Langulus::Things
                return {};
             }
             firstType = false;
-         }
+         }*/
 
+         #if LANGULUS(SAFE)
          // Test if the boundary conflicts with any of the previously   
          // loaded libraries                                            
          for (auto lib : gLibraries) {
-            if (lib.GetValue().mBoundary == library.mBoundary) {
+            if (lib.GetVal()->mBoundary == library.mBoundary) {
                Logger::Error(
                   "The library `", path, "` boundary `", library.mBoundary,
-                  "` conflicts with already loaded library `", lib.GetKey(),
-                  "` boundary `", lib.GetValue().mBoundary, '`'
+                  "` conflicts with already loaded library `", *lib.GetKey(),
+                  "` boundary `", lib.GetVal()->mBoundary, '`'
                );
                (void)UnloadSharedLibrary(library);
                return {};
             }
          }
+         #endif
 
          // Library is properly registered                              
-         gLibraries.Insert(path, library);
+         gLibraries.Merge(path, library);
 
          // Do some info logging                                        
          Logger::Info("Module `", library.mInfo()->mName, 
@@ -492,7 +498,7 @@ namespace Langulus::Things
          bool first = true;
          for (auto& t : types) {
             if (not first) Logger::Append(", ");
-            Logger::Append(t->mToken);
+            Logger::Append(DMeta(t));
             first = false;
          }
       }
@@ -500,7 +506,7 @@ namespace Langulus::Things
          // Make sure we end up in an invariant state                   
          Logger::Error("Could not enter `", path, "` due to an exception");
          if (UnloadSharedLibrary(library))
-            gLibraries.RemoveKey(path);
+            gLibraries.Erase(path);
          if (not gLibraries)
             gLibraries.Reset();
          return {};
@@ -546,19 +552,19 @@ namespace Langulus::Things
 
       Logger::Info("Unloading module `", library.mInfo()->mName, "`...");
 
-      for (auto list : KeepIterator(mModules)) {
-         for (auto mod : KeepIterator(list.GetValue())) {
-            if (mod->Is(library.mModuleType)) {
+      for (auto list : mModules) {
+         for (auto mod : *list.GetVal()) {
+            if ((*mod)->Is(library.mModuleType)) {
                // Delete module instance                                
-               const auto modType = mod->GetType();
+               const auto modType = (*mod)->GetType();
                UnregisterAllBases(mModulesByType, *mod, modType);
                delete *mod;
-               mod = list.GetValue().RemoveIt(mod);
+               mod = (*list.GetVal()).Erase(mod);
             }
          }
 
-         if (not list.GetValue())
-            list = mModules.RemoveIt(list);
+         if (not *list.GetVal())
+            list = mModules.Erase(list);
       }
 
       // Make sure memory for the maps is released                      
@@ -601,13 +607,7 @@ namespace Langulus::Things
       );
 
       // Unload the shared object                                       
-      #if LANGULUS_OS(WINDOWS)
-         Things::UnloadSharedLibrary(
-            reinterpret_cast<HMODULE>(library.mHandle));
-      #else
-         Things::UnloadSharedLibrary(
-            reinterpret_cast<void*>(library.mHandle));
-      #endif
+      UnloadSharedLibraryInner(library.mHandle);
       return true;
    }
 
@@ -628,12 +628,12 @@ namespace Langulus::Things
    /// Get a module instance by type                                          
    ///   @param type the type to search for                                   
    ///   @return the module instance                                          
-   auto Runtime::GetModules(DMeta type) const noexcept -> const ModuleList& {
-      auto found = mModulesByType.FindIt(type);
+   auto Runtime::GetModules(DMeta type) const noexcept -> ModList const& {
+      auto found = mModulesByType.Find(type);
       if (found)
          return found.GetValue();
 
-      static const ModuleList emptyFallback {};
+      static const ModList emptyFallback {};
       return emptyFallback;
    }
 
@@ -642,14 +642,14 @@ namespace Langulus::Things
    ///   @param token type token                                              
    ///   @return the shared library handle, you should check if it's valid    
    auto Runtime::GetDependencyToken(Token const& token) const noexcept -> SharedLibrary {
-      return GetDependency(RTTI::GetMetaData(token));
+      return GetDependency(RTTI::Registry::GetMetaDataByToken(token));
    }
 
    /// Get a module instance by type token                                    
    ///   @param token type token                                              
    ///   @return the module instance, or nullptr if not found                 
-   auto Runtime::GetModulesToken(Token const& token) const noexcept -> const ModuleList& {
-      return GetModules(RTTI::GetMetaData(token));
+   auto Runtime::GetModulesToken(Token const& token) const noexcept -> ModList const& {
+      return GetModules(RTTI::Registry::GetMetaDataByToken(token));
    }
 #endif
 

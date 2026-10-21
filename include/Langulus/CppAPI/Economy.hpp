@@ -22,7 +22,7 @@ namespace Langulus::Things
    struct Economy : virtual Module {
       using CTTI_Bases = Module;
 
-      Economy() : /*Resolvable {this},*/ Module {nullptr} {}
+      Economy() : Downcastable {this}, Module {nullptr} {}
 
       virtual auto GetResource (Text const&) const -> const Resource*  = 0;
       virtual auto GetConverter(Text const&) const -> const Converter* = 0;
@@ -35,7 +35,7 @@ namespace Langulus::Things
       using CTTI_Bases = Part;
       using CTTI_Producer = Economy;
 
-      EconomyPart() /*: Resolvable {this}*/ {}
+      EconomyPart() : Downcastable {this} {}
    };
    
    struct ResourceInstance;
@@ -48,7 +48,7 @@ namespace Langulus::Things
       using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
 
-      Resource() /*: Resolvable {this}*/ {}
+      Resource() : Downcastable {this} {}
 
       using Place = Math::Vec3;
 
@@ -77,7 +77,7 @@ namespace Langulus::Things
       using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
       
-      ResourceInstance() /*: Resolvable {this}*/ {}
+      ResourceInstance() : Downcastable {this} {}
 
       virtual int  GetQuantity()    const noexcept = 0;
       virtual int  GetCapacity()    const noexcept = 0;
@@ -93,7 +93,7 @@ namespace Langulus::Things
       using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
       
-      Converter() /*: Resolvable {this}*/ {}
+      Converter() : Downcastable {this} {}
 
       using Place = Math::Vec3;
 
@@ -110,7 +110,7 @@ namespace Langulus::Things
       using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
       
-      ConverterInstance() /*: Resolvable {this}*/ {}
+      ConverterInstance() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -120,6 +120,6 @@ namespace Langulus::Things
       using CTTI_Bases = EconomyPart;
       using CTTI_Producer = Economy;
 
-      Trader() /*: Resolvable {this}*/ {}
+      Trader() : Downcastable {this} {}
    };
 }

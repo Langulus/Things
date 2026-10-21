@@ -65,7 +65,7 @@ namespace Langulus::Verbs
    ///   @param verb - the verb instance to execute                           
    ///   @return true if execution was a success                              
    /*inline bool Associate::ExecuteDefault(Many& lhs, Verb& verb) {
-      auto const& rhs = verb.GetArgument();
+      Many const rhs  = verb.GetArgument();
 
       if (lhs.IsConstant() or lhs.GetCount() != rhs.GetCount())
          // Can't overwrite a constant context                          
@@ -100,7 +100,7 @@ namespace Langulus::CTTI
       using Can = Verbs::Associate;
 
       static bool Default(Many& lhs, Verb& verb) {
-         Many const& rhs = verb.GetArgument();
+         Many const rhs = verb.GetArgument();
    
          if (lhs.IsConstant() or lhs.GetCount() != rhs.GetCount())
             // Can't overwrite a constant context                       

@@ -37,7 +37,7 @@ namespace Langulus::Things
          friend struct Runtime;
          
          // Library handle, returned by dlopen or LoadLibrary           
-         uintptr_t mHandle {};
+         uintptr_t mHandle = 0;
          // Exported entry function, that registers library types       
          Module::EntryFunction mEntry {};
          // Exported module instantiation function, produces modules    
@@ -45,11 +45,11 @@ namespace Langulus::Things
          // Information function, returning module description          
          Module::InfoFunction mInfo {};
          // Type of the module instance                                 
-         DMeta mModuleType {};
+         DMeta mModuleType;
          // The RTTI::Boundary of the library                           
-         Token mBoundary;
+         ::std::string mBoundary;
          // Whether or not library is marked for unload                 
-         bool mMarkedForUnload {};
+         bool mMarkedForUnload = false;
 
       public:
          constexpr SharedLibrary() noexcept = default;

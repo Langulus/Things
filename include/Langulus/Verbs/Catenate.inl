@@ -188,7 +188,7 @@ namespace Langulus::Verbs
       }
 
       //TODO split
-      context.SmartPush(IndexBack, Langulus::Move(verb.GetArgument()));
+      context.Compose(verb.GetArgument());
       verb << context;
       return true;
    }
@@ -197,7 +197,7 @@ namespace Langulus::Verbs
    ///   @param verb - the verb instance to execute                           
    ///   @return true if execution was a success                              
    inline bool Catenate::ExecuteStateless(Verb& verb) {
-      verb << Langulus::Move(verb.GetArgument());
+      verb << verb.GetArgument();
       return true;
    }
 

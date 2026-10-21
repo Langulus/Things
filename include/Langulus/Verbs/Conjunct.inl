@@ -11,7 +11,6 @@
 
 namespace Langulus::Verbs
 {
-
    /// Compile-time check if a verb is implemented in the provided type       
    ///   @return true if verb is available                                    
    /*template<CT::Dense T, CT::NotVoid...A>
@@ -59,12 +58,12 @@ namespace Langulus::Verbs
    inline bool Conjunct::ExecuteDefault(Many const&, Verb& verb) {
       Many joined;
       if (verb.GetMass() < 0) {
-         joined.SmartPush(IndexBack, verb.GetSource(), DataState::Or);
-         joined.SmartPush(IndexBack, verb.GetArgument(), DataState::Or);
+         joined.Compose(verb.GetSource(), DataState::Or);
+         joined.Compose(verb.GetArgument(), DataState::Or);
       }
       else {
-         joined.SmartPush(IndexBack, verb.GetSource());
-         joined.SmartPush(IndexBack, verb.GetArgument());
+         joined.Compose(verb.GetSource());
+         joined.Compose(verb.GetArgument());
       }
 
       verb << Abandon(joined);
@@ -79,5 +78,4 @@ namespace Langulus::Verbs
       verb << verb.GetArgument();
       return true;
    }
-
-} // namespace Langulus::Verbs
+}

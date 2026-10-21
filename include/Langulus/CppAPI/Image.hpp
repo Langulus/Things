@@ -6,7 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Asset.hpp"
+#include "Art.hpp"
 #include <Langulus/Math/Color.hpp>
 #include <Langulus/Math/Scale.hpp>
 
@@ -41,14 +41,14 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract texture content                                             
    ///                                                                        
-   struct Image : Asset {
+   struct Image : Art {
    protected:
       ImageView mView;
 
    public:
-      using CTTI_Basses = Asset;
+      using CTTI_Bases = Art;
 
-      Image() /*: Resolvable {this}*/ {}
+      Image() : Downcastable {this} {}
 
       virtual auto GetLOD(const Math::LOD&) const -> Ref<Image> { return {}; }
       virtual auto GetGPUHandle() const noexcept -> void* { return nullptr; }
@@ -124,11 +124,11 @@ namespace Langulus::Things
    ///   Abstract font content                                                
    ///                                                                        
    struct Font : Image {
-      using CTTI_Basses = Image;
+      using CTTI_Bases = Image;
 
       Font()
-         : /*Resolvable   {this}
-         ,*/ ProducedFrom {nullptr, {}} {}
+         : Downcastable {this}
+         , ProducedFrom {nullptr, {}} {}
    };
 }
 

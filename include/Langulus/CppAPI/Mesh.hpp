@@ -6,7 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Asset.hpp"
+#include "Art.hpp"
 #include <Langulus/Math/Mapping.hpp>
 #include <Langulus/Math/Vector.hpp>
 
@@ -44,7 +44,7 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract geometry content                                            
    ///                                                                        
-   struct Mesh : Asset {
+   struct Mesh : Art {
    protected:
       using MapModeType = Math::MapModeType;
       using Vec2u = Math::Vec2u;
@@ -52,9 +52,9 @@ namespace Langulus::Things
       MeshView mView;
 
    public:
-      using CTTI_Bases = Asset;
+      using CTTI_Bases = Art;
 
-      Mesh() /*: Resolvable {this}*/ {}
+      Mesh() : Downcastable {this} {}
 
       template<CT::Topology, CT::Topology...>
       bool CheckTopology()    const;

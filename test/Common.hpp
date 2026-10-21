@@ -19,10 +19,10 @@ public:
    LANGULUS_BASES(Part);
    LANGULUS(POOL_TACTIC) RTTI::PoolTactic::Type;
 
-   TestUnit1() : Resolvable {this} {}
+   TestUnit1() : Downcastable {this} {}
 
    TestUnit1(Describe&& describe)
-      : Resolvable {this} {
+      : Downcastable {this} {
       Couple(*describe);
    }
 
@@ -40,10 +40,10 @@ public:
    LANGULUS_BASES(Part);
    LANGULUS(POOL_TACTIC) RTTI::PoolTactic::Type;
 
-   TestUnit2() : Resolvable {this} {}
+   TestUnit2() : Downcastable {this} {}
 
    TestUnit2(Describe&& describe)
-      : Resolvable {this} {
+      : Downcastable {this} {
       Couple(*describe);
    }
 

@@ -14,11 +14,11 @@
 namespace Langulus::Things
 {
    ///                                                                        
-   ///   Abstract asset module                                                
+   ///   Abstract art module                                                  
    ///                                                                        
-   struct AssetModule : virtual Module {
+   struct ArtModule : virtual Module {
       using CTTI_Bases = Module;
-      AssetModule() : /*Resolvable {this},*/ Module {nullptr} {}
+      ArtModule() : Downcastable {this}, Module {nullptr} {}
 
    protected:
       // Data folder, where assets will be saved or loaded from         
@@ -33,11 +33,11 @@ namespace Langulus::Things
 
 
    ///                                                                        
-   ///   Abstract asset part                                                  
+   ///   Abstract art part                                                    
    ///                                                                        
-   struct Asset : virtual Part, virtual Flow::ProducedFrom<AssetModule> {
+   struct Art : virtual Part, virtual Flow::ProducedFrom<ArtModule> {
       using CTTI_Bases     = Part;
-      using CTTI_Producer  = AssetModule;      
+      using CTTI_Producer  = ArtModule;      
       using Data           = Many;
       using DataList       = TMany<Data>;
       using TMeta          = RTTI::TMeta;
@@ -48,7 +48,7 @@ namespace Langulus::Things
       DataListMap mDataListMap;
 
    public:
-      Asset() /*: Resolvable {this}*/ {}
+      Art() : Downcastable {this} {}
 
       virtual bool Generate(TMeta, size_t = 0) { return true; }
 
@@ -78,9 +78,9 @@ namespace Langulus::Things
 
 namespace Langulus::CT
 {
-   /// A concept for any kind of asset                                        
+   /// A concept for any kind of art                                          
    template<class T>
-   concept Asset = DerivedFrom<T, Things::Asset>;
+   concept Art = DerivedFrom<T, Things::Art>;
 }
 
-#include "Asset.inl"
+#include "Art.inl"

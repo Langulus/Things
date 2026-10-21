@@ -6,7 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Asset.hpp"
+#include "Art.hpp"
 #include <Langulus/Rate.hpp>
 
 
@@ -60,9 +60,9 @@ namespace Langulus::Things
    ///                                                                     
    ///   Abstract material content                                         
    ///                                                                     
-   struct Material : Asset {
-      using CTTI_Bases = Asset;
-      using Asset::Asset;
+   struct Material : Art {
+      using CTTI_Bases = Art;
+      using Art::Art;
 
       virtual auto GetLOD(const Math::LOD&) const -> Ref<Material> = 0;
 

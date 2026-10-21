@@ -17,7 +17,7 @@ namespace Langulus::Things
    ///                                                                        
    struct AIModule : virtual Module {
       using CTTI_Bases = Module;
-      AIModule() : /*Resolvable {this},*/ Module {nullptr} {}
+      AIModule() : Downcastable {this}, Module {nullptr} {}
    };
 
    ///                                                                        
@@ -26,7 +26,7 @@ namespace Langulus::Things
    struct AIPart : virtual Part {
       using CTTI_Bases     = Part;
       using CTTI_Producer  = AIModule;
-      AIPart() /*: Resolvable {this}*/ {}
+      AIPart() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -34,7 +34,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Mind : virtual AIPart {
       using CTTI_Bases = AIPart;
-      Mind() /*: Resolvable {this}*/ {}
+      Mind() : Downcastable {this} {}
 
       virtual Many Interpret(Text const&) = 0;
    };

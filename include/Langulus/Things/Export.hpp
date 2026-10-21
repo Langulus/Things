@@ -114,5 +114,4 @@ namespace Langulus::Things
    struct Part;
    struct File;
    struct Folder;
-   struct Temporal;
 }

@@ -15,13 +15,13 @@
 namespace Langulus::Things
 {
    /// Default-constructor, always creates a parentless root thing            
-   Thing::Thing() /*: Resolvable {this}*/ {
+   Thing::Thing() : Downcastable {this} {
       THINGS_VERBOSE_SELF("Created (root, ", GetReferences(), " references)");
    }
    
    /// Descriptor-constructor                                                 
    ///   @param describe instructions for creating the thing                  
-   Thing::Thing(Describe&& describe) /*: Resolvable {this}*/ {
+   Thing::Thing(Describe&& describe) : Downcastable {this} {
       if (describe) {
          THINGS_VERBOSE_SELF_TAB("Creating from descriptor: ", describe.what);
          Many unused_sideeffects;
@@ -46,8 +46,8 @@ namespace Langulus::Things
    ///   @param parent the thing that owns this thing                         
    ///   @param descriptor instructions for creating the thing                
    Thing::Thing(Thing* parent, Many const& descriptor)
-      : /*Resolvable {this}
-      ,*/ mOwner     {parent}
+      : Downcastable {this}
+      , mOwner       {parent}
    {
       THINGS_VERBOSE_SELF_TAB("Created manually");
 
@@ -83,8 +83,8 @@ namespace Langulus::Things
    ///      because 'other' is removed from its children                      
    ///   @param other thing to move                                           
    Thing::Thing(Thing&& other) noexcept
-      : /*Resolvable      {this}
-      ,*/ mRuntime        {Move(other.mRuntime)}
+      : Downcastable    {this}
+      , mRuntime        {Move(other.mRuntime)}
       , mFlow           {Move(other.mFlow)}
       , mChildren       {Move(other.mChildren)}
       , mPartsList      {Move(other.mPartsList)}
@@ -110,8 +110,8 @@ namespace Langulus::Things
    /// Abandon constructor                                                    
    ///   @param other thing to abandon                                        
    Thing::Thing(Abandon<Thing>&& other)
-      : /*Resolvable      {this}
-      ,*/ mRuntime        {Abandon(other->mRuntime)}
+      : Downcastable    {this}
+      , mRuntime        {Abandon(other->mRuntime)}
       , mFlow           {Abandon(other->mFlow)}
       , mChildren       {Abandon(other->mChildren)}
       , mPartsList      {Abandon(other->mPartsList)}
@@ -137,8 +137,8 @@ namespace Langulus::Things
    /// Clone constructor                                                      
    ///   @param other thing to clone                                          
    Thing::Thing(Clone<Thing>&& other)
-      : /*Resolvable      {this}
-      ,*/ mChildren       {Clone(other->mChildren)}
+      : Downcastable    {this}
+      , mChildren       {Clone(other->mChildren)}
       , mRefreshRequired{true}
    {
       TODO();

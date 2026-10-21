@@ -16,7 +16,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Network : virtual Module {
       using CTTI_Bases = Module;
-      Network() : /*Resolvable {this},*/ Module {nullptr} {}
+      Network() : Downcastable {this}, Module {nullptr} {}
    };
 
    ///                                                                        
@@ -25,7 +25,7 @@ namespace Langulus::Things
    struct NetworkPart : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = Network;
-      NetworkPart() /*: Resolvable {this}*/ {}
+      NetworkPart() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -33,7 +33,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Client : virtual NetworkPart {
       using CTTI_Bases = NetworkPart;
-      Client() /*: Resolvable {this}*/ {}
+      Client() : Downcastable {this} {}
    };
    
    ///                                                                        
@@ -41,7 +41,7 @@ namespace Langulus::Things
    ///                                                                        
    struct Server : virtual NetworkPart {
       using CTTI_Bases = NetworkPart;
-      Server() /*: Resolvable {this}*/ {}
+      Server() : Downcastable {this} {}
    };
    
    ///                                                                        
@@ -50,6 +50,6 @@ namespace Langulus::Things
    struct Shared : virtual NetworkPart {
       using CTTI_Bases = NetworkPart;
       using CTTI_Producer = NetworkPart;
-      Shared() /*: Resolvable {this}*/ {}
+      Shared() : Downcastable {this} {}
    };
 }

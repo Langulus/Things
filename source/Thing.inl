@@ -78,7 +78,7 @@ namespace Langulus::Things
             // Instantiate a temporal flow                              
             output << CreateFlow();
          }
-         else if (stuff->template CastsTo<Things::Module>()) {
+         else if (stuff->template CastsTo<Module>()) {
             // Instantiate a module from the runtime                    
             auto& runtime = GetRuntime();
             auto dependency = runtime->GetDependency(stuff);
@@ -95,7 +95,8 @@ namespace Langulus::Things
          for (int i = 0; i < count; ++i) {
             if (count != 1) {
                THINGS_CREATION_VERBOSE_SELF(Logger::Yellow,
-                  "Charged creation - creating ", i + 1, " of ", count);
+                  "Charged creation - creating ", i + 1, " of ", count
+               );
             }
 
             if (stuff.template Is<Thing>()) {
@@ -215,7 +216,7 @@ namespace Langulus::Things
       if (found) {
          auto& set = *found.GetVal();
          if (set.Erase(part) and not set)
-            mPartsAmbiguous.Erase(found);
+            (void) mPartsAmbiguous.Erase(found);
       }
 
       const auto abstract_part = MetaDataOf<Part>();
@@ -238,7 +239,7 @@ namespace Langulus::Things
    template<bool TWOSIDED>
    size_t Thing::AddPart(Part* part) {
       // Check if the part instance is already registered here          
-      const auto meta = part->GetResolved().type;//GetType();
+      const auto meta = part->GetType();
       const auto found = mPartsAmbiguous.Find(meta);
       if (found and (*found.GetVal()).Find(part))
          return 0;
@@ -279,7 +280,7 @@ namespace Langulus::Things
    ///   @return 1 if part has been removed                                   
    template<bool TWOSIDED>
    size_t Thing::RemovePart(Part* part) {
-      const auto meta = part->GetResolved().type;//GetType();
+      const auto meta = part->GetType();
       const auto foundType = mPartsAmbiguous.Find(meta);
       if (not foundType)
          return 0;

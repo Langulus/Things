@@ -6,14 +6,14 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include "Asset.hpp"
+#include "Art.hpp"
 
 
 namespace Langulus::Things
 {
    /// Retrieve the asset module's repository folder                          
    ///   @return a reference to the folder interface                          
-   inline auto AssetModule::GetFolder() const noexcept
+   inline auto ArtModule::GetFolder() const noexcept
    -> Ref<Things::Folder> const& {
       return mFolder;
    }
@@ -22,7 +22,7 @@ namespace Langulus::Things
    ///   @attention this doesn't generate any data                            
    ///   @return a reference to the contents                                  
    template<class C>
-   auto Asset::GetDataListMap(this C&& self) noexcept
+   auto Art::GetDataListMap(this C&& self) noexcept
    -> LglsMutIf(C, DataListMap&) {
       return self.mDataListMap;
    }
@@ -32,7 +32,7 @@ namespace Langulus::Things
    ///   @param index the Nth data associated to the tag                      
    ///   @return a pointer to the data entry, or nullptr if none exists       
    template<CT::DefineTag T, class C>
-   auto Asset::GetData(this C&& self, size_t index) noexcept
+   auto Art::GetData(this C&& self, size_t index) noexcept
    -> LglsMutIf(C, Data*) {
       return self.GetData(MetaTagOf<T>(), index);
    }
@@ -42,7 +42,7 @@ namespace Langulus::Things
    ///   @param index the Nth data associated to the tag                      
    ///   @return a pointer to the data entry, or nullptr if none exists       
    template<class C>
-   auto Asset::GetData(this C&& self, TMeta tag, size_t index) noexcept
+   auto Art::GetData(this C&& self, TMeta tag, size_t index) noexcept
    -> LglsMutIf(C, Data*) {
       if (not DecvqAllCast(self).Generate(tag, index))
          return nullptr;
@@ -57,7 +57,7 @@ namespace Langulus::Things
    ///   @tparam T the tag to search for                                      
    ///   @return a pointer to the data list, or nullptr if none exists        
    template<CT::DefineTag T, class C>
-   auto Asset::GetDataList(this C&& self) noexcept
+   auto Art::GetDataList(this C&& self) noexcept
    -> LglsMutIf(C, DataList*) {
       return self.GetDataList(MetaTagOf<T>());
    }
@@ -66,7 +66,7 @@ namespace Langulus::Things
    ///   @param tag the tag to search for                                     
    ///   @return a pointer to the data list, or nullptr if none exists        
    template<class C>
-   auto Asset::GetDataList(this C&& self, TMeta tag) noexcept
+   auto Art::GetDataList(this C&& self, TMeta tag) noexcept
    -> LglsMutIf(C, DataList*) {
       if (not DecvqAllCast(self).Generate(tag))
          return nullptr;
@@ -87,7 +87,7 @@ namespace Langulus::Things
    ///         you don't use factories, and just want some local content      
    ///         representation.                                                
    template<CT::DefineTag T> LANGULUS(INLINED)
-   void Asset::Commit(auto&& content) {
+   void Art::Commit(auto&& content) {
       const auto tag = MetaTagOf<T>();
       const auto found = mDataListMap.Find(tag);
       if (found)

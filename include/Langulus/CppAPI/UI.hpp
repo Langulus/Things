@@ -17,7 +17,7 @@ namespace Langulus::Things
    ///                                                                        
    struct UIModule : virtual Module {
       using CTTI_Bases = Module;
-      UIModule() : /*Resolvable {this},*/ Things::Module {nullptr} {}
+      UIModule() : Downcastable {this}, Things::Module {nullptr} {}
    };
 
    ///                                                                        
@@ -26,7 +26,7 @@ namespace Langulus::Things
    struct UIUnit : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = UIModule;
-      UIUnit() /*: Resolvable {this}*/ {}
+      UIUnit() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -34,7 +34,7 @@ namespace Langulus::Things
    ///                                                                        
    struct UISystem : virtual UIUnit {
       using CTTI_Bases = UIUnit;
-      UISystem() /*: Resolvable {this}*/ {}
+      UISystem() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -43,7 +43,7 @@ namespace Langulus::Things
    struct UIButton : virtual UIUnit {
       using CTTI_Bases = UIUnit;
       using CTTI_Producer = UISystem;
-      UIButton() /*: Resolvable {this}*/ {}
+      UIButton() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -52,7 +52,7 @@ namespace Langulus::Things
    struct UILabel : virtual UIUnit {
       using CTTI_Bases = UIUnit;
       using CTTI_Producer = UISystem;
-      UILabel() /*: Resolvable {this}*/ {}
+      UILabel() : Downcastable {this} {}
    };
 
    ///                                                                        
@@ -61,6 +61,6 @@ namespace Langulus::Things
    struct UIInput : virtual UIUnit {
       using CTTI_Bases = UIUnit;
       using CTTI_Producer = UISystem;
-      UIInput() /*: Resolvable {this}*/ {}
+      UIInput() : Downcastable {this} {}
    };
 }

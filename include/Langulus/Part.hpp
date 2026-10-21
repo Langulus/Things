@@ -21,13 +21,12 @@ namespace Langulus::Things
    /// composing Things' behavior. Parts are usually produced from factories  
    /// inside external, dynamically loaded modules. There are parts for       
    /// graphics, input, AI, content, and whatever extensions you make.        
-   ///                                                                        
    struct LANGULUS_API(THINGS) Part
-      : virtual Resolvable
+      : virtual Downcastable
       , virtual Referenced
       , Things::SeekInterface
    {
-      using CTTI_Bases = Resolvable;
+      using CTTI_Bases = Downcastable;
 
    protected:
       friend struct Thing;
@@ -38,7 +37,7 @@ namespace Langulus::Things
       Hierarchy mOwners;
 
    public:
-      Part() noexcept /*: Resolvable {this}*/ {}
+      Part() noexcept : Downcastable {this} {}
       Part(Part const&) = delete;
       Part(Part&&) noexcept = delete;
       virtual ~Part();
@@ -71,7 +70,7 @@ namespace Langulus::Things
 /// Convert to text, by writing a short name and address                      
 LANGULUS_MORPHISM_CONCEPT_CUSTOM(CT::Part, {
    auto& dense = DenseCast(from);
-   return Annies::Text::Mention(dense.GetResolved().type.GetName(), dense);
+   return Annies::Text::Mention(dense.Downcast().type.GetName(), dense);
 }, Annies::Text);
 
 /// ...even if encountered by pointer                                         

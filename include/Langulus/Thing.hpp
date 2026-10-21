@@ -33,7 +33,7 @@ namespace Langulus::Things
    /// and children/owner's parts. The Thing is an aggregate of tags,         
    /// parts, and subthings.                                                  
    ///                                                                        
-   struct Thing final : Resolvable, Referenced, SeekInterface {
+   struct Thing final : Downcastable, Referenced, SeekInterface {
       using CTTI_Named     = Yes<"Thing">;
       using CTTI_Abstract  = No;
       using CTTI_Producer  = Thing;

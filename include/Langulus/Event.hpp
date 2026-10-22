@@ -6,10 +6,10 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
+#include "Langulus/MetaOf.hpp"
 #include "Langulus/CT/Convertible.hpp"
 #include "Langulus/CT/Event.hpp"
-#include "Langulus/MetaOf.hpp"
-#include "Langulus/RTTI/Definition.hpp"
+//#include "Langulus/RTTI/Definition.hpp"
 #include <Langulus/Time.hpp>
 #include <Langulus/Many.hpp>
 #include <Langulus/SerializeText.hpp>

@@ -6,6 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/Part.hpp>
+#include <Langulus/Temporal.hpp>
 #include "Thing.inl"
 
 using namespace Langulus::Things;
@@ -97,8 +98,8 @@ auto Part::GetFlow() const noexcept -> Temporal* {
 ///      This usually comes from the producer's context. For example, if you  
 ///      don't provide a parent for the renderer, it will be instantiated as  
 ///      a child to the graphics module owner (i.e. the runtime owner)        
-void Part::Couple(Many const& desc, const Thing* fallback) {
-   const Thing* owner = nullptr;
+void Part::Couple(Many const& desc, Thing const* fallback) {
+   Thing const* owner = nullptr;
    if (not desc.ExtractTag<Tags::Parent>(owner))
       desc.ExtractData(owner);
 
@@ -111,7 +112,7 @@ void Part::Couple(Many const& desc, const Thing* fallback) {
 /// Decouple the component from a Thing (always two-sided)                    
 /// This will call refresh to all parts in that entity on next frame          
 ///   @param entity the entity to decouple with                               
-void Part::Decouple(const Thing* entity) {
+void Part::Decouple(Thing const* entity) {
    if (not entity)
       return;
       
@@ -123,7 +124,7 @@ void Part::Decouple(const Thing* entity) {
 ///   @attention assumes both pointers are different, and not nullptr         
 ///   @param replaceThis owner to replace                                     
 ///   @param withThis entity to replace it with                               
-void Part::ReplaceOwner(const Thing* replaceThis, const Thing* withThis) {
+void Part::ReplaceOwner(Thing const* replaceThis, Thing const* withThis) {
    LglsAssumeDev(replaceThis !=  withThis, "Pointers are the same");
    LglsAssumeDev(replaceThis and withThis, "Nullptr not allowed");
 

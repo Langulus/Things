@@ -159,12 +159,12 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       auto GetChild(size_t = 0) -> Thing*;
       LANGULUS_API(THINGS)
-      auto GetChild(size_t = 0) const -> const Thing*;
+      auto GetChild(size_t = 0) const -> Thing const*;
 
       LANGULUS_API(THINGS)
       auto GetNamedChild(Token const&, size_t = 0) -> Thing*;
       LANGULUS_API(THINGS)
-      auto GetNamedChild(Token const&, size_t = 0) const -> const Thing*;
+      auto GetNamedChild(Token const&, size_t = 0) const -> Thing const*;
 
       LANGULUS_API(THINGS)
       void DumpHierarchy() const;

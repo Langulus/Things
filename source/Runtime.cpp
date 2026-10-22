@@ -7,7 +7,7 @@
 ///                                                                           
 #include <Langulus/Thing.hpp>
 #include <Langulus/TTable.hpp>
-#include <Langulus/MetaOf.hpp>
+//#include <Langulus/MetaOf.hpp>
 
 #include <Langulus/CppAPI/Art.hpp>
 #include <Langulus/CppAPI/Graphics.hpp>

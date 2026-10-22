@@ -31,7 +31,7 @@ namespace Langulus::Things
 
       // Get a flow for executing the interpreted messages              
       auto flow = GetFlow();
-      if (not *flow) {
+      if (not flow) {
          Logger::Error(this, ": No flow - can't execute prompt: ", text);
          return {};
       }
@@ -69,9 +69,9 @@ namespace Langulus::Things
       return flow->Push(Verbs::Do(Abandon(parsed)).In(this));
    }
 
-   /// Custom dispatcher, reflected via CT::Dispatcher                        
-   /// Entity is a composite type, and its behavior depends on the coupled    
-   /// parts, so the custom dispatcher forwards verbs to these parts          
+   /// Custom dispatcher.                                                     
+   /// Entity is a composite type, and its behavior depends on its parts,     
+   /// so the custom dispatcher forwards verbs to these parts                 
    ///   @param verb any verb                                                 
    void Thing::Do(Verb& verb) {
       try {

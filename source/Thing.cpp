@@ -458,7 +458,7 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   auto Thing::GetNamedChild(Token const& name, size_t offset) const -> const Thing* {
+   auto Thing::GetNamedChild(Token const& name, size_t offset) const -> Thing const* {
       return const_cast<Thing*>(this)->GetNamedChild(name, offset);
    }
 

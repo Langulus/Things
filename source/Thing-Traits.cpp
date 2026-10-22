@@ -65,11 +65,11 @@ namespace Langulus::Things
          }
          else if (id.template IsTag<Tags::Runtime>()) {
             // Get the nearest runtime                                  
-            return Tags::Runtime {&(*mRuntime)};
+            return Tags::Runtime {**mRuntime};
          }
          else if (id.template IsTag<Tags::Parent>()) {
             // Get the parent                                           
-            return Tags::Parent {&(*mOwner)};
+            return Tags::Parent {**mOwner};
          }
       }
 
@@ -92,15 +92,13 @@ namespace Langulus::Things
    auto Thing::AddTag(Tag tag) -> Tag* {
       const auto tmeta = tag.GetTag();
       auto found = mTags.Find(tmeta);
-      if (found) {
-         found.GetVal() << tag;
-         return found.GetVal().GetAt(-1);
-      }
+      if (found)
+         return &found.GetVal()->Emplace(tag);
 
-      mTags.Merge(tmeta, tag);
+      found = mTags.Merge(tmeta, tag);
       mRefreshRequired = true;
       THINGS_VERBOSE_SELF(tag, " added");
-      return &mTags[tmeta].Last();
+      return &*found.GetVal();
    }
 
    /// Remove a tag from the universal entity                                 

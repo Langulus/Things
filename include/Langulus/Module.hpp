@@ -6,9 +6,9 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
+#include <Langulus/MetaOf.hpp>
 #include <Langulus/TSet.hpp>
 #include <Langulus/TMany.hpp>
-#include <Langulus/MetaOf.hpp>
 #include <Langulus/Downcastable.hpp>
 #include <Langulus/Time.hpp>
 #include "Things/Export.hpp"
@@ -81,7 +81,7 @@ namespace Langulus::Things
 
       using EntryFunction  = void(*)(RTTI::DMeta&, MetaList&);
       using CreateFunction = Module*(*)(Runtime*, Many const&);
-      using InfoFunction   = const Info*(*)();
+      using InfoFunction   = Info const*(*)();
 
       auto GetRuntime() const noexcept -> Runtime* {
          return mRuntime;

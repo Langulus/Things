@@ -10,7 +10,7 @@
 #include "../Part.hpp"
 #include "../Event.hpp"
 #include <Langulus/TMap.hpp>
-#include <Langulus/MetaOf.hpp>
+//#include <Langulus/MetaOf.hpp>
 #include <utility>
 
 

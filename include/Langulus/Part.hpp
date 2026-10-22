@@ -8,12 +8,11 @@
 #pragma once
 #include "Hierarchy.hpp"
 #include <Langulus/Text.hpp>
+#include <Langulus/Temporal.hpp>
 
 
 namespace Langulus::Things
 {
-   struct Temporal;
-
    ///                                                                        
    ///   An abstract part                                                     
    ///                                                                        
@@ -61,9 +60,9 @@ namespace Langulus::Things
       V& RunIn(V&);
 
    protected:
-      void Couple(Many const&, const Thing* = nullptr);
-      void Decouple(const Thing*);
-      void ReplaceOwner(const Thing*, const Thing*);
+      void Couple(Many const&, Thing const* = nullptr);
+      void Decouple(Thing const*);
+      void ReplaceOwner(Thing const*, Thing const*);
    };
 }
 

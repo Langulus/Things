@@ -150,7 +150,7 @@ namespace Langulus::Things
    ///   @param verb creation verb                                            
    void Thing::Create(Verb& verb) {
       if (verb)
-         CreateInner(verb.GetOutput(), verb.GetArgument());
+         CreateInner(verb.GetOutput(), verb.GetRHS());
    }
 
    /// Pick something from the entity - children, tags, parts, modules        

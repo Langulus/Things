@@ -80,9 +80,9 @@ namespace Langulus::Things
          }
          else if (stuff->template CastsTo<Module>()) {
             // Instantiate a module from the runtime                    
-            auto& runtime = GetRuntime();
-            auto dependency = runtime->GetDependency(stuff);
-            output << runtime->InstantiateModule(dependency);
+            //auto& runtime = GetRuntime();
+            auto dependency = mRuntime->GetDependency(stuff);
+            output << mRuntime->InstantiateModule(dependency);
          }
          else {
             // Instantiate anything else                                
@@ -113,9 +113,9 @@ namespace Langulus::Things
             }
             else if (stuff.template CastsTo<Things::Module>()) {
                // Instantiate a module from the runtime                 
-               auto& runtime = GetRuntime();
-               auto dependency = runtime->GetDependency(stuff.GetType());
-               output << runtime->InstantiateModule(dependency, stuff.GetDescriptor());
+               //auto& runtime = GetRuntime();
+               auto dependency = mRuntime->GetDependency(stuff.GetType());
+               output << mRuntime->InstantiateModule(dependency, stuff.GetDescriptor());
             }
             else {
                // Instantiate anything else                             

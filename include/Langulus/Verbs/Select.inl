@@ -80,7 +80,7 @@ namespace Langulus::CTTI
          TMany<RTTI::DefinitionVerb const*> selectedAbilities;
 
          // Scan verb argument for indices                              
-         indices.GatherFrom(verb.GetArgument());
+         indices.GatherFrom(verb.GetRHS());
          bool containsOnlyIndices = not indices.IsEmpty();
 
          // Scan verb argument for anything but indices                 

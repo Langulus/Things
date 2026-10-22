@@ -91,11 +91,19 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       bool RequiresRefresh() const noexcept;
 
-      LANGULUS_API(THINGS)
+      auto GetRuntime() const noexcept -> Runtime* {
+         return const_cast<Runtime*>(**mRuntime);
+      }
+
+      auto GetFlow() const noexcept -> Temporal* {
+         return const_cast<Temporal*>(**mFlow);
+      }
+
+      /*LANGULUS_API(THINGS)
       auto GetRuntime() const noexcept -> Pin<Ref<Runtime>> const&;
 
       LANGULUS_API(THINGS)
-      auto GetFlow() const noexcept -> Pin<Ref<Temporal>> const&;
+      auto GetFlow() const noexcept -> Pin<Ref<Temporal>> const&;*/
 
       LANGULUS_API(THINGS) void Do(Verb&);
       LANGULUS_API(THINGS) void Select(Verb&);

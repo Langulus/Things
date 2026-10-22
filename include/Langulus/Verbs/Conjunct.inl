@@ -58,12 +58,12 @@ namespace Langulus::Verbs
    inline bool Conjunct::ExecuteDefault(Many const&, Verb& verb) {
       Many joined;
       if (verb.GetMass() < 0) {
-         joined.Compose(verb.GetSource(), DataState::Or);
-         joined.Compose(verb.GetArgument(), DataState::Or);
+         joined.Compose(verb.GetLHS(), DataState::Or);
+         joined.Compose(verb.GetRHS(), DataState::Or);
       }
       else {
-         joined.Compose(verb.GetSource());
-         joined.Compose(verb.GetArgument());
+         joined.Compose(verb.GetLHS());
+         joined.Compose(verb.GetRHS());
       }
 
       verb << Abandon(joined);
@@ -75,7 +75,7 @@ namespace Langulus::Verbs
    ///   @param verb - the conjunction/disjunction verb                        
    ///   @return true if verb was satisfied                                    
    inline bool Conjunct::ExecuteStateless(Verb& verb) {
-      verb << verb.GetArgument();
+      verb << verb.GetRHS();
       return true;
    }
 }

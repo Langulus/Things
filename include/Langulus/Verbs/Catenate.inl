@@ -167,7 +167,7 @@ namespace Langulus::Verbs
       //TODO split
       TMany<Many> shallow;
       shallow << context;
-      shallow << verb.GetArgument();
+      shallow << verb.GetRHS();
       verb << Abandon(shallow);
       return true;
    }
@@ -188,7 +188,7 @@ namespace Langulus::Verbs
       }
 
       //TODO split
-      context.Compose(verb.GetArgument());
+      context.Compose(verb.GetRHS());
       verb << context;
       return true;
    }
@@ -197,7 +197,7 @@ namespace Langulus::Verbs
    ///   @param verb - the verb instance to execute                           
    ///   @return true if execution was a success                              
    inline bool Catenate::ExecuteStateless(Verb& verb) {
-      verb << verb.GetArgument();
+      verb << verb.GetRHS();
       return true;
    }
 

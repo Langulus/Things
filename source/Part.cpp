@@ -31,9 +31,10 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    // First we compare tags only, all of them must be present           
    bool mismatch = false;
    size_t memberOffset = 0;
-   auto concrete = Many {Annies::Absorb, GetResolved()};
-   descriptor.ForEachDeep([&concrete,&memberOffset,&mismatch](const Annies::Tag& tag) {
-      if (not concrete.GetMember(tag.GetTag(), memberOffset).Compare(tag.GetData())) {
+   const auto concrete = Downcast();
+   descriptor.ForEachDeep([&concrete,&memberOffset,&mismatch](Tag const& tag) {
+      const auto member = concrete.GetMember(tag.GetTag(), {}, memberOffset);
+      if (not member or Many {Annies::Absorb, member}.CompareEqual(tag.GetData())) {
          mismatch = true;
          return Loop::Break;
       }
@@ -46,7 +47,8 @@ bool Part::CompareDescriptor(Many const& descriptor) const {
    // of them must be present, either as tags or in other form          
    memberOffset = 0;
    descriptor.ForEachDeep([&concrete,&memberOffset,&mismatch](Many const& anythingElse) {
-      if (not concrete.GetMember(TMeta {}, memberOffset).Compare(anythingElse)) {
+      const auto member = concrete.GetMember({}, anythingElse.GetType(), memberOffset);
+      if (not member or Many {Annies::Absorb, member}.CompareEqual(anythingElse)) {
          mismatch = true;
          return Loop::Break;
       }
@@ -74,7 +76,7 @@ void Part::Refresh() {}
 auto Part::GetRuntime() const noexcept -> Runtime* {
    if (not mOwners)
       return nullptr;
-   return mOwners[0]->GetRuntime().Get();
+   return mOwners->GetRuntime();
 }
 
 /// Get the temporal flow                                                     
@@ -84,7 +86,7 @@ auto Part::GetRuntime() const noexcept -> Runtime* {
 auto Part::GetFlow() const noexcept -> Temporal* {
    if (not mOwners)
       return nullptr;
-   return mOwners[0]->GetFlow().Get();
+   return mOwners->GetFlow();
 }
 
 /// Couple the component with a Thing, extracted from a descriptor's          

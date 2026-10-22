@@ -502,7 +502,7 @@ namespace Langulus::Things
 
    /// Get the current runtime                                                
    ///   @return the pointer to the runtime                                   
-   auto Thing::GetRuntime() const noexcept -> Pin<Ref<Runtime>> const& {
+   /*auto Thing::GetRuntime() const noexcept -> Pin<Ref<Runtime>> const& {
       return mRuntime;
    }
 
@@ -510,7 +510,7 @@ namespace Langulus::Things
    ///   @return the pointer to the flow                                      
    auto Thing::GetFlow() const noexcept -> Pin<Ref<Temporal>> const& {
       return mFlow;
-   }
+   }*/
 
    /// Create a local runtime for this thing                                  
    ///   @return the new runtime instance, or the old one if already created  

@@ -31,65 +31,65 @@ namespace Langulus::Things
 
       ///                                                                     
       /// MARK: Seek parts                                                    
-      template<Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPart(this SELF&&, DMeta, CT::Index auto&& = 0)
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPart(this SELF&&, DMeta, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
 
-      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPart(this SELF&&, CT::Index auto&& = 0)
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPart(this SELF&&, IDX&& = 0)
          -> LglsMutIf(SELF, Decay<T>*);
 
-      template<Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPartAux(this SELF&&, Many const&, DMeta, CT::Index auto&& = 0)
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPartAux(this SELF&&, Many const&, DMeta, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
 
-      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPartAux(this SELF&&, Many const&, CT::Index auto&& = 0)
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPartAux(this SELF&&, Many const&, IDX&& = 0)
          -> LglsMutIf(SELF, Decay<T>*);
 
-      template<Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPartExt(this SELF&&, DMeta, Many const&, CT::Index auto&& = 0)
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPartExt(this SELF&&, DMeta, Many const&, IDX&& = 0)
          -> LglsMutIf(SELF, Part);
 
-      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPartExt(this SELF&&, Many const&, CT::Index auto&& = 0)
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPartExt(this SELF&&, Many const&, IDX&& = 0)
          -> LglsMutIf(SELF, Decay<T>*);
 
-      template<Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPartAuxExt(this SELF&&, DMeta, Many const&, Many const&, CT::Index auto&& = 0)
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPartAuxExt(this SELF&&, DMeta, Many const&, Many const&, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
 
-      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
-      auto SeekPartAuxExt(this SELF&&, Many const&, Many const&, CT::Index auto&& = 0)
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPartAuxExt(this SELF&&, Many const&, Many const&, IDX&& = 0)
          -> LglsMutIf(SELF, Decay<T>*);
 
       ///                                                                     
       /// MARK: Seek tags                                                     
-      template<Seek = Seek::HereAndAbove, class SELF>
-      auto SeekTag(this SELF&&, TMeta = {}, CT::Index auto&& = 0) -> Tag;
-      template<CT::DefineTag, Seek = Seek::HereAndAbove, class SELF>
-      auto SeekTag(this SELF&&, CT::Index auto&& = 0) -> Tag;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekTag(this SELF&&, TMeta = {}, IDX&& = 0) -> Tag;
+      template<CT::DefineTag, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekTag(this SELF&&, IDX&& = 0) -> Tag;
 
-      template<Seek = Seek::HereAndAbove, class SELF>
-      auto SeekTagAux(this SELF&&, Many const&, TMeta = {}, CT::Index auto&& = 0) -> Tag;
-      template<CT::DefineTag, Seek = Seek::HereAndAbove, class SELF>
-      auto SeekTagAux(this SELF&&, Many const&, CT::Index auto&& = 0) -> Tag;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekTagAux(this SELF&&, Many const&, TMeta = {}, IDX&& = 0) -> Tag;
+      template<CT::DefineTag, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekTagAux(this SELF&&, Many const&, IDX&& = 0) -> Tag;
 
       ///                                                                     
       /// MARK: Seek data                                                     
-      template<Seek = Seek::HereAndAbove, class SELF>
-      bool SeekValue(this SELF const&, TMeta, auto&, CT::Index auto&& = 0);
-      template<CT::DefineTag, Seek = Seek::HereAndAbove, class SELF>
-      bool SeekValue(this SELF const&, CT::NotTagged auto&, CT::Index auto&& = 0);
-      template<Seek = Seek::HereAndAbove, class SELF>
-      bool SeekValue(this SELF const&, CT::Tagged auto&, CT::Index auto&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValue(this SELF const&, TMeta, auto&, IDX&& = 0);
+      template<CT::DefineTag, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValue(this SELF const&, CT::NotTagged auto&, IDX&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValue(this SELF const&, CT::Tagged auto&, IDX&& = 0);
 
-      template<Seek = Seek::HereAndAbove, class SELF>
-      bool SeekValueAux(this SELF const&, TMeta, Many const&, auto&, CT::Index auto&& = 0);
-      template<CT::DefineTag, Seek = Seek::HereAndAbove, class SELF>
-      bool SeekValueAux(this SELF const&, Many const&, CT::NotTagged auto&, CT::Index auto&& = 0);
-      template<Seek = Seek::HereAndAbove, class SELF>
-      bool SeekValueAux(this SELF const&, Many const&, CT::Tagged auto&, CT::Index auto&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValueAux(this SELF const&, TMeta, Many const&, auto&, IDX&& = 0);
+      template<CT::DefineTag, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValueAux(this SELF const&, Many const&, CT::NotTagged auto&, IDX&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValueAux(this SELF const&, Many const&, CT::Tagged auto&, IDX&& = 0);
 
       ///                                                                     
       /// MARK: Gather parts                                                  
@@ -122,20 +122,20 @@ namespace Langulus::Things
       /// MARK: Token based interface                                         
       /// Available only when managed reflection is enabled                   
       ///                                                                     
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPart(this auto&&, Token const&, CT::Index auto&& = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekPartAux(this auto&&, Many const&, Token const&, CT::Index auto&& = 0) -> Part*;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
+      auto SeekPart(this auto&&, Token const&, IDX&& = 0) -> Part*;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
+      auto SeekPartAux(this auto&&, Many const&, Token const&, IDX&& = 0) -> Part*;
       
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTag(this auto&&, Token const&, CT::Index auto&& = 0) -> Tag;
-      template<Seek = Seek::HereAndAbove>
-      auto SeekTagAux(this auto&&, Many const&, Token const&, CT::Index auto&& = 0) -> Tag;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
+      auto SeekTag(this auto&&, Token const&, IDX&& = 0) -> Tag;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
+      auto SeekTagAux(this auto&&, Many const&, Token const&, IDX&& = 0) -> Tag;
 
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValue(this auto const&, Token const&, CT::NotVoid auto&, CT::Index auto&& = 0);
-      template<Seek = Seek::HereAndAbove>
-      bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, CT::Index auto&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
+      bool SeekValue(this auto const&, Token const&, CT::NotVoid auto&, IDX&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
+      bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, IDX&& = 0);
 
       template<Seek = Seek::HereAndAbove, class SELF>
       auto GatherParts(this SELF&&, Token const&) -> TMany<LglsMutIf(SELF, Part*)>;

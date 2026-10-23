@@ -69,7 +69,7 @@ namespace Langulus::Things
          }
          else if (id.template IsTag<Tags::Parent>()) {
             // Get the parent                                           
-            return Tags::Parent {**mOwner};
+            return Tags::Parent {*mOwner};
          }
       }
 
@@ -98,7 +98,7 @@ namespace Langulus::Things
       found = mTags.Merge(tmeta, tag);
       mRefreshRequired = true;
       THINGS_VERBOSE_SELF(tag, " added");
-      return &*found.GetVal();
+      return &**found.GetVal();
    }
 
    /// Remove a tag from the universal entity                                 
@@ -107,7 +107,7 @@ namespace Langulus::Things
    auto Thing::RemoveTag(TMeta tag) -> size_t {
       const auto found = mTags.Find(tag);
       if (found) {
-         const size_t removed = found.GetVal().GetCount();
+         const size_t removed = found.GetVal()->GetCount();
          mTags.Erase(found);
          THINGS_VERBOSE_SELF(tag, " removed");
          mRefreshRequired = true;
@@ -123,7 +123,7 @@ namespace Langulus::Things
    auto Thing::RemoveTag(Tag tag) -> size_t {
       const auto found = mTags.Find(tag.GetTag());
       if (found) {
-         const auto removed = found.GetVal().Erase(tag);
+         const auto removed = found.GetVal()->Erase(tag);
          if (removed) {
             THINGS_VERBOSE_SELF(tag, " removed");
             mRefreshRequired = true;
@@ -139,7 +139,7 @@ namespace Langulus::Things
    ///   @return the number of matching tags                                  
    auto Thing::HasTags(TMeta tag) const -> size_t {
       const auto found = mTags.Find(tag);
-      return found ? found.GetVal().GetCount() : 0;
+      return found ? found.GetVal()->GetCount() : 0;
    }
 
    /// A fast check whether tags of the given type and value are inside       

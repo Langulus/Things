@@ -17,8 +17,8 @@ namespace Langulus::Things
    ///   @param meta the type of part to search for                           
    ///   @param offset the Nth match to return                                
    ///   @return a pointer to the found part, or nullptr if not found         
-   template<Seek SEEK, class SELF>
-   auto SeekInterface::SeekPart(this SELF&& self, DMeta meta, CT::Index auto&& offset)
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPart(this SELF&& self, DMeta meta, IDX&& offset)
    -> LglsMutIf(SELF, Part*) {
       LglsMutIf(SELF, Part*) result;
 
@@ -59,8 +59,8 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   template<CT::Part T, Seek SEEK, class SELF>
-   auto SeekInterface::SeekPart(this SELF&& self, CT::Index auto&& offset)
+   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPart(this SELF&& self, IDX&& offset)
    -> LglsMutIf(SELF, Decay<T>*) {
       return self.template SeekPart<SEEK>(
          MetaDataOf<Decay<T>>(), LglsFwd(offset)
@@ -74,8 +74,8 @@ namespace Langulus::Things
    ///   @param meta the type of part to search for                           
    ///   @param offset the Nth match to return                                
    ///   @return a pointer to the found part, or nullptr if not found         
-   template<Seek SEEK, class SELF>
-   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, DMeta meta, CT::Index auto&& offset) 
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, DMeta meta, IDX&& offset) 
    -> LglsMutIf(SELF, Part*) {
       LglsMutIf(SELF, Part*) result = nullptr;
 
@@ -135,8 +135,8 @@ namespace Langulus::Things
       return self.template SeekPart<SEEK>(meta, offset);
    }
 
-   template<CT::Part T, Seek SEEK, class SELF>
-   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, CT::Index auto&& offset)
+   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, IDX&& offset)
    -> LglsMutIf(SELF, Decay<T>*) {
       return self.template SeekPartAux<SEEK>(
          aux, MetaDataOf<Decay<T>>(), LglsFwd(offset)
@@ -149,8 +149,8 @@ namespace Langulus::Things
    ///   @param ext the properties of the part to search for                  
    ///   @param offset the Nth match to return                                
    ///   @return a pointer to the found part, or nullptr if not found         
-   template<Seek SEEK, class SELF>
-   auto SeekInterface::SeekPartExt(this SELF&& self, DMeta meta, Many const& ext, CT::Index auto&& offset)
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPartExt(this SELF&& self, DMeta meta, Many const& ext, IDX&& offset)
    -> LglsMutIf(SELF, Part*) {
       LglsMutIf(SELF, Part*) result;
 
@@ -192,8 +192,8 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   template<CT::Part T, Seek SEEK, class SELF>
-   auto SeekInterface::SeekPartExt(this SELF&& self, Many const& ext, CT::Index auto&& offset)
+   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPartExt(this SELF&& self, Many const& ext, IDX&& offset)
    -> LglsMutIf(SELF, Decay<T>*) {
       return self.template SeekPartExt<SEEK>(MetaDataOf<Decay<T>>(), ext, LglsFwd(offset));
    }
@@ -206,8 +206,8 @@ namespace Langulus::Things
    ///   @param ext the properties of the part to search for                  
    ///   @param offset the Nth match to return                                
    ///   @return a pointer to the found part, or nullptr if not found         
-   template<Seek SEEK, class SELF>
-   auto SeekInterface::SeekPartAuxExt(this SELF&& self, DMeta meta, Many const& aux, Many const& ext, CT::Index auto&& offset)
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPartAuxExt(this SELF&& self, DMeta meta, Many const& aux, Many const& ext, IDX&& offset)
    -> LglsMutIf(SELF, Part*) {
       LglsMutIf(SELF, Part*) result = nullptr;
 
@@ -235,8 +235,8 @@ namespace Langulus::Things
       return self.template SeekPartExt<SEEK>(meta, ext, offset);
    }
 
-   template<CT::Part T, Seek SEEK, class SELF>
-   auto SeekInterface::SeekPartAuxExt(this SELF&& self, Many const& aux, Many const& ext, CT::Index auto&& offset)
+   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekPartAuxExt(this SELF&& self, Many const& aux, Many const& ext, IDX&& offset)
    -> LglsMutIf(SELF, Decay<T>*) {
       return self.template SeekPartAuxExt<SEEK>(MetaDataOf<Decay<T>>(), aux, ext, LglsFwd(offset));
    }
@@ -246,8 +246,8 @@ namespace Langulus::Things
    ///   @param meta the type of tag to search for                            
    ///   @param offset the Nth match to return                                
    ///   @return a shallow copy of the found tag                              
-   template<Seek SEEK, class SELF>
-   auto SeekInterface::SeekTag(this SELF&& self, TMeta meta, CT::Index auto&& offset) -> Tag {
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekTag(this SELF&& self, TMeta meta, IDX&& offset) -> Tag {
       if constexpr (CT::Part<SELF>) {
          for (auto owner : self.mOwners) {
             auto result = owner->template SeekTag<SEEK>(meta, offset);
@@ -285,8 +285,8 @@ namespace Langulus::Things
       return {};
    }
 
-   template<CT::DefineTag T, Seek SEEK, class SELF>
-   auto SeekInterface::SeekTag(this SELF&& self, CT::Index auto&& offset) -> Tag {
+   template<CT::DefineTag T, Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekTag(this SELF&& self, IDX&& offset) -> Tag {
       return self.template SeekTag<SEEK>(MetaTagOf<T>(), LglsFwd(offset));
    }
 
@@ -297,8 +297,8 @@ namespace Langulus::Things
    ///   @param meta the type of tag to search for                            
    ///   @param offset the Nth match to return                                
    ///   @return a shallow copy of the found tag                              
-   template<Seek SEEK, class SELF>
-   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, TMeta meta, CT::Index auto&& offset) -> Tag {
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, TMeta meta, IDX&& offset) -> Tag {
       // Scan descriptor                                                
       Tag result;
       aux.ForEachDeep([&](Tag const& tag) {
@@ -320,8 +320,8 @@ namespace Langulus::Things
       return self.template SeekTag<SEEK>(meta, offset);
    }
 
-   template<CT::DefineTag T, Seek SEEK, class SELF>
-   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, CT::Index auto&& offset) -> Tag {
+   template<CT::DefineTag T, Seek SEEK, CT::Index IDX, class SELF>
+   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, IDX&& offset) -> Tag {
       return self.template SeekTagAux<SEEK>(aux, MetaTagOf<T>(), offset);
    }
 
@@ -332,8 +332,8 @@ namespace Langulus::Things
    ///   @param output [out] the output                                       
    ///   @param offset the Nth matching tag to use                            
    ///   @return true if output was rewritten                                 
-   template<Seek SEEK, class SELF>
-   bool SeekInterface::SeekValue(this SELF const& self, TMeta meta, auto& output, CT::Index auto&& offset) {
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   bool SeekInterface::SeekValue(this SELF const& self, TMeta meta, auto& output, IDX&& offset) {
       using D = Deref<decltype(output)>;
       if constexpr (CT::Pinnable<D>) {
          // Never touch pinned values                                   
@@ -394,8 +394,8 @@ namespace Langulus::Things
    }
 
    /// Same as above, but derives the tag we search from the output           
-   template<Seek SEEK, class SELF>
-   bool SeekInterface::SeekValue(this SELF const& self, CT::Tagged auto& output, CT::Index auto&& offset) {
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   bool SeekInterface::SeekValue(this SELF const& self, CT::Tagged auto& output, IDX&& offset) {
       using TAGS = TagsOf<decltype(output)>;
       return ForEachOr(TAGS{}, [&]<class T>() {
          return self.template SeekValue<SEEK>(MetaTagOf<T>(), output, offset);
@@ -403,8 +403,8 @@ namespace Langulus::Things
    }
 
    /// Same as above, but you can specify tag manually at compile-time        
-   template<CT::DefineTag T, Seek SEEK, class SELF>
-   bool SeekInterface::SeekValue(this SELF const& self, CT::NotTagged auto& output, CT::Index auto&& offset) {
+   template<CT::DefineTag T, Seek SEEK, CT::Index IDX, class SELF>
+   bool SeekInterface::SeekValue(this SELF const& self, CT::NotTagged auto& output, IDX&& offset) {
       return self.template SeekValue<SEEK>(MetaTagOf<T>(), output, offset);
    }
 
@@ -418,8 +418,8 @@ namespace Langulus::Things
    ///   @param output [out] the output                                       
    ///   @param offset the Nth matching tag to use                            
    ///   @return shallow copy of the tag if found                             
-   template<Seek SEEK, class SELF>
-   bool SeekInterface::SeekValueAux(this SELF const& self, TMeta meta, Many const& aux, auto& output, CT::Index auto&& offset) {
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   bool SeekInterface::SeekValueAux(this SELF const& self, TMeta meta, Many const& aux, auto& output, IDX&& offset) {
       using D = Deref<decltype(output)>;
       if constexpr (CT::Pinnable<D>) {
          // Never touch pinned values                                   
@@ -536,8 +536,8 @@ namespace Langulus::Things
    }
    
    /// Same as above, but derives the tag we search from the output           
-   template<Seek SEEK, class SELF>
-   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::Tagged auto& output, CT::Index auto&& offset) {
+   template<Seek SEEK, CT::Index IDX, class SELF>
+   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::Tagged auto& output, IDX&& offset) {
       using TAGS = TagsOf<decltype(output)>;
       return ForEachOr(TAGS{}, [&]<class T>() {
          return self.template SeekValueAux<SEEK>(MetaTagOf<T>(), aux, output, offset);
@@ -545,8 +545,8 @@ namespace Langulus::Things
    }
 
    /// Same as above, but you can specify tag manually at compile-time        
-   template<CT::DefineTag T, Seek SEEK, class SELF>
-   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::NotTagged auto& output, CT::Index auto&& offset) {
+   template<CT::DefineTag T, Seek SEEK, CT::Index IDX, class SELF>
+   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::NotTagged auto& output, IDX&& offset) {
       return self.template SeekValueAux<SEEK>(MetaTagOf<T>(), aux, output, offset);
    }
 
@@ -555,38 +555,38 @@ namespace Langulus::Things
       /// Token based interface                                               
       /// Available only when managed reflection is enabled                   
       ///                                                                     
-      template<Seek SEEK>
-      auto SeekInterface::SeekPart(Token const& dataToken, CT::Index auto&& offset) -> Part* {
+      template<Seek SEEK, CT::Index IDX>
+      auto SeekInterface::SeekPart(Token const& dataToken, IDX&& offset) -> Part* {
          return static_cast<THIS*>(this)
             ->template SeekPart<SEEK>(RTTI::GetMetaData(dataToken), offset);
       }
 
-      template<Seek SEEK>
-      auto SeekInterface::SeekPartAux(Many const& aux, Token const& dataToken, CT::Index auto&& offset) -> Part* {
+      template<Seek SEEK, CT::Index IDX>
+      auto SeekInterface::SeekPartAux(Many const& aux, Token const& dataToken, IDX&& offset) -> Part* {
          return static_cast<THIS*>(this)
             ->template SeekPartAux<SEEK>(aux, RTTI::GetMetaData(dataToken), offset);
       }
       
-      template<Seek SEEK>
-      auto SeekInterface::SeekTag(Token const& traitToken, CT::Index auto&& offset) -> Tag {
+      template<Seek SEEK, CT::Index IDX>
+      auto SeekInterface::SeekTag(Token const& traitToken, IDX&& offset) -> Tag {
          return static_cast<THIS*>(this)
             ->template SeekTag<SEEK>(RTTI::GetMetaTrait(traitToken), offset);
       }
 
-      template<Seek SEEK>
-      auto SeekInterface::SeekTagAux(Many const& aux, Token const& traitToken, CT::Index auto&& offset) const -> Tag {
+      template<Seek SEEK, CT::Index IDX>
+      auto SeekInterface::SeekTagAux(Many const& aux, Token const& traitToken, IDX&& offset) const -> Tag {
          return static_cast<THIS*>(this)
             ->template SeekTagAux<SEEK>(aux, RTTI::GetMetaTrait(traitToken), offset);
       }
 
-      template<Seek SEEK>
-      bool SeekInterface::SeekValue(Token const& traitToken, CT::NotVoid auto& output, CT::Index auto&& offset) const {
+      template<Seek SEEK, CT::Index IDX>
+      bool SeekInterface::SeekValue(Token const& traitToken, CT::NotVoid auto& output, IDX&& offset) const {
          return static_cast<THIS*>(this)
             ->template SeekValue<SEEK>(RTTI::GetMetaTrait(traitToken), output, offset);
       }
      
-      template<Seek SEEK>
-      bool SeekInterface::SeekValueAux(Token const& traitToken, Many const& aux, CT::NotVoid auto& output, CT::Index auto&& offset) const {
+      template<Seek SEEK, CT::Index IDX>
+      bool SeekInterface::SeekValueAux(Token const& traitToken, Many const& aux, CT::NotVoid auto& output, IDX&& offset) const {
          return static_cast<THIS*>(this)
             ->template SeekValueAux<SEEK>(RTTI::GetMetaTrait(traitToken), aux, output, offset);
       }

@@ -15,13 +15,13 @@
 namespace Langulus::Things
 {
    /// Default-constructor, always creates a parentless root thing            
-   Thing::Thing() : Downcastable {this} {
+   Thing::Thing() /*: Downcastable {this}*/ {
       THINGS_VERBOSE_SELF("Created (root, ", GetReferences(), " references)");
    }
    
    /// Descriptor-constructor                                                 
    ///   @param describe instructions for creating the thing                  
-   Thing::Thing(Describe&& describe) : Downcastable {this} {
+   Thing::Thing(Describe&& describe) /*: Downcastable {this}*/ {
       if (describe) {
          THINGS_VERBOSE_SELF_TAB("Creating from descriptor: ", describe.what);
          Many unused_sideeffects;
@@ -46,8 +46,8 @@ namespace Langulus::Things
    ///   @param parent the thing that owns this thing                         
    ///   @param descriptor instructions for creating the thing                
    Thing::Thing(Thing* parent, Many const& descriptor)
-      : Downcastable {this}
-      , mOwner       {parent}
+      : /*Downcastable {this}
+      ,*/ mOwner       {parent}
    {
       THINGS_VERBOSE_SELF_TAB("Created manually");
 
@@ -83,8 +83,8 @@ namespace Langulus::Things
    ///      because 'other' is removed from its children                      
    ///   @param other thing to move                                           
    Thing::Thing(Thing&& other) noexcept
-      : Downcastable    {this}
-      , mRuntime        {Move(other.mRuntime)}
+      : /*Downcastable    {this}
+      ,*/ mRuntime        {Move(other.mRuntime)}
       , mFlow           {Move(other.mFlow)}
       , mChildren       {Move(other.mChildren)}
       , mPartsList      {Move(other.mPartsList)}
@@ -110,8 +110,8 @@ namespace Langulus::Things
    /// Abandon constructor                                                    
    ///   @param other thing to abandon                                        
    Thing::Thing(Abandon<Thing>&& other)
-      : Downcastable    {this}
-      , mRuntime        {Abandon(other->mRuntime)}
+      : /*Downcastable    {this}
+      ,*/ mRuntime        {Abandon(other->mRuntime)}
       , mFlow           {Abandon(other->mFlow)}
       , mChildren       {Abandon(other->mChildren)}
       , mPartsList      {Abandon(other->mPartsList)}
@@ -137,8 +137,8 @@ namespace Langulus::Things
    /// Clone constructor                                                      
    ///   @param other thing to clone                                          
    Thing::Thing(Clone<Thing>&& other)
-      : Downcastable    {this}
-      , mChildren       {Clone(other->mChildren)}
+      : /*Downcastable    {this}
+      ,*/ mChildren       {Clone(other->mChildren)}
       , mRefreshRequired{true}
    {
       TODO();
@@ -516,34 +516,34 @@ namespace Langulus::Things
    ///   @return the new runtime instance, or the old one if already created  
    auto Thing::CreateRuntime() -> Runtime* {
       if (mRuntime.IsPinned())
-         return *mRuntime;
+         return **mRuntime;
 
-      mRuntime.Get().Emplace(this);
+      mRuntime.Emplace(this);
       mRuntime.Pin();
 
       // Dispatch the change to all children                            
       for (auto& child : mChildren)
-         child->ResetRuntime(*mRuntime);
+         child->ResetRuntime(**mRuntime);
 
       THINGS_VERBOSE_SELF("New runtime: ", &*mRuntime);
-      return *mRuntime;
+      return **mRuntime;
    }
 
    /// Create a local flow for this thing                                     
    ///   @return the new flow instance, or the old one, if already created    
    auto Thing::CreateFlow() -> Temporal* {
       if (mFlow.IsPinned())
-         return *mFlow;
+         return **mFlow;
 
       mFlow.Emplace();
       mFlow.Pin();
 
       // Dispatch the change to all children                            
       for (auto& child : mChildren)
-         child->ResetFlow(*mFlow);
+         child->ResetFlow(**mFlow);
 
       THINGS_VERBOSE_SELF("New flow: ", *mFlow);
-      return *mFlow;
+      return **mFlow;
    }
 
    /// Uses the current runtime to load a shared library module, and          
@@ -553,9 +553,8 @@ namespace Langulus::Things
    ///   @param descriptor instructions for module setup                      
    ///   @return the instantiated module interface                            
    auto Thing::LoadMod(Token const& module, Many const& descriptor) -> Things::Module* {
-      const auto runtime = **GetRuntime();
-      LglsAssumeUser(runtime, "No runtime available for loading a module");
-      const auto instance = runtime->InstantiateModule(module, descriptor);
+      LglsAssumeUser(mRuntime, "No runtime available for loading a module");
+      const auto instance = mRuntime->InstantiateModule(module, descriptor);
       LglsAssert(instance, "Missing module");
       return instance;
    }
@@ -567,9 +566,8 @@ namespace Langulus::Things
    ///   @param descriptor instructions for module setup                      
    ///   @return the instantiated module interface                            
    auto Thing::LoadModPath(Path const& path, Many const& descriptor) -> Things::Module* {
-      const auto runtime = **GetRuntime();
-      LglsAssumeUser(runtime, "No runtime available for loading a module");
-      const auto instance = runtime->InstantiateModulePath(path, descriptor);
+      LglsAssumeUser(mRuntime, "No runtime available for loading a module");
+      const auto instance = mRuntime->InstantiateModulePath(path, descriptor);
       LglsAssert(instance, "Missing module");
       return instance;
    }

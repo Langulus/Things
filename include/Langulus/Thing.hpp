@@ -32,7 +32,7 @@ namespace Langulus::Things
    ///   The primary composable type. Its functionality comes from its parts  
    /// and children/owner's parts. The Thing is an aggregate of tags,         
    /// parts, and subthings.                                                  
-   struct Thing final : Downcastable, Referenced, SeekInterface {
+   struct Thing final : /*Downcastable,*/ Referenced, SeekInterface {
       using CTTI_Named     = Yes<"Thing">;
       using CTTI_Abstract  = No;
       using CTTI_Producer  = Thing;
@@ -109,8 +109,8 @@ namespace Langulus::Things
       LANGULUS_API(THINGS) void Select(Verb&);
       LANGULUS_API(THINGS) void Create(Verb&);
 
-      template<Seek = Seek::HereAndAbove>
-      void DoIn(Verb&);
+      /*template<Seek = Seek::HereAndAbove>
+      void DoIn(Verb&);*/
 
       /*template<CT::Executable V>
       V& Run(V&);*/
@@ -267,7 +267,7 @@ namespace Langulus::Things
       auto GetLocalTag(TMeta, size_t = 0)       -> Tag*;
       
       template<CT::DefineTag, class SELF>
-      auto GetLocalTag(this SELF&&, CT::Index auto&& = 0) -> LglsMutIf(SELF, Tag*);
+      auto GetLocalTag(this SELF&&, size_t = 0) -> LglsMutIf(SELF, Tag*);
 
       LANGULUS_API(THINGS)
       void SetName(Text const&);
@@ -296,15 +296,15 @@ LANGULUS_MORPHISM_CUSTOM(Things::Thing*, {
 }, Annies::Text);
 
 
-static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing, ::Langulus::Annies::Text>);//TODO move these to test
-static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing*, ::Langulus::Annies::Text>);
-static_assert(::Langulus::CT::Convertible<::Langulus::Things::Thing const*, ::Langulus::Annies::Text>);
+static_assert(    ::Langulus::CT::Convertible<::Langulus::Things::Thing, ::Langulus::Annies::Text>);//TODO move these to test
+static_assert(    ::Langulus::CT::Convertible<::Langulus::Things::Thing*, ::Langulus::Annies::Text>);
+static_assert(    ::Langulus::CT::Convertible<::Langulus::Things::Thing const*, ::Langulus::Annies::Text>);
 static_assert(not ::Langulus::CT::Container<::Langulus::Things::Thing>);
 static_assert(not ::Langulus::CT::Container<::Langulus::Things::Thing*>);
 static_assert(not ::Langulus::CT::Container<::Langulus::Things::Thing const*>);
 static_assert(not ::std::is_fundamental_v<::Langulus::Things::Thing>);
 static_assert(not ::std::is_fundamental_v<::Langulus::Things::Thing*>);
 static_assert(not ::std::is_fundamental_v<::Langulus::Things::Thing const*>);
-static_assert(::fmt::is_formattable<::Langulus::Things::Thing>::value);
+static_assert(    ::fmt::is_formattable<::Langulus::Things::Thing>::value);
 static_assert(not ::fmt::is_formattable<::Langulus::Things::Thing*>::value);        // libfmt never formats pointers
 static_assert(not ::fmt::is_formattable<::Langulus::Things::Thing const*>::value);  // libfmt never formats pointers

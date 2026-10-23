@@ -91,7 +91,7 @@ namespace Langulus::Things
       }
       else if constexpr (CT::Recipe<T>) {
          // Instantiate a type, with charge and arguments               
-         const auto count = static_cast<int>(std::ceil(stuff.GetCharge().mMass));
+         const auto count = static_cast<int>(std::ceil(stuff.GetCharge().mass));
          for (int i = 0; i < count; ++i) {
             if (count != 1) {
                THINGS_CREATION_VERBOSE_SELF(Logger::Yellow,
@@ -180,7 +180,6 @@ namespace Langulus::Things
 
       return removed;
    }
-
 
    /// Execute verb in this thing only, scanning parts for required abilities 
    ///   @param verb the verb to execute                                      
@@ -368,7 +367,7 @@ namespace Langulus::Things
    /// in the hierarchy                                                       
    ///   @tparam T the part to create                                         
    ///   @tparam A... arguments for the part's creation                       
-   ///   @param arguments... the arguments to provide for recipe           
+   ///   @param arguments... the arguments to provide for recipe              
    ///   @return the created part(s)                                          
    template<CT::Part T, class...A>
    Many Thing::CreatePart(A&&...arguments) {
@@ -390,7 +389,7 @@ namespace Langulus::Things
    /// in the hierarchy                                                       
    ///   @tparam A... arguments for the part's creation                       
    ///   @param token the part type token                                     
-   ///   @param arguments... the arguments to provide for recipe           
+   ///   @param arguments... the arguments to provide for recipe              
    ///   @return the created part(s)                                          
    template<class...A>
    Many Thing::CreatePartToken(Token const& token, A&&...arguments) {
@@ -446,15 +445,14 @@ namespace Langulus::Things
    ///   @param offset the offset of the tag to return (optional)             
    ///   @return the tag or nullptr if none found                             
    template<CT::DefineTag T, class SELF>
-   auto Thing::GetLocalTag(this SELF&& self, CT::Index auto&& offset)
-   -> LglsMutIf(SELF, Tag*) {
+   auto Thing::GetLocalTag(this SELF&& self, size_t offset) -> LglsMutIf(SELF, Tag*) {
       return self.GetLocalTag(MetaTagOf<T>(), offset);
    }
 
-   /// Produce recipes (including parts) from the hierarchy                
-   ///   @attention assumes recipe has a valid type                        
+   /// Produce recipes (including parts) from the hierarchy                   
+   ///   @attention assumes recipe has a valid type                           
    ///   @tparam SEEK what part of the hierarchy to use for the creation      
-   ///   @param recipe instructions for the creation of the data           
+   ///   @param recipe instructions for the creation of the data              
    ///   @return created data                                                 
    template<Seek SEEK>
    Many Thing::CreateData(Recipe const& recipe) {

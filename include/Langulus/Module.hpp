@@ -6,6 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
+#include <Langulus/CT/Module.hpp>
 #include <Langulus/MetaOf.hpp>
 #include <Langulus/TSet.hpp>
 #include <Langulus/TMany.hpp>
@@ -96,12 +97,11 @@ namespace Langulus::Things
    };
 }
 
-namespace Langulus::CT
-{
-   /// Any type that inherits Module is considered a module                   
-   template<class T>
-   concept Module = DerivedFrom<T, Things::Module>;
-}
+/// Convert to text, by writing a short name and address                      
+LANGULUS_MORPHISM_CONCEPT_CUSTOM(CT::Module, {
+   auto& dense = DenseCast(from);
+   return Annies::Text::Mention(dense.Downcast().type.GetName(), dense);
+}, Annies::Text);
 
 namespace Langulus
 {

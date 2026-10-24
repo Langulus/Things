@@ -23,25 +23,25 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract UI part                                                     
    ///                                                                        
-   struct UIUnit : virtual Part {
+   struct UIPart : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = UIModule;
-      UIUnit() : Downcastable {this} {}
+      UIPart() : Downcastable {this} {}
    };
 
    ///                                                                        
    ///   Abstract UI system                                                   
    ///                                                                        
-   struct UISystem : virtual UIUnit {
-      using CTTI_Bases = UIUnit;
+   struct UISystem : virtual UIPart {
+      using CTTI_Bases = UIPart;
       UISystem() : Downcastable {this} {}
    };
 
    ///                                                                        
    ///   Abstract UI button                                                   
    ///                                                                        
-   struct UIButton : virtual UIUnit {
-      using CTTI_Bases = UIUnit;
+   struct UIButton : virtual UIPart {
+      using CTTI_Bases = UIPart;
       using CTTI_Producer = UISystem;
       UIButton() : Downcastable {this} {}
    };
@@ -49,8 +49,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract UI text field                                               
    ///                                                                        
-   struct UILabel : virtual UIUnit {
-      using CTTI_Bases = UIUnit;
+   struct UILabel : virtual UIPart {
+      using CTTI_Bases = UIPart;
       using CTTI_Producer = UISystem;
       UILabel() : Downcastable {this} {}
    };
@@ -58,8 +58,8 @@ namespace Langulus::Things
    ///                                                                        
    ///   Abstract UI input field                                              
    ///                                                                        
-   struct UIInput : virtual UIUnit {
-      using CTTI_Bases = UIUnit;
+   struct UIInput : virtual UIPart {
+      using CTTI_Bases = UIPart;
       using CTTI_Producer = UISystem;
       UIInput() : Downcastable {this} {}
    };

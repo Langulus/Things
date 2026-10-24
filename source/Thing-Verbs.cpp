@@ -156,7 +156,7 @@ namespace Langulus::Things
       TMany<Thing*> selectedThings;
       bool mismatch = false;
 
-      const auto selectTag = [&](TMeta const& tag) {
+      const auto selectTag = [this,&mismatch,&selectedTags](TMeta const& tag) {
          auto found = GetTag(tag);
          if (not found) {
             mismatch = true;
@@ -167,8 +167,8 @@ namespace Langulus::Things
          return Loop::Continue;
       };
 
-      const auto selectPart = [&](DMeta const& type) {
-         if (type.Is<Thing>())
+      const auto selectPart = [this,&mismatch,&selectedParts](DMeta const& type) {
+         if (type.Is(MetaDataOf<Thing>()))
             return Loop::Continue;
 
          auto found = GetPartMeta(type);
@@ -182,7 +182,7 @@ namespace Langulus::Things
       };
 
       const auto selectRecipe = [&](Recipe const& recipe) {
-         if (recipe.GetTarget().Is<Thing>()) {
+         if (recipe.GetTarget().Is(MetaDataOf<Thing>())) {
             // Find a thing containing recipe arguments.                
             // Start with this one:                                     
             Verbs::Select selector {recipe.GetDescriptor()};
@@ -192,32 +192,31 @@ namespace Langulus::Things
                return Loop::Continue;
             }
          }
-         else if (recipe.CastsTo<Part>()) {
+         else if (recipe.GetTarget().CastsTo(MetaDataOf<Part>())) {
             // Find a part containing recipe arguments                  
             if (not selectPart(recipe.GetTarget()))
                return Loop::Break;
 
             // selectedComponents has been populated with results       
-            // Filter them additionally by recipe arguments          
+            // Filter them additionally by recipe arguments             
             TMany<Part*> filteredSelectedComponents;
             for (auto& part : selectedParts) {
                bool localMismatch = false;
-               auto resolved = part->GetResolved();
-               recipe->ForEach(
-                  [&](Many const& part) {
-                     for (size_t i = 0; i < part.GetCount(); ++i) {
-                        auto element = part.GetElementResolved(i);
-                        Verbs::Select selector {element};
-                        if (not Flow::DispatchFlat(resolved, selector)) {
-                           // Abort on first failure                    
-                           localMismatch = true;
-                           return Loop::Break;
-                        }
+               Many resolved_part {Annies::Absorb, part->Downcast()};
+               
+               recipe.ForEach([&resolved_part,&localMismatch](Many const& d) {
+                  for (size_t i = 0; i < d.GetCount(); ++i) {
+                     Many resolved_scope {Annies::Absorb, d.GetResolvedAt(i)};
+                     auto selector = Verbs::Select{resolved_scope}.In(resolved_part);
+                     if (not selector.Run()) {
+                        // Abort on first failure                       
+                        localMismatch = true;
+                        return Loop::Break;
                      }
-
-                     return Loop::Continue;
                   }
-               );
+
+                  return Loop::Continue;
+               });
 
                if (not localMismatch) {
                   // The part passes the test                           
@@ -233,18 +232,10 @@ namespace Langulus::Things
       };
 
       verb.ForEachDeep(
-         [&](Recipe const& recipe) {
-            return selectRecipe(recipe);
-         },
-         [&](Tag const& tag) {
-            return selectTag(tag.GetTag());
-         },
-         [&](TMeta const& tag) {
-            return selectTag(tag);
-         },
-         [&](DMeta const& type) {
-            return selectPart(type);
-         }
+         [&](Recipe const& recipe) { return selectRecipe(recipe);    },
+         [&](Tag    const& tag)    { return selectTag(tag.GetTag()); },
+         [&](TMeta  const& tag)    { return selectTag(tag);          },
+         [&](DMeta  const& type)   { return selectPart(type);        }
       );
 
       if (not mismatch) {

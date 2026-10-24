@@ -92,13 +92,15 @@ namespace Langulus::Things
    auto Thing::AddTag(Tag tag) -> Tag* {
       const auto tmeta = tag.GetTag();
       auto found = mTags.Find(tmeta);
-      if (found)
-         return &found.GetVal()->Emplace(tag);
+      if (found) {
+         found.GetVal()->Insert(tag);
+         return found.GetVal()->GetAt(Index::Last);
+      }
 
       found = mTags.Merge(tmeta, tag);
       mRefreshRequired = true;
       THINGS_VERBOSE_SELF(tag, " added");
-      return &**found.GetVal();
+      return found.GetVal()->Get();
    }
 
    /// Remove a tag from the universal entity                                 

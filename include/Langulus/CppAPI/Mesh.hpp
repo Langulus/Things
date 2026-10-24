@@ -15,7 +15,6 @@ namespace Langulus::Things
 {
    ///                                                                        
    ///   Vertex/index buffer view                                             
-   ///                                                                        
    struct MeshView {
       using MapModeType = Math::MapModeType;
 
@@ -43,7 +42,6 @@ namespace Langulus::Things
    
    ///                                                                        
    ///   Abstract geometry content                                            
-   ///                                                                        
    struct Mesh : Art {
    protected:
       using MapModeType = Math::MapModeType;
@@ -56,6 +54,10 @@ namespace Langulus::Things
 
       Mesh() : Downcastable {this} {}
 
+      /// Interface                                                           
+      virtual auto GetLOD(Math::LOD const&) const -> Ref<Mesh> = 0;
+
+      /// Capsulation                                                         
       template<CT::Topology, CT::Topology...>
       bool CheckTopology()    const;
       auto GetTopology()      const noexcept -> DMeta;
@@ -65,31 +67,25 @@ namespace Langulus::Things
          return self.mView;
       }
 
-      virtual auto GetLOD(const Math::LOD&) const -> Ref<Mesh> = 0;
-
-      // Point utilities                                                
+      /// Utilities                                                           
       bool MadeOfPoints() const noexcept;
       auto GetPointCount() const -> size_t;
       template<CT::DefineTag>
       Many GetPointTag(size_t) const;
 
-      // Line utilities                                                 
       bool MadeOfLines() const noexcept;
       auto GetLineCount() const -> size_t;
       auto GetLineIndices(size_t) const -> Vec2u;
       template<CT::DefineTag>
       Many GetLineTag(size_t) const;
 
-      // Triangle utilities                                             
       bool MadeOfTriangles() const noexcept;
       auto GetTriangleCount() const -> size_t;
       auto GetTriangleIndices(size_t) const -> Vec3u;
       template<CT::DefineTag>
       Many GetTriangleTag(size_t) const;
 
-      ///                                                                     
       ///   Iteration                                                         
-      ///                                                                     
       size_t ForEachVertex(auto&&) const;
 
    protected:

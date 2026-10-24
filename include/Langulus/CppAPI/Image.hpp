@@ -50,7 +50,7 @@ namespace Langulus::Things
 
       Image() : Downcastable {this} {}
 
-      virtual auto GetLOD(const Math::LOD&) const -> Ref<Image> { return {}; }
+      virtual auto GetLOD(Math::LOD const&) const -> Ref<Image> { return {}; }
       virtual auto GetGPUHandle() const noexcept -> void* { return nullptr; }
 
       auto GetFormat() const noexcept -> DMeta;

@@ -37,7 +37,7 @@ namespace Langulus::Things
       THINGS_VERBOSE_SELF_TAB(
          "Producing child (at ", GetReferences(), " references): ");
       Ref<Thing> newThing;
-      newThing.Emplace(this, Many {LglsFwd(arguments)...});
+      newThing.New(this, Many {LglsFwd(arguments)...});
       return Abandon(newThing);
    }
 
@@ -47,7 +47,7 @@ namespace Langulus::Things
    ///   @param stuff creation instructions                                   
    template<class T>
    void Thing::CreateInner(Many& output, T const& stuff) {
-      if constexpr (CT::Deep<T> /*or CT::Neat<T>*/) {
+      if constexpr (CT::Deep<T>) {
          // Nest if deep/neat                                           
          stuff.ForEachDeep(
             [this, &output](Tag const& tag) {
@@ -66,21 +66,20 @@ namespace Langulus::Things
       }
       else if constexpr (Exact<T, DMeta>) {
          // Instantiate a type without any arguments                    
-         if (stuff->template Is<Thing>()) {
+         if (stuff.Is(MetaDataOf<Thing>())) {
             // Instantiate a child Thing                                
             output << CreateChild();
          }
-         else if (stuff->template Is<Runtime>()) {
+         else if (stuff.Is(MetaDataOf<Runtime>())) {
             // Instantiate a runtime                                    
             output << CreateRuntime();
          }
-         else if (stuff->template Is<Temporal>()) {
+         else if (stuff.Is(MetaDataOf<Temporal>())) {
             // Instantiate a temporal flow                              
             output << CreateFlow();
          }
-         else if (stuff->template CastsTo<Module>()) {
+         else if (stuff.CastsTo(MetaDataOf<Module>())) {
             // Instantiate a module from the runtime                    
-            //auto& runtime = GetRuntime();
             auto dependency = mRuntime->GetDependency(stuff);
             output << mRuntime->InstantiateModule(dependency);
          }
@@ -111,9 +110,8 @@ namespace Langulus::Things
                // Instantiate a temporal flow                           
                output << CreateFlow();
             }
-            else if (stuff.template CastsTo<Things::Module>()) {
+            else if (stuff.template CastsTo<Module>()) {
                // Instantiate a module from the runtime                 
-               //auto& runtime = GetRuntime();
                auto dependency = mRuntime->GetDependency(stuff.GetType());
                output << mRuntime->InstantiateModule(dependency, stuff.GetDescriptor());
             }

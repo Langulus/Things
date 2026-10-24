@@ -57,25 +57,43 @@ namespace Langulus::Things
       constexpr Token Functions     = "//#FUNCTIONS\n";
    }
 
-   ///                                                                     
-   ///   Abstract material content                                         
-   ///                                                                     
+   ///                                                                        
+   ///   Abstract material content                                            
+   ///                                                                        
    struct Material : Art {
       using CTTI_Bases = Art;
       using Art::Art;
 
-      virtual auto GetLOD(const Math::LOD&) const -> Ref<Material> = 0;
+      virtual auto GetLOD(Math::LOD const&) const -> Ref<Material> = 0;
 
-      auto GetInputs(RefreshRate)  const -> const TagList&;
-      auto GetInputs(size_t)       const -> const TagList&;
+      /// Get input tags for a given rate                                     
+      ///   @param rate the rate                                              
+      ///   @return the input tag list                                        
+      auto GetInputs(RefreshRate rate) const -> TagList const& {
+         return GetInputs(rate.GetInputIndex());
+      }
 
-      auto GetOutputs(RefreshRate) const -> const TagList&;
-      auto GetOutputs(size_t)      const -> const TagList&;
+      auto GetInputs(size_t rate) const -> TagList const& {
+         LglsAssumeDev(rate < RefreshRate::InputCount,
+            "Input offset out of range");
+         return mInputs[rate];
+      }
+
+      /// Get output tags for a given rate (const)                            
+      ///   @param rate the rate                                              
+      ///   @return the output tag list                                       
+      auto GetOutputs(RefreshRate rate) const -> TagList const& {
+         return GetOutputs(rate.GetInputIndex());
+      }
+
+      auto GetOutputs(size_t rate) const -> TagList const& {
+         LglsAssumeDev(rate < RefreshRate::InputCount,
+            "Input offset out of range");
+         return mOutputs[rate];
+      }
 
    protected:
       mutable TagList mInputs[RefreshRate::InputCount];
       mutable TagList mOutputs[RefreshRate::InputCount];
    };
 }
-
-#include "Material.inl"

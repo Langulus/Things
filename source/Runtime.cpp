@@ -160,7 +160,7 @@ namespace Langulus::Things
       (void)MetaDataOf<Things::Instance>();
 
       (void)MetaDataOf<Things::UIModule>();
-      (void)MetaDataOf<Things::UIUnit>();
+      (void)MetaDataOf<Things::UIPart>();
       (void)MetaDataOf<Things::UISystem>();
       (void)MetaDataOf<Things::UIButton>();
       (void)MetaDataOf<Things::UILabel>();

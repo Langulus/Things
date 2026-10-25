@@ -77,7 +77,7 @@ LANGULUS_DEFINE_TAG(Runtime,
 LANGULUS_DEFINE_TAG(Part,
    "Accesses parts (components) of Things");
 LANGULUS_DEFINE_TAG(Mesh,
-   "Associated geometry asset");
+   "Associated geometry art");
 LANGULUS_DEFINE_TAG(FOV,
    "Horizontal field of view angle, usually a real number");
 LANGULUS_DEFINE_TAG(AspectRatio,
@@ -85,11 +85,11 @@ LANGULUS_DEFINE_TAG(AspectRatio,
 LANGULUS_DEFINE_TAG(Viewport,
    "Viewport and depth clipping, usually a Range4");
 LANGULUS_DEFINE_TAG(Image, 
-   "Associated image asset");
+   "Associated image art");
 LANGULUS_DEFINE_TAG(Material,
-   "Associated material asset");
+   "Associated material art");
 LANGULUS_DEFINE_TAG(Shader, 
-   "Associated shader asset");
+   "Associated shader art");
 LANGULUS_DEFINE_TAG(Cursor,
    "Enables or disables cursor for window");
 LANGULUS_DEFINE_TAG(Monitor,

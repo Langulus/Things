@@ -14,6 +14,7 @@
 #include <Langulus/Many.hpp>
 #include <Langulus/SerializeText.hpp>
 #include <Langulus/Describe.hpp>
+#include <Langulus/Annies/Components/Stack.hpp>
 #include "Things/Export.hpp"
 
 
@@ -151,8 +152,8 @@ namespace Langulus
 
       /// Descriptor-construction                                             
       Event(Describe describe) : Event {} {
-         LglsAssert(describe.ExtractData(*Stack<DMeta, 1>::Get()), "Invalid event");
-         describe.ExtractData(*Stack<EventState, 2>::Get());
+         LglsAssert(describe.ExtractData(*Get<DMeta, 1>()), "Invalid event");
+         describe.ExtractData(*Get<EventState, 2>());
          describe.ExtractTag<Tags::Data>(*this);
          SetTimestamp(SteadyClock::Now());
       }
@@ -179,27 +180,27 @@ namespace Langulus
 
       /// Set what this event is                                              
       void SetEvent(DMeta event) noexcept {
-         *Stack<DMeta, 1>::Get() = event;
+         *Get<DMeta, 1>() = event;
       }
 
       /// What is happening in that event?                                    
       DMeta GetEvent() const noexcept {
-         return *Stack<DMeta, 1>::Get();
+         return *Get<DMeta, 1>();
       }
    
       /// Set event state                                                     
       void SetEventState(EventState state) noexcept {
-         *Stack<EventState, 2>::Get() = state;
+         *Get<EventState, 2>() = state;
       }
 
       /// What is this event's state?                                         
       EventState GetEventState() const noexcept {
-         return *Stack<EventState, 2>::Get();
+         return *Get<EventState, 2>();
       }
 
       /// What is this a recipe for?                                          
       TimePoint GetTimestamp() const noexcept {
-         return *Stack<TimePoint, 3>::Get();
+         return *Get<TimePoint, 3>();
       }
    
       /// Get the payload of the event                                        
@@ -281,7 +282,7 @@ namespace Langulus
    private:
       /// Set timestamp at which the event was generated                      
       void SetTimestamp(TimePoint t) noexcept {
-         *Stack<TimePoint, 3>::Get() = t;
+         *Get<TimePoint, 3>() = t;
       }
    };
 
@@ -299,7 +300,7 @@ namespace Langulus
             EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
             EVENT(Describe descriptor) { \
                SetEvent(MetaDataOf<EVENT>()); \
-               descriptor.ExtractData(*Stack<EventState, 2>::Get()); \
+               descriptor.ExtractData(*Get<EventState, 2>()); \
                descriptor.ExtractTag<Tags::Data>(*this); \
             } \
             EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \
@@ -322,7 +323,7 @@ namespace Langulus
             EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
             EVENT(Describe descriptor) { \
                SetEvent(MetaDataOf<EVENT>()); \
-               descriptor.ExtractData(*Stack<EventState, 2>::Get()); \
+               descriptor.ExtractData(*Get<EventState, 2>()); \
                descriptor.ExtractTag<Tags::Data>(*this); \
             } \
             EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \

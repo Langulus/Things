@@ -11,7 +11,7 @@
 
 namespace Langulus::Things
 {
-   /// Retrieve the asset module's repository folder                          
+   /// Retrieve the art module's repository folder                            
    ///   @return a reference to the folder interface                          
    inline auto ArtModule::GetFolder() const noexcept
    -> Ref<Things::Folder> const& {
@@ -75,15 +75,15 @@ namespace Langulus::Things
       return found ? &found.GetVal() : nullptr;
    }
 
-   /// Commit data to an asset                                                
+   /// Commit data to an art                                                  
    ///   @attention data is always comitted, even if tag already exists       
    ///   @tparam T an optional tag type                                       
    ///      @attention default value leads all data to the no-tag bucket      
    ///   @param content block of data to insert (with intents or not)         
    ///      @attention you can use references to external data, but beware    
-   ///         that asset data is intrinsically paired with the asset         
+   ///         that art data is intrinsically paired with the art             
    ///         descriptor, and any silent change in contents might cause      
-   ///         disparity and confusion in asset libraries. Still useful when  
+   ///         disparity and confusion in art libraries. Still useful when    
    ///         you don't use factories, and just want some local content      
    ///         representation.                                                
    template<CT::DefineTag T> LANGULUS(INLINED)

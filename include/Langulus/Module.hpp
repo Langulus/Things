@@ -39,7 +39,7 @@ namespace Langulus::Things
    template<class...T>
    void RegisterTypeList(MetaList& list) {
       // Merge to avoid duplications                                    
-      (list << ... << MetaOf<T>());
+      (list << ... << static_cast<RTTI::Inner::Definition const*>(MetaOf<T>()));
    }
 
 
@@ -84,16 +84,12 @@ namespace Langulus::Things
       using CreateFunction = Module*(*)(Runtime*, Many const&);
       using InfoFunction   = Info const*(*)();
 
-      auto GetRuntime() const noexcept -> Runtime* {
-         return mRuntime;
-      }
+      auto GetRuntime() const noexcept -> Runtime* { return mRuntime; }
 
    public:
       virtual void Teardown() = 0;
 
-      virtual bool Update(Time) {
-         return true;
-      }
+      virtual bool Update(Time) { return true; }
    };
 }
 

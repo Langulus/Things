@@ -143,7 +143,7 @@ namespace Langulus::Things
          if constexpr (SEEK & Seek::Here) {
             // Check dynamic tags in the entity                       
             for (auto tagGroup : self.mTags) {
-               for (auto tag : tagGroup.GetValue()) {
+               for (auto tag : tagGroup.GetVal()) {
                   try { result << tag.template AsCast<D>(); }
                   catch (...) {}
                }

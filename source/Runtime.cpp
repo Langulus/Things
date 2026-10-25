@@ -7,6 +7,7 @@
 ///                                                                           
 #include <Langulus/Thing.hpp>
 #include <Langulus/TTable.hpp>
+#include <Langulus/Profiler.hpp>
 //#include <Langulus/MetaOf.hpp>
 
 #include <Langulus/CppAPI/Art.hpp>
@@ -178,7 +179,7 @@ namespace Langulus::Things
       (void)MetaDataOf<Things::Renderable>();
       (void)MetaDataOf<Things::Light>();
 
-      (void)MetaDataOf<Things::AssetModule>();
+      (void)MetaDataOf<Things::ArtModule>();
       (void)MetaDataOf<Things::Asset>();
       (void)MetaDataOf<Things::Image>();
       (void)MetaDataOf<Things::Font>();
@@ -371,8 +372,9 @@ namespace Langulus::Things
    auto Runtime::LoadSharedLibraryPath(Path path) -> SharedLibrary {
       // Check if this library is already loaded                        
       const auto preloaded = gLibraries.Find(path);
-      if (preloaded)
+      if (preloaded) {
          return *preloaded.GetVal();
+      }
 
       // Load the library                                               
       #if LANGULUS_OS(WINDOWS)
@@ -393,7 +395,7 @@ namespace Langulus::Things
       }
 
       SharedLibrary library;
-      static_assert(sizeof(library.mHandle) == sizeof(dll), "Size mismatch");
+      static_assert(sizeof(library.mHandle) == sizeof(decltype(dll)), "Size mismatch");
       library.mHandle = reinterpret_cast<decltype(library.mHandle)>(dll);
 
       // Get entry, creator, info and exit points from the library      
@@ -600,7 +602,7 @@ namespace Langulus::Things
 
       // If reached, then the library has no known allocations, using   
       // its reflected types - now we can safely unregister these types 
-      IF_LANGULUS_MANAGED_REFLECTION(RTTI::UnloadBoundary(boundary));
+      IF_LANGULUS_MANAGED_REFLECTION(RTTI::Registry::UnloadBoundary(boundary));
       Logger::Info(
          "Module `", boundary, "` unloaded ",
          Logger::DarkYellow, (wasMarked ? "(scheduled)" : "")
@@ -614,15 +616,14 @@ namespace Langulus::Things
    /// Get the dependency module of a given type                              
    ///   @param type the type to search for                                   
    ///   @return the shared library handle, you should check if it's valid    
+   ///   @attention a type may have multiple dependencies, when unloading     
+   ///      make sure you repeat this function until nothing is returned.     
    auto Runtime::GetDependency(DMeta type) const noexcept -> SharedLibrary {
-      if (type->mLibraryName == RTTI::MainBoundary)
+      auto& boundaries = type.GetBoundaries();
+      if (boundaries.empty())
          return {};
 
-      for (auto library : gLibraries) {
-         if (library.GetValue().mBoundary == type->mLibraryName)
-            return library.GetValue();
-      }
-      return {};
+      return *gLibraries.Find(*boundaries.begin());
    }
 
    /// Get a module instance by type                                          
@@ -631,7 +632,7 @@ namespace Langulus::Things
    auto Runtime::GetModules(DMeta type) const noexcept -> ModList const& {
       auto found = mModulesByType.Find(type);
       if (found)
-         return found.GetValue();
+         return found.GetVal();
 
       static const ModList emptyFallback {};
       return emptyFallback;
@@ -659,11 +660,9 @@ namespace Langulus::Things
    ///   @return true if no exit was requested by any of the modules          
    bool Runtime::Update(Time dt) {
       LglsProfile();
-      for (auto pair : mModules) {
-         for (auto module : pair.GetValue()) {
-            if (not module->Update(dt))
-               return false;
-         }
+      for (auto module : InValuesOf(mModules)) {
+         if (not module->Update(dt))
+            return false;
       }
       return true;
    }

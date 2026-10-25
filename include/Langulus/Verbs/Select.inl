@@ -94,7 +94,7 @@ namespace Langulus::CTTI
                   verb << Abandon(nested.GetOutput());
                },
                [&](Tag const& tag) {
-                  if (tag.template IsTrait<Tags::Index>()) {
+                  if (tag.template IsTag<Tags::Index>()) {
                      // Skip indices - they were already gathered       
                      return;
                   }

@@ -186,9 +186,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          auto it = root.GetTags().begin();
          REQUIRE(it.GetKey() == MetaOf<Tags::Count>());
-         REQUIRE(it.GetValue().GetCount() == 1);
-         REQUIRE(it.GetValue()[0] == Tags::Count {666});
-         REQUIRE(&(it.GetValue()[0]) == tag);
+         REQUIRE(it.GetVal().GetCount() == 1);
+         REQUIRE(it.GetVal()[0] == Tags::Count {666});
+         REQUIRE(&(it.GetVal()[0]) == tag);
       }
 
       WHEN("Set a name tag") {
@@ -211,9 +211,9 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
 
          auto it = root.GetTags().begin();
          REQUIRE(it.GetKey() == MetaOf<Tags::Name>());
-         REQUIRE(it.GetValue().GetCount() == 1);
-         REQUIRE(it.GetValue()[0] == Tags::Name {"Dimo"});
-         REQUIRE(&(it.GetValue()[0]) == tag);
+         REQUIRE(it.GetVal().GetCount() == 1);
+         REQUIRE(it.GetVal()[0] == Tags::Name {"Dimo"});
+         REQUIRE(&(it.GetVal()[0]) == tag);
       }
    }
 
@@ -222,18 +222,18 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          Logger::Special("Start: Creating a Thing by descriptor");
          TestType descriptor {
             Tags::Name {"Root"},
-            Recipe::From<Runtime>(),
-            Recipe::From<Temporal>(),
-            Recipe::From<TestUnit1>(),
-            Recipe::From<TestUnit2>(),
-            Recipe::From<Thing>(
+            Recipe::For<Runtime>(),
+            Recipe::For<Temporal>(),
+            Recipe::For<TestUnit1>(),
+            Recipe::For<TestUnit2>(),
+            Recipe::For<Thing>(
                Tags::Name {"Child1"},
-               Recipe::From<TestUnit1>(),
-               Recipe::From<TestUnit2>(),
-               Recipe::From<Thing>(Tags::Name {"GrandChild1"}),
-               Recipe::From<Thing>(Tags::Name {"GrandChild2"})
+               Recipe::For<TestUnit1>(),
+               Recipe::For<TestUnit2>(),
+               Recipe::For<Thing>(Tags::Name {"GrandChild1"}),
+               Recipe::For<Thing>(Tags::Name {"GrandChild2"})
             ),
-            Recipe::From<Thing>(Tags::Name {"Child2"})
+            Recipe::For<Thing>(Tags::Name {"Child2"})
          };
 
          Thing root {Describe(descriptor)};
@@ -318,25 +318,25 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
    GIVEN("A complex hierarchy with runtime, flow, parts, and tags") {
       TestType descriptor {
          Tags::Name {"Root"},
-         Recipe::From<Runtime>(),
-         Recipe::From<Temporal>(),
-         Recipe::From<TestUnit1>(),
-         Recipe::From<TestUnit2>(),
-         Recipe::From<Thing>(
+         Recipe::For<Runtime>(),
+         Recipe::For<Temporal>(),
+         Recipe::For<TestUnit1>(),
+         Recipe::For<TestUnit2>(),
+         Recipe::For<Thing>(
             Tags::Name {"Child1"},
-            Recipe::From<TestUnit1>(),
-            Recipe::From<TestUnit2>(),
-            Recipe::From<Thing>(
+            Recipe::For<TestUnit1>(),
+            Recipe::For<TestUnit2>(),
+            Recipe::For<Thing>(
                Tags::Name {"GrandChild1"}
             ),
-            Recipe::From<Thing>(
+            Recipe::For<Thing>(
                Tags::Name {"GrandChild2"}
             )
          ),
-         Recipe::From<Thing>(
+         Recipe::For<Thing>(
             Tags::Name {"Child2"}
          ),
-         Recipe::From<Thing>(
+         Recipe::For<Thing>(
             Tags::Name {"Child2"}
          )
       };

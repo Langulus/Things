@@ -72,7 +72,7 @@ namespace Langulus::Things
          return nullptr;
 
       const auto found = self.mDataListMap.Find(tag);
-      return found ? &found.GetValue() : nullptr;
+      return found ? &found.GetVal() : nullptr;
    }
 
    /// Commit data to an asset                                                

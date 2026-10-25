@@ -369,7 +369,7 @@ namespace Langulus::Things
    ///   @return the created part(s)                                          
    template<CT::Part T, class...A>
    Many Thing::CreatePart(A&&...arguments) {
-      return CreateData(Recipe::From<Decay<T>>(LglsFwd(arguments)...));
+      return CreateData(Recipe::For<Decay<T>>(LglsFwd(arguments)...));
    }
 
    /// Create default-initialized instances of each part type                 
@@ -572,7 +572,7 @@ namespace Langulus::Things
    /*template<Seek SEEK, CT::VerbBased V>
    V& Part::RunIn(V& verb) {
       if (not mOwners) {
-         Logger::Warning(Self(), "No owners available for executing: ", verb);
+         Logger::Warning(this, ": No owners available for executing: ", verb);
          return verb;
       }
 

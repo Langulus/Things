@@ -23,8 +23,8 @@
    #define THINGS_VERBOSE_SELF(...)             Logger::Info(this, ": ", __VA_ARGS__)
    #define THINGS_VERBOSE_SELF_TAB(...)         const auto scoped = Logger::InfoTab(this, ": ", __VA_ARGS__)
    #define THINGS_VERBOSE(...)                  Logger::Append(__VA_ARGS__)
-   #define THINGS_CREATION_VERBOSE_SELF(...)    Logger::Verbose(Self(), __VA_ARGS__)
-   #define THINGS_SELECTION_VERBOSE_SELF(...)   Logger::Verbose(Self(), __VA_ARGS__) //TODO use the new include
+   #define THINGS_CREATION_VERBOSE_SELF(...)    Logger::Verbose(this, __VA_ARGS__)
+   #define THINGS_SELECTION_VERBOSE_SELF(...)   Logger::Verbose(this, __VA_ARGS__) //TODO use the new include
 #else
    #define THINGS_VERBOSE_ENABLED()             0
    #define THINGS_VERBOSE_SELF(...)             LANGULUS(NOOP)

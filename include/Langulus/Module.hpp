@@ -39,7 +39,7 @@ namespace Langulus::Things
    template<class...T>
    void RegisterTypeList(MetaList& list) {
       // Merge to avoid duplications                                    
-      (list << ... << static_cast<RTTI::Inner::Definition const*>(MetaOf<T>()));
+      (list.Merge(static_cast<RTTI::Inner::Definition const*>(MetaOf<T>())), ...);
    }
 
 

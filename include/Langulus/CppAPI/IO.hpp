@@ -77,14 +77,14 @@ namespace Langulus::Things
       /// Abstract file reader stream                                         
       struct Reader {
       protected:
-         Ref<File> mFile;
+         Ref<File const> mFile;
          size_t    mProgress = 0;
 
       public:
          Reader() = delete;
          virtual ~Reader() {}
 
-         Reader(File* f) : mFile {f} {}
+         Reader(File const* f) : mFile {f} {}
 
          virtual auto Read(Bytes&) -> size_t = 0;
 
@@ -113,8 +113,8 @@ namespace Langulus::Things
          auto& GetFile() const noexcept { return mFile; }
       };
 
-      virtual auto NewReader() const -> Ref<Reader> = 0;
-      virtual auto NewWriter(bool append) const -> Ref<Writer> = 0;
+      virtual auto NewReader() const      -> Ref<Reader> = 0;
+      virtual auto NewWriter(bool append) -> Ref<Writer> = 0;
    };
 
 

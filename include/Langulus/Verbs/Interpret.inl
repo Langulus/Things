@@ -167,7 +167,7 @@ namespace Langulus::Verbs
    T Block<TYPE>::AsCast(const CT::Index auto index) const {
       if (IsEmpty()) {
          if constexpr (FATAL_FAILURE)
-            LANGULUS_THROW(Convert, "Unable to AsCast, container is empty");
+            throw Exception(Convert, "Unable to AsCast, container is empty");
          else if constexpr (CT::Defaultable<T>)
             return {};
          else {
@@ -201,7 +201,7 @@ namespace Langulus::Verbs
 
       // Failure if reached                                             
       if constexpr (FATAL_FAILURE)
-         LANGULUS_THROW(Convert, "Unable to AsCast");
+         throw Exception(Convert, "Unable to AsCast");
       else if constexpr (CT::Defaultable<T>)
          return {};
       else {

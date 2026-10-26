@@ -17,7 +17,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract file system module                                          
-   ///                                                                        
    struct FileSystem : virtual Module {
       using CTTI_Bases = Module;
 
@@ -41,17 +40,16 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract file interface                                              
-   ///                                                                        
    struct File : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = FileSystem;
 
    protected:
-      Path mFilePath;
-      bool mExists {};
-      DMeta mFormat {};
-      size_t mByteCount {};
-      bool mIsReadOnly {};
+      Path   mFilePath;
+      bool   mExists = false;
+      DMeta  mFormat;
+      size_t mByteCount = 0;
+      bool   mIsReadOnly = false;
 
       // Parent directory substring, mapped onto mFilePath              
       Token mParentDirectory;
@@ -86,14 +84,11 @@ namespace Langulus::Things
          Reader() = delete;
          virtual ~Reader() {}
 
-         Reader(File* f)
-            : mFile {f} {}
+         Reader(File* f) : mFile {f} {}
 
-         virtual auto Read(Many&) -> size_t = 0;
+         virtual auto Read(Bytes&) -> size_t = 0;
 
-         auto GetFile() const noexcept -> Ref<Things::File> const& {
-            return mFile;
-         }
+         auto& GetFile() const noexcept { return mFile; }
       };
 
 
@@ -110,14 +105,12 @@ namespace Langulus::Things
          virtual ~Writer() {}
 
          Writer(File* f, bool append)
-            : mFile  {f}
-            , mAppend{append} {}
+            : mFile   {f}
+            , mAppend {append} {}
 
-         virtual auto Write(Many const&) -> size_t = 0;
+         virtual auto Write(Bytes const&) -> size_t = 0;
 
-         auto GetFile() const noexcept -> Ref<Things::File> const& {
-            return mFile;
-         }
+         auto& GetFile() const noexcept { return mFile; }
       };
 
       virtual auto NewReader() const -> Ref<Reader> = 0;
@@ -127,7 +120,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract folder interface                                            
-   ///                                                                        
    struct Folder : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = FileSystem;

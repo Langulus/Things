@@ -7,6 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Hierarchy.hpp>
+#include <Langulus/Describe.hpp>
 #include <Langulus/CT/Pinnable.hpp>
 
 
@@ -363,9 +364,9 @@ namespace Langulus::Things
                   else if constexpr (CT::DescribeConstructible<D>)
                      output = D {Describe(static_cast<Many const&>(temp))};
                   else if constexpr (CT::Pinnable<D>)
-                     output = temp.template AsCast<TypeOf<D>>();
+                     output = temp.template As<TypeOf<D>>();
                   else
-                     output = temp.template AsCast<D>();
+                     output = temp.template As<D>();
                   return true;
                }
                catch (...) {}
@@ -442,9 +443,9 @@ namespace Langulus::Things
                      else if constexpr (CT::DescribeConstructible<D>)
                         output = D {Describe {tag.GetData()}};
                      else if constexpr (CT::Pinnable<D>)
-                        output = tag.template AsCast<TypeOf<D>>();
+                        output = tag.template As<TypeOf<D>>();
                      else
-                        output = tag.template AsCast<D>();
+                        output = tag.template As<D>();
 
                      // Didn't throw, but we're done only if offset  
                      // matches                                      
@@ -469,9 +470,9 @@ namespace Langulus::Things
                   else if constexpr (CT::DescribeConstructible<D>)
                      output = D {Describe {group}};
                   else if constexpr (CT::Pinnable<D>)
-                     output = group.template AsCast<TypeOf<D>>();
+                     output = group.template As<TypeOf<D>>();
                   else
-                     output = group.template AsCast<D>();
+                     output = group.template As<D>();
 
                   // Didn't throw, but we're done only if offset     
                   // matches                                         

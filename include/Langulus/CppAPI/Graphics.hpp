@@ -14,7 +14,6 @@ namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract graphics module                                             
-   ///                                                                        
    struct GraphicsModule : virtual Module {
       using CTTI_Bases = Module;
       GraphicsModule() : Downcastable {this}, Module {nullptr} {}
@@ -22,7 +21,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract graphics parts                                              
-   ///                                                                        
    struct Graphics : virtual Part {
       using CTTI_Bases = Part;
       Graphics() : Downcastable {this} {}
@@ -30,7 +28,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract graphics renderer                                           
-   ///                                                                        
    struct Renderer : virtual Graphics {
       using CTTI_Producer = GraphicsModule;
       using CTTI_Bases = Graphics;
@@ -39,7 +36,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract graphics layer                                              
-   ///                                                                        
    struct Layer : virtual Graphics {
       using CTTI_Producer = Renderer;
       using CTTI_Bases = Graphics;
@@ -48,7 +44,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract graphics camera                                             
-   ///                                                                        
    struct Camera : virtual Graphics {
       using CTTI_Producer = Layer;
       using CTTI_Bases = Graphics;
@@ -57,7 +52,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract graphics renderable                                         
-   ///                                                                        
    struct Renderable : virtual Graphics {
       using CTTI_Producer = Layer;
       using CTTI_Bases = Graphics;
@@ -66,7 +60,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract graphics light                                              
-   ///                                                                        
    struct Light : virtual Graphics {
       using CTTI_Producer = Layer;
       using CTTI_Bases = Graphics;

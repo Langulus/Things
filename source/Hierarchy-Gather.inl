@@ -144,7 +144,7 @@ namespace Langulus::Things
             // Check dynamic tags in the entity                       
             for (auto tagGroup : self.mTags) {
                for (auto tag : tagGroup.GetVal()) {
-                  try { result << tag.template AsCast<D>(); }
+                  try { result << tag.template As<D>(); }
                   catch (...) {}
                }
             }
@@ -154,7 +154,7 @@ namespace Langulus::Things
                size_t index = 0;
                auto t = part->GetMember(TMeta {}, index);
                while (t) {
-                  try { result << t.template AsCast<D>(); }
+                  try { result << t.template As<D>(); }
                   catch (...) {}
 
                   t = part->GetMember(TMeta {}, ++index);
@@ -165,7 +165,7 @@ namespace Langulus::Things
             size_t index = 0;
             auto t = self.GetMember(TMeta {}, index);
             while (t) {
-               try { result << t.template AsCast<D>(); }
+               try { result << t.template As<D>(); }
                catch (...) {}
 
                t = self.GetMember(TMeta {}, ++index);

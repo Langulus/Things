@@ -141,7 +141,7 @@ namespace Langulus::Things
       (void)MetaDataOf<A::Char>();
       (void)MetaDataOf<A::Bool>();
 
-      Math::RegisterTraits();
+      Math::RegisterTags();
       Math::RegisterVerbs();
 
       // We always prefer 'type' definitions that are in the main       

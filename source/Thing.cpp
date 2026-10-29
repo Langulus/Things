@@ -518,7 +518,7 @@ namespace Langulus::Things
       if (mRuntime.IsPinned())
          return **mRuntime;
 
-      mRuntime.Emplace(this);
+      mRuntime.New(this);
       mRuntime.Pin();
 
       // Dispatch the change to all children                            
@@ -535,7 +535,7 @@ namespace Langulus::Things
       if (mFlow.IsPinned())
          return **mFlow;
 
-      mFlow.Emplace();
+      mFlow.New();
       mFlow.Pin();
 
       // Dispatch the change to all children                            

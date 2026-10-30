@@ -26,7 +26,8 @@ namespace Langulus::Things
       // This is not a scalable solution and would eventually fail      
       bool mReverseFormat {};
 
-      bool operator == (const ImageView&) const noexcept;
+      bool operator == (ImageView const&) const noexcept = default;
+      bool DimensionsMatch(ImageView const& other) const noexcept;
 
       constexpr uint32_t GetPixelCount() const noexcept;
       constexpr uint32_t GetDimensionCount() const noexcept;
@@ -126,9 +127,8 @@ namespace Langulus::Things
    struct Font : Image {
       using CTTI_Bases = Image;
 
-      Font()
-         : Downcastable {this}
-         , ProducedFrom {nullptr, {}} {}
+      Font() : Downcastable {this}
+             , ProducedFrom {nullptr, {}} {}
    };
 }
 

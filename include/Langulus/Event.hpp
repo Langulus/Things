@@ -136,7 +136,6 @@ namespace Langulus
       using CTTI_Event     = Yup;
       using CTTI_Deep      = No;
       using Base           = Annies::Inner::EventBase;
-      using DeepType       = Many;
       using DMeta          = RTTI::DMeta;
 
       constexpr Event() noexcept {

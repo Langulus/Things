@@ -15,13 +15,22 @@ namespace Langulus::Things
    /// Compare texture views                                                  
    ///   @param rhs the texture view to compare against                       
    ///   @return true if both views are the same                              
-   LANGULUS(INLINED)
-   bool ImageView::operator == (const ImageView& rhs) const noexcept {
+   /*LANGULUS(INLINED)
+   bool ImageView::operator == (ImageView const& rhs) const noexcept {
       return mWidth  == rhs.mWidth
          and mHeight == rhs.mHeight
          and mDepth  == rhs.mDepth
          and mFrames == rhs.mFrames
-         and mFormat == rhs.mFormat;
+         and mFormat == rhs.mFormat
+         and mReverseFormat == rhs.mReverseFormat;
+   }*/
+
+   /// Checks if dimensions match (format might be different or reversed)     
+   inline bool ImageView::DimensionsMatch(ImageView const& rhs) const noexcept {
+      return mWidth  == rhs.mWidth
+         and mHeight == rhs.mHeight
+         and mDepth  == rhs.mDepth
+         and mFrames == rhs.mFrames;
    }
 
    /// Get the number of pixels in the texture                                
@@ -88,7 +97,7 @@ namespace Langulus::Things
    /// Get the texture view (const)                                           
    ///   @return the texture view                                             
    LANGULUS(INLINED)
-   auto Image::GetView() const noexcept -> const ImageView& {
+   auto Image::GetView() const noexcept -> ImageView const& {
       return mView;
    }
    

@@ -99,7 +99,7 @@ namespace Langulus::Things
 
       template<CT::Part P, Seek = Seek::HereAndAbove, class SELF> requires CT::Decayed<P>
       auto GatherParts(this SELF&&)
-         -> TMany<LglsMutIf(SELF, P*)>;
+         -> TMany<LglsMutIf(SELF, Part*)>;
 
       template<Seek = Seek::HereAndAbove>
       auto GatherPartsExt(this auto&&, DMeta, Many const&) -> TMany<Part*>;

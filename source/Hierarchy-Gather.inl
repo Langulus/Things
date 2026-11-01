@@ -49,7 +49,7 @@ namespace Langulus::Things
    }
 
    template<CT::Part P, Seek SEEK, class SELF> requires CT::Decayed<P>
-   auto SeekInterface::GatherParts(this SELF&& self) -> TMany<LglsMutIf(SELF, P*)> {
+   auto SeekInterface::GatherParts(this SELF&& self) -> TMany<LglsMutIf(SELF, Part*)> {
       return self.template GatherParts<SEEK>(MetaDataOf<P>());
    }
 
@@ -70,7 +70,7 @@ namespace Langulus::Things
       }
       else {
          if constexpr (SEEK & Seek::Here) {
-            // Handle some predefined trags here                        
+            // Handle some predefined tags here                         
             if (tag == MetaTagOf<Tags::Part>()) {
                // Gather all parts                                      
                for (auto& part : self.mPartsList)

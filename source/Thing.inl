@@ -32,14 +32,14 @@ namespace Langulus::Things
    /// Create a child Thing with the provided arguments                       
    ///   @param arguments instructions for the thing's creation               
    ///   @return the new child instance                                       
-   template<class...T>
+   /*template<class...T>
    Ref<Thing> Thing::CreateChild(T&&...arguments) {
       THINGS_VERBOSE_SELF_TAB(
          "Producing child (at ", GetReferences(), " references): ");
       Ref<Thing> newThing;
       newThing.New(this, Many {LglsFwd(arguments)...});
       return Abandon(newThing);
-   }
+   }*/
 
    /// Inner creation routine                                                 
    ///   @tparam T type of instructions for creation                          
@@ -389,10 +389,10 @@ namespace Langulus::Things
    ///   @param token the part type token                                     
    ///   @param arguments... the arguments to provide for recipe              
    ///   @return the created part(s)                                          
-   template<class...A>
+   /*template<class...A>
    Many Thing::CreatePartToken(Token const& token, A&&...arguments) {
       return CreateData(Recipe::Of(token, LglsFwd(arguments)...));
-   }
+   }*/
 #endif
 
    /// Get a part by a static type and an optional offset                     

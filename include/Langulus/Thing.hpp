@@ -126,8 +126,12 @@ namespace Langulus::Things
       LANGULUS_API(THINGS)
       auto CreateFlow() -> Temporal*;
 
-      template<class...T>
-      auto CreateChild(T&&...) -> Ref<Thing>;
+      auto CreateChild(auto&&...arguments) -> Ref<Thing> {
+         THINGS_VERBOSE_SELF_TAB("Producing child (at ", GetReferences(), " references): ");
+         Ref<Thing> newThing;
+         newThing.New(this, Many {LglsFwd(arguments)...});
+         return newThing;
+      }
 
       template<bool TWOSIDED = true>
       size_t AddChild(Thing*);
@@ -172,8 +176,9 @@ namespace Langulus::Things
       Many CreateParts();
 
       #if LANGULUS_FEATURE(MANAGED_REFLECTION)
-         template<class...A>
-         Many CreatePartToken(Token const&, A&&...);
+         Many CreatePartToken(Token const& token, auto&&...arguments) {
+            return CreateData(Recipe::Of(token, LglsFwd(arguments)...));
+         }
       #endif
 
       template<CT::Part = Part, bool TWOSIDED = true>

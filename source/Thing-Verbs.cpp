@@ -8,6 +8,7 @@
 #include <Langulus/Thing.hpp>
 #include <Langulus/Temporal.hpp>
 #include <Langulus/Verbs/Conjunct.hpp>
+#include <Langulus/Verbs/Interpret.hpp>
 #include <Langulus/CppAPI/AI.hpp>
 #include "Thing.inl"
 #include "Hierarchy-Gather.inl"
@@ -38,14 +39,9 @@ namespace Langulus::Things
       }
 
       // Interpret by each mind and then execute in flow                
-      Many results;
-      for (auto& mind : minds) {
-         auto interpretation = mind->Interpret(text);
-         if (interpretation)
-            results << flow->Push(interpretation);
-      }
-
-      return Abandon(results);
+      auto converted = Verbs::Interpret(text).In(minds);
+      converted.Run();
+      return Abandon(converted.GetOutput());
    }
    
    /// Executes a piece of code in the current context                        

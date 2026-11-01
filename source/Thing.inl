@@ -48,7 +48,7 @@ namespace Langulus::Things
    template<class T>
    void Thing::CreateInner(Many& output, T const& stuff) {
       if constexpr (CT::Deep<T>) {
-         // Nest if deep/neat                                           
+         // Nest if deep                                                
          stuff.ForEachDeep(
             [this, &output](Tag const& tag) {
                output << AddTag(tag);
@@ -56,9 +56,9 @@ namespace Langulus::Things
             [this, &output](Recipe const& recipe) {
                CreateInner(output, recipe);
             },
-            [this, &output](Neat const& neat) {
+            /*[this, &output](Neat const& neat) {//should be broken apart into the other things
                CreateInner(output, neat);
-            },
+            },*/
             [this, &output](DMeta const& type) {
                CreateInner(output, type);
             }
@@ -414,7 +414,7 @@ namespace Langulus::Things
       ///   @param token part type token                                      
       ///   @param offset optional offset (Nth match)                         
       ///   @return the part if found, or nullptr if not                      
-      auto Thing::GetPartMeta(Token const& token, size_t offset) const -> Part const* {
+      inline auto Thing::GetPartMeta(Token const& token, size_t offset) const -> Part const* {
          return const_cast<Thing*>(this)->GetPartMeta(token, LglsFwd(offset));
       }
 

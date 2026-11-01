@@ -14,7 +14,6 @@ namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract UI module                                                   
-   ///                                                                        
    struct UIModule : virtual Module {
       using CTTI_Bases = Module;
       UIModule() : Downcastable {this}, Things::Module {nullptr} {}
@@ -22,7 +21,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract UI part                                                     
-   ///                                                                        
    struct UIPart : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = UIModule;
@@ -31,7 +29,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract UI system                                                   
-   ///                                                                        
    struct UISystem : virtual UIPart {
       using CTTI_Bases = UIPart;
       UISystem() : Downcastable {this} {}
@@ -39,7 +36,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract UI button                                                   
-   ///                                                                        
    struct UIButton : virtual UIPart {
       using CTTI_Bases = UIPart;
       using CTTI_Producer = UISystem;
@@ -48,7 +44,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract UI text field                                               
-   ///                                                                        
    struct UILabel : virtual UIPart {
       using CTTI_Bases = UIPart;
       using CTTI_Producer = UISystem;
@@ -57,7 +52,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract UI input field                                              
-   ///                                                                        
    struct UIInput : virtual UIPart {
       using CTTI_Bases = UIPart;
       using CTTI_Producer = UISystem;

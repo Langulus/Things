@@ -6,9 +6,10 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #pragma once
-#include <Langulus/Hierarchy.hpp>
+#include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 #include <Langulus/Describe.hpp>
-#include <Langulus/CT/Pinnable.hpp>
+//#include <Langulus/CT/Pinnable.hpp>
 
 
 namespace Langulus::Things
@@ -83,7 +84,7 @@ namespace Langulus::Things
       // Scan descriptor even if hierarchy is empty                     
       if constexpr (SEEK & Seek::Here) {
          aux.ForEachDeep([&](Part const* part) {
-            if (part->GetResolved().CastsTo(meta)) {
+            if (part->Downcast().type.CastsTo(meta)) {
                // Found match                                           
                if (offset == 0) {
                   // We're done                                         
@@ -105,8 +106,8 @@ namespace Langulus::Things
       // Tags::Parent and Tags::Child inside the 'aux'.                 
       // 'aux' acts like a mini world for us.                           
       if constexpr (SEEK & Seek::Above) {
-         aux.ForEachDeep([&](const Tags::Parent& tag) -> LoopControl {
-            tag.ForEach([&](const Thing& parent) {
+         aux.ForEachDeep([&](Tags::Parent const& tag) -> LoopControl {
+            tag.ForEach([&](Thing const& parent) {
                if (nullptr != (result = parent.SeekPart<Seek::HereAndAbove>(meta, offset)))
                   // Value was found                                    
                   return Loop::Break;
@@ -117,8 +118,8 @@ namespace Langulus::Things
       }
 
       if constexpr (SEEK & Seek::Below) {
-         aux.ForEachDeep([&](const Tags::Child& tag) -> LoopControl {
-            tag.ForEach([&](const Thing& child) {
+         aux.ForEachDeep([&](Tags::Child const& tag) -> LoopControl {
+            tag.ForEach([&](Thing const& child) {
                if (nullptr != (result = child.SeekPart<Seek::HereAndBelow>(meta, offset)))
                   // Value was found                                    
                   return Loop::Break;
@@ -214,7 +215,7 @@ namespace Langulus::Things
 
       // Scan descriptor even if hierarchy is empty                     
       aux.ForEachDeep([&](Part const* u) {
-         if (u->GetResolved().CastsTo(meta)) {
+         if (u->Downcast().type.CastsTo(meta)) {
             //TODO check recipe arguments
             // Found match                                              
             if (offset == 0) {
@@ -492,8 +493,8 @@ namespace Langulus::Things
       // and Tags::Child inside the 'aux'                               
       if (not done) {
          if constexpr (SEEK & Seek::Above) {
-            aux.ForEachDeep([&](const Tags::Parent& tag) -> LoopControl {
-               tag.ForEach([&](const Thing& parent) {
+            aux.ForEachDeep([&](Tags::Parent const& tag) -> LoopControl {
+               tag.ForEach([&](Thing const& parent) {
                   if (parent.template SeekValue<Seek::HereAndAbove>(meta, output, offset)) {
                      // Value was found                                    
                      done = true;
@@ -507,8 +508,8 @@ namespace Langulus::Things
          }
 
          if constexpr (SEEK & Seek::Below) {
-            aux.ForEachDeep([&](const Tags::Child& tag) -> LoopControl {
-               tag.ForEach([&](const Thing& child) {
+            aux.ForEachDeep([&](Tags::Child const& tag) -> LoopControl {
+               tag.ForEach([&](Thing const& child) {
                   if (child.template SeekValue<Seek::HereAndBelow>(meta, output, offset)) {
                      // Value was found                                    
                      done = true;
@@ -553,43 +554,56 @@ namespace Langulus::Things
 
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
       ///                                                                     
-      /// Token based interface                                               
-      /// Available only when managed reflection is enabled                   
-      ///                                                                     
-      template<Seek SEEK, CT::Index IDX>
-      auto SeekInterface::SeekPart(Token const& dataToken, IDX&& offset) -> Part* {
-         return static_cast<THIS*>(this)
-            ->template SeekPart<SEEK>(RTTI::GetMetaData(dataToken), offset);
+      /// Token based interface.                                              
+      /// Available only when managed reflection is enabled.                  
+      template<Seek SEEK, CT::Index IDX, class SELF>
+      auto SeekInterface::SeekPart(this SELF&& self, Token const& token, IDX&& offset)
+      -> LglsMutIf(SELF, Part*) {
+         return self.template SeekPart<SEEK>(
+            RTTI::Registry::GetMetaDataByToken(token),
+            offset
+         );
       }
 
-      template<Seek SEEK, CT::Index IDX>
-      auto SeekInterface::SeekPartAux(Many const& aux, Token const& dataToken, IDX&& offset) -> Part* {
-         return static_cast<THIS*>(this)
-            ->template SeekPartAux<SEEK>(aux, RTTI::GetMetaData(dataToken), offset);
+      template<Seek SEEK, CT::Index IDX, class SELF>
+      auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, Token const& dataToken, IDX&& offset)
+      -> LglsMutIf(SELF, Part*) {
+         return self.template SeekPartAux<SEEK>(
+            aux, RTTI::Registry::GetMetaDataByToken(dataToken),
+            offset
+         );
       }
       
-      template<Seek SEEK, CT::Index IDX>
-      auto SeekInterface::SeekTag(Token const& traitToken, IDX&& offset) -> Tag {
-         return static_cast<THIS*>(this)
-            ->template SeekTag<SEEK>(RTTI::GetMetaTrait(traitToken), offset);
+      template<Seek SEEK, CT::Index IDX, class SELF>
+      auto SeekInterface::SeekTag(this SELF&& self, Token const& tag, IDX&& offset) -> Tag {
+         return self.template SeekTag<SEEK>(
+            RTTI::Registry::GetMetaTagByToken(tag),
+            offset
+         );
       }
 
-      template<Seek SEEK, CT::Index IDX>
-      auto SeekInterface::SeekTagAux(Many const& aux, Token const& traitToken, IDX&& offset) const -> Tag {
-         return static_cast<THIS*>(this)
-            ->template SeekTagAux<SEEK>(aux, RTTI::GetMetaTrait(traitToken), offset);
+      template<Seek SEEK, CT::Index IDX, class SELF>
+      auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, Token const& tag, IDX&& offset) -> Tag {
+         return self.template SeekTagAux<SEEK>(
+            aux, RTTI::Registry::GetMetaTagByToken(tag),
+            offset
+         );
       }
 
-      template<Seek SEEK, CT::Index IDX>
-      bool SeekInterface::SeekValue(Token const& traitToken, CT::NotVoid auto& output, IDX&& offset) const {
-         return static_cast<THIS*>(this)
-            ->template SeekValue<SEEK>(RTTI::GetMetaTrait(traitToken), output, offset);
+      template<Seek SEEK, CT::Index IDX, class SELF>
+      bool SeekInterface::SeekValue(this SELF const& self, Token const& tag, CT::NotVoid auto& output, IDX&& offset) {
+         return self.template SeekValue<SEEK>(
+            RTTI::Registry::GetMetaTagByToken(tag),
+            output, offset
+         );
       }
      
-      template<Seek SEEK, CT::Index IDX>
-      bool SeekInterface::SeekValueAux(Token const& traitToken, Many const& aux, CT::NotVoid auto& output, IDX&& offset) const {
-         return static_cast<THIS*>(this)
-            ->template SeekValueAux<SEEK>(RTTI::GetMetaTrait(traitToken), aux, output, offset);
+      template<Seek SEEK, CT::Index IDX, class SELF>
+      bool SeekInterface::SeekValueAux(this SELF const& self, Token const& tag, Many const& aux, CT::NotVoid auto& output, IDX&& offset) {
+         return self.template SeekValueAux<SEEK>(
+            RTTI::Registry::GetMetaTagByToken(tag),
+            aux, output, offset
+         );
       }
    #endif
 }

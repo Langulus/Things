@@ -8,6 +8,7 @@
 #include <Langulus/TTable.hpp>
 #include <Langulus/Thing.hpp>
 #include "Thing.inl"
+#include "Hierarchy-Seek.inl"
 
 
 namespace Langulus::Things

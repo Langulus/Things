@@ -49,7 +49,7 @@ namespace Langulus::Things
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
       auto SeekPartExt(this SELF&&, DMeta, Many const&, IDX&& = 0)
-         -> LglsMutIf(SELF, Part);
+         -> LglsMutIf(SELF, Part*);
 
       template<CT::Part T = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
       auto SeekPartExt(this SELF&&, Many const&, IDX&& = 0)
@@ -122,10 +122,13 @@ namespace Langulus::Things
       /// MARK: Token based interface                                         
       /// Available only when managed reflection is enabled                   
       ///                                                                     
-      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
-      auto SeekPart(this auto&&, Token const&, IDX&& = 0) -> Part*;
-      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
-      auto SeekPartAux(this auto&&, Many const&, Token const&, IDX&& = 0) -> Part*;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPart(this SELF&&, Token const&, IDX&& = 0)
+         -> LglsMutIf(SELF, Part*);
+
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekPartAux(this SELF&&, Many const&, Token const&, IDX&& = 0)
+         -> LglsMutIf(SELF, Part*);
       
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
       auto SeekTag(this auto&&, Token const&, IDX&& = 0) -> Tag;

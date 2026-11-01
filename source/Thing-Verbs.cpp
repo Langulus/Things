@@ -10,6 +10,7 @@
 #include <Langulus/Verbs/Conjunct.hpp>
 #include <Langulus/CppAPI/AI.hpp>
 #include "Thing.inl"
+#include "Hierarchy-Gather.inl"
 
 
 namespace Langulus::Things

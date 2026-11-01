@@ -22,26 +22,26 @@ namespace Langulus::Things
       if constexpr (CT::Part<SELF>) {
          // Start seeking from each part owner                          
          for (auto owner : self.mOwners)
-            result += owner->template GatherParts<SEEK>(meta);
+            result.Concat(owner->template GatherParts<SEEK>(meta));
       }
       else {
          if constexpr (SEEK & Seek::Here) {
             // Seek here if requested                                   
             auto found = self.mPartsAmbiguous.Find(meta);
             if (found)
-               result += found.GetVal();
+               result.Concat(*found.GetVal());
          }
 
          if constexpr (SEEK & Seek::Above) {
             // Seek in parents up to root, if requested                 
             if (self.mOwner)
-               result += self.mOwner->template GatherParts<Seek::HereAndAbove>(meta);
+               result.Concat(self.mOwner->template GatherParts<Seek::HereAndAbove>(meta));
          }
 
          if constexpr (SEEK & Seek::Below) {
             // Seek children, if requested                              
             for (auto& child : self.mChildren)
-               result += child->template GatherParts<Seek::HereAndBelow>(meta);
+               result.Concat(child->template GatherParts<Seek::HereAndBelow>(meta));
          }
       }
 

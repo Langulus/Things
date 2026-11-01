@@ -32,15 +32,16 @@ namespace Langulus::Things
    ///   The primary composable type. Its functionality comes from its parts  
    /// and children/owner's parts. The Thing is an aggregate of tags,         
    /// parts, and subthings.                                                  
-   struct Thing final : /*Downcastable,*/ Referenced, SeekInterface {
+   struct Thing final : Referenced, SeekInterface {
       using CTTI_Named     = Yes<"Thing">;
       using CTTI_Abstract  = No;
       using CTTI_Producer  = Thing;
       using CTTI_Pooled    = PooledByType<>;
       using CTTI_Ability   = Types<Verbs::Do, Verbs::Create, Verbs::Select>;
-      //using CTTI_Bases     = Resolvable; //auto-detected?
 
    protected:
+      friend struct SeekInterface;
+
       LANGULUS_API(THINGS) void ResetRuntime(Runtime*);
       LANGULUS_API(THINGS) void ResetFlow(Temporal*);
       LANGULUS_API(THINGS) void Teardown();
@@ -99,21 +100,9 @@ namespace Langulus::Things
          return const_cast<Temporal*>(**mFlow);
       }
 
-      /*LANGULUS_API(THINGS)
-      auto GetRuntime() const noexcept -> Pin<Ref<Runtime>> const&;
-
-      LANGULUS_API(THINGS)
-      auto GetFlow() const noexcept -> Pin<Ref<Temporal>> const&;*/
-
       LANGULUS_API(THINGS) void Do(Verb&);
       LANGULUS_API(THINGS) void Select(Verb&);
       LANGULUS_API(THINGS) void Create(Verb&);
-
-      /*template<Seek = Seek::HereAndAbove>
-      void DoIn(Verb&);*/
-
-      /*template<CT::Executable V>
-      V& Run(V&);*/
 
       LANGULUS_API(THINGS) Many Say(Text const&);
       LANGULUS_API(THINGS) Many Run(Code const&);
@@ -123,7 +112,7 @@ namespace Langulus::Things
       LANGULUS_API(THINGS) void Reset();
 
       LANGULUS_API(THINGS)
-      bool operator == (const Thing&) const;
+      bool operator == (Thing const&) const;
 
       //LANGULUS_API(THINGS)
       //explicit operator Text() const;

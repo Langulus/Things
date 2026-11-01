@@ -15,13 +15,13 @@
 namespace Langulus::Things
 {
    /// Default-constructor, always creates a parentless root thing            
-   Thing::Thing() /*: Downcastable {this}*/ {
+   Thing::Thing() {
       THINGS_VERBOSE_SELF("Created (root, ", GetReferences(), " references)");
    }
    
    /// Descriptor-constructor                                                 
    ///   @param describe instructions for creating the thing                  
-   Thing::Thing(Describe&& describe) /*: Downcastable {this}*/ {
+   Thing::Thing(Describe&& describe) {
       if (describe) {
          THINGS_VERBOSE_SELF_TAB("Creating from descriptor: ", describe.what);
          Many unused_sideeffects;
@@ -46,8 +46,7 @@ namespace Langulus::Things
    ///   @param parent the thing that owns this thing                         
    ///   @param descriptor instructions for creating the thing                
    Thing::Thing(Thing* parent, Many const& descriptor)
-      : /*Downcastable {this}
-      ,*/ mOwner       {parent}
+      : mOwner {parent}
    {
       THINGS_VERBOSE_SELF_TAB("Created manually");
 
@@ -83,8 +82,7 @@ namespace Langulus::Things
    ///      because 'other' is removed from its children                      
    ///   @param other thing to move                                           
    Thing::Thing(Thing&& other) noexcept
-      : /*Downcastable    {this}
-      ,*/ mRuntime        {Move(other.mRuntime)}
+      : mRuntime        {Move(other.mRuntime)}
       , mFlow           {Move(other.mFlow)}
       , mChildren       {Move(other.mChildren)}
       , mPartsList      {Move(other.mPartsList)}
@@ -107,16 +105,41 @@ namespace Langulus::Things
       THINGS_VERBOSE_SELF("Moved from ", other);
    }
    
+   /// Move constructor                                                       
+   ///   @param other thing to move                                           
+   Thing::Thing(Move<Thing>&& other)
+      : mRuntime        {Move(other->mRuntime)}
+      , mFlow           {Move(other->mFlow)}
+      , mChildren       {Move(other->mChildren)}
+      , mPartsList      {Move(other->mPartsList)}
+      , mPartsAmbiguous {Move(other->mPartsAmbiguous)}
+      , mTags           {Move(other->mTags)}
+      , mRefreshRequired{true}
+   {
+      // Remap children                                                 
+      for (auto& child : mChildren)
+         child->mOwner = this;
+
+      // Remap parts                                                    
+      for (auto& part : mPartsList)
+         part->ReplaceOwner(&other.what, this);
+
+      // Make sure the losing parent is notified of the change          
+      if (other->mOwner)
+         other->mOwner->RemoveChild(&other.what);
+
+      THINGS_VERBOSE_SELF("Moved from ", *other);
+   }
+
    /// Abandon constructor                                                    
    ///   @param other thing to abandon                                        
    Thing::Thing(Abandon<Thing>&& other)
-      : /*Downcastable    {this}
-      ,*/ mRuntime        {Abandon(other->mRuntime)}
+      : mRuntime        {Abandon(other->mRuntime)}
       , mFlow           {Abandon(other->mFlow)}
       , mChildren       {Abandon(other->mChildren)}
       , mPartsList      {Abandon(other->mPartsList)}
       , mPartsAmbiguous {Abandon(other->mPartsAmbiguous)}
-      , mTags         {Abandon(other->mTags)}
+      , mTags           {Abandon(other->mTags)}
       , mRefreshRequired{true}
    {
       // Remap children                                                 
@@ -137,13 +160,12 @@ namespace Langulus::Things
    /// Clone constructor                                                      
    ///   @param other thing to clone                                          
    Thing::Thing(Clone<Thing>&& other)
-      : /*Downcastable    {this}
-      ,*/ mChildren       {Clone(other->mChildren)}
+      : mChildren       {Clone(other->mChildren)}
       , mRefreshRequired{true}
    {
       TODO();
       //TODO clone flow and runtime if pinned, recreate modules if new runtime, 
-      // recreate parts and tags, then recreate children
+      //TODO recreate parts and tags, then recreate children
       THINGS_VERBOSE_SELF("Cloned from ", *other);
    }
 
@@ -233,7 +255,7 @@ namespace Langulus::Things
    ///   @param other thing to compare with                                   
    ///   @return true if entities are functionally same, that is, they have   
    ///      the exact same behavior (actual state is ignored)                 
-   bool Thing::operator == (const Thing& other) const {
+   bool Thing::operator == (Thing const& other) const {
       return mChildren == other.mChildren
          and mPartsList == other.mPartsList
          and mTags == other.mTags;

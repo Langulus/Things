@@ -92,13 +92,13 @@ auto Part::GetFlow() const noexcept -> Temporal* {
 
 /// Couple the component with a Thing, extracted from a descriptor's          
 /// Tags::Parent, if any was defined (always two-sided).                      
-/// This will call refresh to all parts in that Thing on next tick            
+/// This will call refresh to all parts in that Thing on next tick.           
 ///   @param desc the descriptor to scan for parents                          
-///   @param fallback a fallback Thing to couple to (optional)                
+///   @param fallback a fallback Thing to couple to (optional).               
 ///      This usually comes from the producer's context. For example, if you  
 ///      don't provide a parent for the renderer, it will be instantiated as  
-///      a child to the graphics module owner (i.e. the runtime owner)        
-void Part::Couple(Many const& desc, Thing const* fallback) {
+///      a child to the graphics module owner (i.e. the runtime owner).       
+void Part::Couple(Neat const& desc, Thing const* fallback) {
    Thing const* owner = nullptr;
    if (not desc.ExtractTag<Tags::Parent>(owner))
       desc.ExtractData(owner);

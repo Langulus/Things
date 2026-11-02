@@ -10,6 +10,7 @@
 #include <Langulus/MetaOf.hpp>
 #include <Langulus/TSet.hpp>
 #include <Langulus/TMany.hpp>
+#include <Langulus/Neat.hpp>
 #include <Langulus/Downcastable.hpp>
 #include <Langulus/Time.hpp>
 #include "Things/Export.hpp"
@@ -81,7 +82,7 @@ namespace Langulus::Things
       };
 
       using EntryFunction  = void(*)(RTTI::DMeta&, MetaList&);
-      using CreateFunction = Module*(*)(Runtime*, Many const&);
+      using CreateFunction = Module*(*)(Runtime*, Neat const&);
       using InfoFunction   = Info const*(*)();
 
       auto GetRuntime() const noexcept -> Runtime* { return mRuntime; }
@@ -137,7 +138,7 @@ namespace Langulus
       \
       LANGULUS_EXPORT() \
       ::Langulus::Things::Module* LANGULUS_MODULE_CREATE() ( \
-         ::Langulus::Things::Runtime* rt, const ::Langulus::Annies::Many& desc) { \
+         ::Langulus::Things::Runtime* rt, const ::Langulus::Annies::Neat& desc) { \
          static_assert(::Langulus::CT::DerivedFrom<m, ::Langulus::Things::Module>, \
             "Langulus module class interface " \
             #m " doesn't inherit ::Langulus::Things::Module"); \

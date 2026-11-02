@@ -60,7 +60,7 @@ namespace Langulus::Things
       V& RunIn(V&);
 
    protected:
-      void Couple(Many const&, Thing const* = nullptr);
+      void Couple(Neat const&, Thing const* = nullptr);
       void Decouple(Thing const*);
       void ReplaceOwner(Thing const*, Thing const*);
    };

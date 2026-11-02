@@ -15,10 +15,11 @@ namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract art module                                                  
-   ///                                                                        
    struct ArtModule : virtual Module {
       using CTTI_Bases = Module;
-      ArtModule() : Downcastable {this}, Module {nullptr} {}
+      
+      ArtModule() : Downcastable {this}
+                  , Module       {nullptr} {}
 
    protected:
       // Data folder, where assets will be saved or loaded from         
@@ -34,7 +35,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract art part                                                    
-   ///                                                                        
    struct Art : virtual Part, virtual ProducedFrom<ArtModule> {
       using CTTI_Bases     = Part;
       using CTTI_Producer  = ArtModule;      

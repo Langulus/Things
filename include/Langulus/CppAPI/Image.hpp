@@ -15,7 +15,6 @@ namespace Langulus::Things
 {
    ///                                                                        
    ///   Universal pixel buffer view                                          
-   ///                                                                        
    struct ImageView {
       uint32_t mWidth  = 1;
       uint32_t mHeight = 1;
@@ -41,7 +40,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract texture content                                             
-   ///                                                                        
    struct Image : Art {
    protected:
       ImageView mView;
@@ -63,9 +61,7 @@ namespace Langulus::Things
 
       void Upload(CT::Container auto&&);
 
-      ///                                                                     
       ///   Iteration                                                         
-      ///                                                                     
       /*template<bool MUTABLE>
       struct Iterator;
 
@@ -77,7 +73,6 @@ namespace Langulus::Things
 
    ///                                                                        
    /// Image iterator                                                         
-   ///                                                                        
    /*template<bool MUTABLE>
    struct Image::Iterator : A::Iterator {
       static constexpr bool Mutable = MUTABLE;
@@ -123,12 +118,10 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract font content                                                
-   ///                                                                        
    struct Font : Image {
       using CTTI_Bases = Image;
 
-      Font() : Downcastable {this}
-             , ProducedFrom {nullptr, {}} {}
+      Font() : Downcastable {this} {}
    };
 }
 

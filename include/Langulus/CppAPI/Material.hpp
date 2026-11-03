@@ -69,12 +69,12 @@ namespace Langulus::Things
       /// Get input tags for a given rate                                     
       ///   @param rate the rate                                              
       ///   @return the input tag list                                        
-      auto GetInputs(RefreshRate rate) const -> TagList const& {
+      auto GetInputs(RRate rate) const -> TagList const& {
          return GetInputs(rate.GetInputIndex());
       }
 
       auto GetInputs(size_t rate) const -> TagList const& {
-         LglsAssumeDev(rate < RefreshRate::InputCount,
+         LglsAssumeDev(rate < RRate::InputCount,
             "Input offset out of range");
          return mInputs[rate];
       }
@@ -82,18 +82,18 @@ namespace Langulus::Things
       /// Get output tags for a given rate (const)                            
       ///   @param rate the rate                                              
       ///   @return the output tag list                                       
-      auto GetOutputs(RefreshRate rate) const -> TagList const& {
+      auto GetOutputs(RRate rate) const -> TagList const& {
          return GetOutputs(rate.GetInputIndex());
       }
 
       auto GetOutputs(size_t rate) const -> TagList const& {
-         LglsAssumeDev(rate < RefreshRate::InputCount,
+         LglsAssumeDev(rate < RRate::InputCount,
             "Input offset out of range");
          return mOutputs[rate];
       }
 
    protected:
-      mutable TagList mInputs[RefreshRate::InputCount];
-      mutable TagList mOutputs[RefreshRate::InputCount];
+      mutable TagList mInputs[RRate::InputCount];
+      mutable TagList mOutputs[RRate::InputCount];
    };
 }

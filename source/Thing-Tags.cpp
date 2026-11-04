@@ -110,7 +110,7 @@ namespace Langulus::Things
    auto Thing::RemoveTag(TMeta tag) -> size_t {
       const auto found = mTags.Find(tag);
       if (found) {
-         const size_t removed = found.GetVal()->GetCount();
+         size_t const removed = found.GetVal()->GetCount();
          mTags.Erase(found);
          THINGS_VERBOSE_SELF(tag, " removed");
          mRefreshRequired = true;

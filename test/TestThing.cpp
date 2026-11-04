@@ -31,7 +31,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       REQUIRE(root.GetFlow().IsPinned() == false);
       REQUIRE(root.RequiresRefresh() == false);
       REQUIRE(not root.GetChildren());
-      REQUIRE(not root.GetUnits());
+      REQUIRE(not root.GetParts());
       REQUIRE(not root.GetUnitsMap());
       REQUIRE(not root.GetTags());
       REQUIRE(root.GetReferences() == 1);
@@ -49,7 +49,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       REQUIRE(root.RequiresRefresh() == false);
       REQUIRE(root.GetChildren().GetCount() == 1);
       REQUIRE(root.GetChildren()[0] == &child);
-      REQUIRE(not root.GetUnits());
+      REQUIRE(not root.GetParts());
       REQUIRE(not root.GetUnitsMap());
       REQUIRE(not root.GetTags());
       REQUIRE(root.GetReferences() == 1);
@@ -61,7 +61,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       REQUIRE(child.GetFlow().IsPinned() == false);
       REQUIRE(child.RequiresRefresh() == false);
       REQUIRE(not child.GetChildren());
-      REQUIRE(not child.GetUnits());
+      REQUIRE(not child.GetParts());
       REQUIRE(not child.GetUnitsMap());
       REQUIRE(not child.GetTags());
       REQUIRE(child.GetReferences() == 1);
@@ -94,7 +94,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == false);
          REQUIRE(root.GetChildren().GetCount() == 1);
-         REQUIRE(not root.GetUnits());
+         REQUIRE(not root.GetParts());
          REQUIRE(not root.GetTags());
          REQUIRE(root.GetReferences() == 1);
 
@@ -107,7 +107,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child1->GetFlow().IsPinned() == false);
          REQUIRE(child1->RequiresRefresh() == false);
          REQUIRE(not child1->GetChildren());
-         REQUIRE(not child1->GetUnits());
+         REQUIRE(not child1->GetParts());
          REQUIRE(not child1->GetTags());
          REQUIRE(child1->GetReferences() == 2);
       }
@@ -124,11 +124,11 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().IsEmpty());
-         REQUIRE(root.GetUnits().GetCount() == 1);
+         REQUIRE(root.GetParts().GetCount() == 1);
          REQUIRE(root.GetTags().IsEmpty());
          REQUIRE(root.GetReferences() == 1);
 
-         auto it = root.GetUnits().begin();
+         auto it = root.GetParts().begin();
          REQUIRE(it->GetType() == MetaOf<TestUnit1>());
          REQUIRE(*it == &testUnit);
          REQUIRE(it->GetOwners().GetCount() == 1);
@@ -146,11 +146,11 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().IsEmpty());
-         REQUIRE(root.GetUnits().GetCount() == 1);
+         REQUIRE(root.GetParts().GetCount() == 1);
          REQUIRE(root.GetTags().IsEmpty());
          REQUIRE(root.GetReferences() == 1);
 
-         auto it = root.GetUnits().begin();
+         auto it = root.GetParts().begin();
          REQUIRE(it->GetType() == MetaOf<TestUnit1>());
          REQUIRE(*it == part.As<TestUnit1*>());
 
@@ -179,7 +179,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(not root.GetChildren());
-         REQUIRE(not root.GetUnits());
+         REQUIRE(not root.GetParts());
          REQUIRE(not root.GetUnitsMap());
          REQUIRE(root.GetTags().GetCount() == 1);
          REQUIRE(root.GetReferences() == 1);
@@ -203,7 +203,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetFlow().IsPinned() == false);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(not root.GetChildren());
-         REQUIRE(not root.GetUnits());
+         REQUIRE(not root.GetParts());
          REQUIRE(not root.GetUnitsMap());
          REQUIRE(root.GetTags().GetCount() == 1);
          REQUIRE(root.GetName() == "Dimo");
@@ -245,7 +245,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(root.GetFlow().IsPinned() == true);
          REQUIRE(root.RequiresRefresh() == true);
          REQUIRE(root.GetChildren().GetCount() == 2);
-         REQUIRE(root.GetUnits().GetCount() == 2);
+         REQUIRE(root.GetParts().GetCount() == 2);
          REQUIRE(root.GetTags().GetCount() == 1);
          REQUIRE(root.GetName() == "Root");
          REQUIRE(root.GetReferences() == 1);
@@ -258,7 +258,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child1->GetFlow().IsPinned() == false);
          REQUIRE(child1->RequiresRefresh() == true);
          REQUIRE(child1->GetChildren().GetCount() == 2);
-         REQUIRE(child1->GetUnits().GetCount() == 2);
+         REQUIRE(child1->GetParts().GetCount() == 2);
          REQUIRE(child1->GetTags().GetCount() == 1);
          REQUIRE(child1->GetName() == "Child1");
 
@@ -280,7 +280,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(child2->GetFlow().IsPinned() == false);
          REQUIRE(child2->RequiresRefresh() == true);
          REQUIRE(not child2->GetChildren());
-         REQUIRE(not child2->GetUnits());
+         REQUIRE(not child2->GetParts());
          REQUIRE(child2->GetTags().GetCount() == 1);
          REQUIRE(child2->GetName() == "Child2");
          REQUIRE(child2->GetReferences() == 1);
@@ -293,7 +293,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(grandchild1->GetFlow().IsPinned() == false);
          REQUIRE(grandchild1->RequiresRefresh() == true);
          REQUIRE(not grandchild1->GetChildren());
-         REQUIRE(not grandchild1->GetUnits());
+         REQUIRE(not grandchild1->GetParts());
          REQUIRE(grandchild1->GetTags().GetCount() == 1);
          REQUIRE(grandchild1->GetName() == "GrandChild1");
          REQUIRE(grandchild1->GetReferences() == 1);
@@ -306,7 +306,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          REQUIRE(grandchild2->GetFlow().IsPinned() == false);
          REQUIRE(grandchild2->RequiresRefresh() == true);
          REQUIRE(not grandchild2->GetChildren());
-         REQUIRE(not grandchild2->GetUnits());
+         REQUIRE(not grandchild2->GetParts());
          REQUIRE(grandchild2->GetTags().GetCount() == 1);
          REQUIRE(grandchild2->GetName() == "GrandChild2");
          REQUIRE(grandchild2->GetReferences() == 1);
@@ -387,7 +387,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto removed = root.RemoveUnit(root.GetUnit(0));
 
          REQUIRE(removed == 1);
-         REQUIRE(root.GetUnits().GetCount() == 1);
+         REQUIRE(root.GetParts().GetCount() == 1);
          REQUIRE(nullptr == Allocator::Find(MetaOf<TestUnit1>(), unitmemory));
       }
 
@@ -397,7 +397,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
          auto removed = root.RemoveUnits();
 
          REQUIRE(removed == 2);
-         REQUIRE(not root.GetUnits());
+         REQUIRE(not root.GetParts());
          REQUIRE(nullptr == Allocator::Find(MetaOf<TestUnit1>(), unitmemory1));
          REQUIRE(nullptr == Allocator::Find(MetaOf<TestUnit2>(), unitmemory2));
       }

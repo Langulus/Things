@@ -29,7 +29,7 @@ namespace Langulus::Things
             // Seek here if requested                                   
             auto found = self.mPartsAmbiguous.Find(meta);
             if (found)
-               result.Concat(*found.GetVal());
+               result.Concat(found.GetVal());
          }
 
          if constexpr (SEEK & Seek::Above) {

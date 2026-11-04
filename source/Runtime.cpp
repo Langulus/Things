@@ -87,7 +87,7 @@ namespace
       VERBOSE("Registering `", type, '`');
       auto found = map.Find(type);
       if (found)
-         (*found.GetVal()).Insert(module);
+         found.GetVal().Insert(module);
       else
          map.Merge(type, module);
 
@@ -111,7 +111,7 @@ namespace
 
       const auto found = map.Find(type);
       if (found) {
-         auto& list = *found.GetVal();
+         auto& list = found.GetVal();
          if (list.Erase(module) and not list) {
             VERBOSE("Unregistering `", type, '`');
             (void) map.Erase(found);
@@ -237,7 +237,7 @@ namespace Langulus::Things
       auto attempts = gLibraries.GetCount();
       while (attempts) {
          for (auto library : gLibraries) {
-            if (UnloadSharedLibrary(*library.GetVal()))
+            if (UnloadSharedLibrary(library.GetVal()))
                library = gLibraries.Erase(library);
          }
 
@@ -334,7 +334,7 @@ namespace Langulus::Things
       try {
          auto found = mModules.Find(info->mPriority);
          if (found)
-            (*found.GetVal()).Insert(module);
+            found.GetVal().Insert(module);
          else
             mModules.Merge(info->mPriority, ModList {module});
 
@@ -346,8 +346,8 @@ namespace Langulus::Things
          // Make sure we end up in an invariant state                   
          const auto found = mModules.Find(info->mPriority);
          if (found) {
-            (*found.GetVal()).Erase(module);
-            if (not *found.GetVal())
+            found.GetVal().Erase(module);
+            if (not found.GetVal())
                (void) mModules.Erase(found);
          }
 
@@ -373,7 +373,7 @@ namespace Langulus::Things
       // Check if this library is already loaded                        
       const auto preloaded = gLibraries.Find(path);
       if (preloaded) {
-         return *preloaded.GetVal();
+         return preloaded.GetVal();
       }
 
       // Load the library                                               
@@ -479,11 +479,11 @@ namespace Langulus::Things
          // Test if the boundary conflicts with any of the previously   
          // loaded libraries                                            
          for (auto lib : gLibraries) {
-            if (lib.GetVal()->mBoundary == library.mBoundary) {
+            if (lib.GetVal().mBoundary == library.mBoundary) {
                Logger::Error(
                   "The library `", path, "` boundary `", library.mBoundary,
                   "` conflicts with already loaded library `", *lib.GetKey(),
-                  "` boundary `", lib.GetVal()->mBoundary, '`'
+                  "` boundary `", lib.GetVal().mBoundary, '`'
                );
                (void)UnloadSharedLibrary(library);
                return {};
@@ -555,17 +555,17 @@ namespace Langulus::Things
       Logger::Info("Unloading module `", library.mInfo()->mName, "`...");
 
       for (auto list : mModules) {
-         for (auto mod : *list.GetVal()) {
-            if ((*mod)->Is(library.mModuleType)) {
+         for (auto mod : list.GetVal()) {
+            if (mod->Is(library.mModuleType)) {
                // Delete module instance                                
-               const auto modType = (*mod)->GetType();
-               UnregisterAllBases(mModulesByType, *mod, modType);
-               delete *mod;
-               mod = (*list.GetVal()).Erase(mod);
+               const auto modType = mod->GetType();
+               UnregisterAllBases(mModulesByType, mod, modType);
+               delete mod;
+               mod = list.GetVal().Erase(mod);
             }
          }
 
-         if (not *list.GetVal())
+         if (not list.GetVal())
             list = mModules.Erase(list);
       }
 

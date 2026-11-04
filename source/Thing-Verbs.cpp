@@ -83,7 +83,7 @@ namespace Langulus::Things
       }
 
       // If verb is still not satisfied, dispatch to ALL parts.         
-      for (auto& part : mPartsList) {
+      for (auto part : mPartsList) {
          const Many concrete_part {Annies::Absorb, part->Downcast()};
          if (Flow::Execute(flow, concrete_part, output, false, unusedSkipVerbs)) {
             // The execution may or may not have an output, but a       
@@ -197,7 +197,7 @@ namespace Langulus::Things
             // selectedComponents has been populated with results       
             // Filter them additionally by recipe arguments             
             TMany<Part*> filteredSelectedComponents;
-            for (auto& part : selectedParts) {
+            for (auto part : selectedParts) {
                bool localMismatch = false;
                Many resolved_part {Annies::Absorb, part->Downcast()};
                

@@ -52,7 +52,7 @@ namespace Langulus::Things
          const auto found = mEventQueue.Find(pair);
          if (found) {
             // Event-state pair already exists, merge payload           
-            (*found.GetVal()).Concat(e.GetPayload());
+            found.GetVal().Concat(e.GetPayload());
          }
          else {
             // Event-state pair doesn't exist yet                       

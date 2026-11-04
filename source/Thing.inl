@@ -190,9 +190,9 @@ namespace Langulus::Things
    ///   @param part the part instance to register                            
    ///   @param type type to register the part as                             
    inline void Thing::AddPartBases(Part* part, DMeta type) {
-      const auto found = mPartsAmbiguous.Find(type);
+      auto found = mPartsAmbiguous.Find(type);
       if (found)
-         *found.GetVal() << part;
+         found.GetVal() << part;
       else
          mPartsAmbiguous.Merge(type, part);
 
@@ -209,9 +209,9 @@ namespace Langulus::Things
    ///   @param part the part instance to unregister                          
    ///   @param type the type to unregister the part as                       
    inline void Thing::RemovePartBases(Part* part, DMeta type) {
-      const auto found = mPartsAmbiguous.Find(type);
+      auto found = mPartsAmbiguous.Find(type);
       if (found) {
-         auto& set = *found.GetVal();
+         auto& set = found.GetVal();
          if (set.Erase(part) and not set)
             (void) mPartsAmbiguous.Erase(found);
       }
@@ -238,7 +238,7 @@ namespace Langulus::Things
       // Check if the part instance is already registered here          
       const auto meta = part->GetType();
       const auto found = mPartsAmbiguous.Find(meta);
-      if (found and (*found.GetVal()).Find(part))
+      if (found and found.GetVal().Find(part))
          return 0;
 
       // We must guarantee, that no part is coupled to entities with    
@@ -282,7 +282,7 @@ namespace Langulus::Things
       if (not foundType)
          return 0;
 
-      const auto partIndex = (*foundType.GetVal()).Find(part);
+      const auto partIndex = foundType.GetVal().Find(part);
       if (partIndex) {
          // Decouple before part is destroyed                           
          if constexpr (TWOSIDED)
@@ -314,7 +314,7 @@ namespace Langulus::Things
          const auto removed = mPartsList.GetCount();
          if constexpr (TWOSIDED) {
             // Decouple before parts are (potentially) destroyed        
-            for (auto& part : mPartsList)
+            for (auto part : mPartsList)
                part->mOwners.Erase(this);
          }
 

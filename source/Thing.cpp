@@ -91,11 +91,11 @@ namespace Langulus::Things
       , mRefreshRequired{true}
    {
       // Remap children                                                 
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->mOwner = this;
 
       // Remap parts                                                    
-      for (auto& part : mPartsList)
+      for (auto part : mPartsList)
          part->ReplaceOwner(&other, this);
 
       // Make sure the losing parent is notified of the change          
@@ -117,11 +117,11 @@ namespace Langulus::Things
       , mRefreshRequired{true}
    {
       // Remap children                                                 
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->mOwner = this;
 
       // Remap parts                                                    
-      for (auto& part : mPartsList)
+      for (auto part : mPartsList)
          part->ReplaceOwner(&other.what, this);
 
       // Make sure the losing parent is notified of the change          
@@ -143,11 +143,11 @@ namespace Langulus::Things
       , mRefreshRequired{true}
    {
       // Remap children                                                 
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->mOwner = this;
 
       // Remap parts                                                    
-      for (auto& part : mPartsList)
+      for (auto part : mPartsList)
          part->ReplaceOwner(&other.what, this);
 
       // Make sure the losing parent is notified of the change          
@@ -229,7 +229,7 @@ namespace Langulus::Things
       // If they still have owners, they will attempt to Decouple in    
       // Part::~Part from already destroyed mPartsList/Ambiguous        
       mPartsAmbiguous.Reset();
-      for (auto& part : mPartsList) {
+      for (auto part : mPartsList) {
          THINGS_VERBOSE_SELF(
             "Tearing off part ", part, " at ", part->GetReferences(), " uses...");
          part->mOwners.Erase(this);
@@ -239,7 +239,7 @@ namespace Langulus::Things
       }
 
       // Propagate Teardown through the hierarchy of Things             
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->Teardown();
 
       if (not mFlow.IsPinned())
@@ -279,14 +279,14 @@ namespace Langulus::Things
       if (mPartsList) {
          const auto tab2 = Logger::Section(Logger::White, Logger::Underline,
             "Parts (", mPartsList.GetCount(), "):");
-         for (auto& part : mPartsList)
+         for (auto part : mPartsList)
             Logger::Verbose(*part);
       }
 
       if (mChildren) {
          const auto tab2 = Logger::Section(Logger::White, Logger::Underline,
             "Children (", mChildren.GetCount(), "):");
-         for (auto& child : mChildren)
+         for (auto child : mChildren)
             child->DumpHierarchy();
       }
    }
@@ -307,7 +307,7 @@ namespace Langulus::Things
          // This will execute any temporally based verbs and scripts    
          // Game logic basically happens in this flow                   
          Many unsusedSideeffects;
-         if (not (*mFlow)->Update(deltaTime, unsusedSideeffects))
+         if (not mFlow->Update(deltaTime, unsusedSideeffects))
             return false;
       }
 
@@ -320,7 +320,7 @@ namespace Langulus::Things
       }
 
       // Cascade the update down the hierarchy                          
-      for (auto& child : mChildren) {
+      for (auto child : mChildren) {
          if (not child->Update(deltaTime))
             return false;
       }
@@ -339,22 +339,22 @@ namespace Langulus::Things
       mRefreshRequired = false;
 
       // Refresh all parts                                              
-      for (auto& part : mPartsList)
+      for (auto part : mPartsList)
          part->Refresh();
 
       // And cascade down the hierarchy                                 
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->Refresh(true);
    }
 
    /// Reset the entity, clearing all children, parts, tags                   
    void Thing::Reset() {
       // Decouple all children from this parent                         
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->mOwner.Reset();
 
       // Decouple all parts from this owner                             
-      for (auto& part : mPartsList)
+      for (auto part : mPartsList)
          part->mOwners.Erase(this);
 
       mChildren.Reset();
@@ -372,10 +372,8 @@ namespace Langulus::Things
    auto Thing::GetPartMeta(DMeta id, size_t index) -> Part* {
       if (id) {
          // Search a typed tag                                          
-         const auto found = mPartsAmbiguous.Find(id);
-         return found
-            ? static_cast<Part*>((*found.GetVal())[index])
-            : static_cast<Part*>(nullptr);
+         auto found = mPartsAmbiguous.Find(id);
+         return found ? found.GetVal()[index] : nullptr;
       }
 
       // Get part by index only                                         
@@ -396,17 +394,17 @@ namespace Langulus::Things
    auto Thing::GetPartExt(DMeta meta, Many const& what, size_t index) -> Part* {
       if (meta) {
          // Search a typed part                                         
-         const auto found = mPartsAmbiguous.Find(meta);
+         auto found = mPartsAmbiguous.Find(meta);
          if (found) {
-            auto& bucket = *found.GetVal();
+            auto& bucket = found.GetVal();
             if (not what)
                return bucket[index];
 
             // Check all parts in that bucket for required properties   
-            for (auto& part : bucket) {
+            for (auto part : bucket) {
                if (part->CompareDescriptor(what)) {
                   // Match found                                        
-                  if (index == 0) return *part;
+                  if (index == 0) return part;
                   else --index;
                }
             }
@@ -414,10 +412,10 @@ namespace Langulus::Things
       }
       else {
          // Search part by index and properties only                    
-         for (auto& part : mPartsList) {
+         for (auto part : mPartsList) {
             if (part->CompareDescriptor(what)) {
                // Match found                                           
-               if (index == 0) return *part;
+               if (index == 0) return part;
                else --index;
             }
          }
@@ -469,10 +467,10 @@ namespace Langulus::Things
    ///   @return the child entity, or nullptr of none was found               
    auto Thing::GetNamedChild(Token const& name, size_t offset) -> Thing* {
       size_t matches = 0;
-      for (auto& child : mChildren) {
+      for (auto child : mChildren) {
          if (child->GetName() == name) {
             if (matches == offset)
-               return *child;
+               return child;
             ++matches;
          }
       }
@@ -492,7 +490,7 @@ namespace Langulus::Things
          return;
 
       mRuntime = newrt;
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->ResetRuntime(newrt);
    }
 
@@ -504,7 +502,7 @@ namespace Langulus::Things
          return;
 
       mFlow = newflow;
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->ResetFlow(newflow);
    }
 
@@ -544,7 +542,7 @@ namespace Langulus::Things
       mRuntime.Pin();
 
       // Dispatch the change to all children                            
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->ResetRuntime(**mRuntime);
 
       THINGS_VERBOSE_SELF("New runtime: ", &*mRuntime);
@@ -561,7 +559,7 @@ namespace Langulus::Things
       mFlow.Pin();
 
       // Dispatch the change to all children                            
-      for (auto& child : mChildren)
+      for (auto child : mChildren)
          child->ResetFlow(**mFlow);
 
       THINGS_VERBOSE_SELF("New flow: ", *mFlow);

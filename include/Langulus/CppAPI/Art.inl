@@ -71,7 +71,7 @@ namespace Langulus::Things
       if (not DecvqAllCast(self).Generate(tag))
          return nullptr;
 
-      const auto found = self.mDataListMap.Find(tag);
+      auto found = self.mDataListMap.Find(tag);
       return found ? &found.GetVal() : nullptr;
    }
 
@@ -89,9 +89,9 @@ namespace Langulus::Things
    template<CT::DefineTag T> LANGULUS(INLINED)
    void Art::Commit(auto&& content) {
       const auto tag = MetaTagOf<T>();
-      const auto found = mDataListMap.Find(tag);
+      auto found = mDataListMap.Find(tag);
       if (found)
-         *found.GetVal() << Many {LglsFwd(content)};
+         found.GetVal() << Many {LglsFwd(content)};
       else
          mDataListMap.Merge(tag, Many {LglsFwd(content)});
    }

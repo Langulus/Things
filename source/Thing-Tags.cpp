@@ -20,9 +20,9 @@ namespace Langulus::Things
    auto Thing::GetLocalTag(TMeta id, size_t index) -> Tag* {
       if (id) {
          // Search a typed tag                                          
-         const auto found = mTags.Find(id);
+         auto found = mTags.Find(id);
          if (found)
-            return &((*found.GetVal())[index]);
+            return &found.GetVal()[index];
          return nullptr;
       }
 
@@ -94,14 +94,14 @@ namespace Langulus::Things
       const auto tmeta = tag.GetTag();
       auto found = mTags.Find(tmeta);
       if (found) {
-         found.GetVal()->Insert(tag);
-         return found.GetVal()->GetAt(Index::Last);
+         found.GetVal().Insert(tag);
+         return found.GetVal().GetAt(Index::Last);
       }
 
       found = mTags.Merge(tmeta, tag);
       mRefreshRequired = true;
       THINGS_VERBOSE_SELF(tag, " added");
-      return found.GetVal()->Get();
+      return found.GetVal().Get();
    }
 
    /// Remove a tag from the universal entity                                 
@@ -110,7 +110,7 @@ namespace Langulus::Things
    auto Thing::RemoveTag(TMeta tag) -> size_t {
       const auto found = mTags.Find(tag);
       if (found) {
-         size_t const removed = found.GetVal()->GetCount();
+         size_t const removed = found.GetVal().GetCount();
          mTags.Erase(found);
          THINGS_VERBOSE_SELF(tag, " removed");
          mRefreshRequired = true;
@@ -124,9 +124,9 @@ namespace Langulus::Things
    ///   @param tag type and value to remove                                  
    ///   @return the number of removed tags                                   
    auto Thing::RemoveTag(Tag tag) -> size_t {
-      const auto found = mTags.Find(tag.GetTag());
+      auto found = mTags.Find(tag.GetTag());
       if (found) {
-         const auto removed = found.GetVal()->Erase(tag);
+         const auto removed = found.GetVal().Erase(tag);
          if (removed) {
             THINGS_VERBOSE_SELF(tag, " removed");
             mRefreshRequired = true;
@@ -142,7 +142,7 @@ namespace Langulus::Things
    ///   @return the number of matching tags                                  
    auto Thing::HasTags(TMeta tag) const -> size_t {
       const auto found = mTags.Find(tag);
-      return found ? found.GetVal()->GetCount() : 0;
+      return found ? found.GetVal().GetCount() : 0;
    }
 
    /// A fast check whether tags of the given type and value are inside       

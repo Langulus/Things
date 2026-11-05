@@ -100,6 +100,14 @@ LANGULUS_DEFINE_TAG(MouseScroll,
    "Mouse scroll for window");
 LANGULUS_DEFINE_TAG(NativeWindowHandle,
    "Native window handle");
+LANGULUS_DEFINE_TAG(Modal,
+   "Most occuring value in a set");
+LANGULUS_DEFINE_TAG(Smallest,
+   "The smallest value in a set");
+LANGULUS_DEFINE_TAG(Largest,
+   "The biggest value in a set");
+LANGULUS_DEFINE_TAG(Range,
+   "Context dependent range");
 
 namespace Langulus
 {   

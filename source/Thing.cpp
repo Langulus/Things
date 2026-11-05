@@ -7,7 +7,7 @@
 ///                                                                           
 #include <Langulus/Thing.hpp>
 #include <Langulus/Temporal.hpp>
-#include <Langulus/Describe.hpp>
+#include <Langulus/Annies/Functional/Describe.hpp>
 #include <Langulus/Profiler.hpp>
 #include "Thing.inl"
 

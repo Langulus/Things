@@ -10,6 +10,8 @@
 #include "Thing.inl"
 #include "Hierarchy-Seek.inl"
 
+#include <Langulus/Annies/Functional/Compare.hpp>
+
 
 namespace Langulus::Things
 {

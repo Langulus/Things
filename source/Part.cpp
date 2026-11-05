@@ -9,6 +9,11 @@
 #include <Langulus/Temporal.hpp>
 #include "Thing.inl"
 
+#include <Langulus/Annies/Functional/Compare.hpp>
+#include <Langulus/Annies/Functional/Deepen.hpp>
+#include <Langulus/Annies/Functional/Merge.hpp>
+#include <Langulus/Annies/Functional/ForEach.hpp>
+
 using namespace Langulus::Things;
 
 

@@ -13,6 +13,10 @@
 #include "Thing.inl"
 #include "Hierarchy-Gather.inl"
 
+#include <Langulus/Annies/Functional/Compare.hpp>
+#include <Langulus/Annies/Functional/ForEach.hpp>
+#include <Langulus/Annies/Functional/Deepen.hpp>
+
 
 namespace Langulus::Things
 {

@@ -8,6 +8,7 @@
 #include <Langulus/Thing.hpp>
 #include <Langulus/TTable.hpp>
 #include <Langulus/Profiler.hpp>
+#include <Langulus/Annies/Iterators/Handles.hpp>
 //#include <Langulus/MetaOf.hpp>
 
 #include <Langulus/CppAPI/Art.hpp>
@@ -228,8 +229,8 @@ namespace Langulus::Things
       // references. This minimizes references and destroys no longer   
       // referenced data.                                               
       for (auto& modlist : InValuesOf(mModules)) {
-         for (auto& mod : modlist)
-            (*mod)->Teardown();
+         for (auto mod : modlist)
+            mod->Teardown();
       }
 
       // Second-stage destruction: cycle through N libraries N^2        
@@ -498,7 +499,7 @@ namespace Langulus::Things
          Logger::Info("Module `", library.mInfo()->mName, 
             "` exposed the following types: ", Logger::DarkGreen);
          bool first = true;
-         for (auto& t : types) {
+         for (auto t : types) {
             if (not first) Logger::Append(", ");
             Logger::Append(DMeta(t));
             first = false;
@@ -554,14 +555,16 @@ namespace Langulus::Things
 
       Logger::Info("Unloading module `", library.mInfo()->mName, "`...");
 
-      for (auto list : mModules) {
-         for (auto mod : list.GetVal()) {
-            if (mod->Is(library.mModuleType)) {
+      for (auto list : IterateHandles(mModules)) {
+         for (auto mod : IterateHandles(list.GetVal())) {
+            // Assuming module instances are never owned by us          
+            auto mod_raw = (*mod);
+            if (mod_raw->Is(library.mModuleType)) {
                // Delete module instance                                
-               const auto modType = mod->GetType();
-               UnregisterAllBases(mModulesByType, mod, modType);
-               delete mod;
+               const auto modType = mod_raw->GetType();
+               UnregisterAllBases(mModulesByType, mod_raw, modType);
                mod = list.GetVal().Erase(mod);
+               delete mod_raw;
             }
          }
 

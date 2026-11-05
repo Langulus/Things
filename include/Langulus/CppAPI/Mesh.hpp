@@ -55,7 +55,7 @@ namespace Langulus::Things
       Mesh() : Downcastable {this} {}
 
       /// Interface                                                           
-      virtual auto GetLOD(Math::LOD const&) const -> Ref<Mesh> = 0;
+      virtual auto GetLOD(Math::LOD const&) const -> Ref<Things::Mesh> = 0;
 
       /// Capsulation                                                         
       template<CT::Topology, CT::Topology...>

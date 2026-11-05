@@ -8,7 +8,7 @@
 #pragma once
 #include <Langulus/Thing.hpp>
 #include <Langulus/Part.hpp>
-#include <Langulus/Describe.hpp>
+#include <Langulus/Annies/Functional/Describe.hpp>
 //#include <Langulus/CT/Pinnable.hpp>
 
 

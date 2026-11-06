@@ -9,6 +9,8 @@
 #include "Art.hpp"
 #include <Langulus/Math/Mapping.hpp>
 #include <Langulus/Math/Vector.hpp>
+#include <Langulus/Math/LOD.hpp>
+#include <Langulus/TRef.hpp>
 
 
 namespace Langulus::Things

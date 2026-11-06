@@ -101,27 +101,25 @@ namespace Langulus::Things
       auto GatherParts(this SELF&&)
          -> TMany<LglsMutIf(SELF, Part*)>;
 
-      template<Seek = Seek::HereAndAbove>
-      auto GatherPartsExt(this auto&&, DMeta, Many const&) -> TMany<Part*>;
-      template<CT::NotVoid T = Part, Seek = Seek::HereAndAbove>
-      auto GatherPartsExt(this auto&&, Many const&) -> TMany<T*>;
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto GatherPartsExt(this SELF&&, DMeta, Many const&) -> TMany<LglsMutIf(SELF, Part*)>;
+      template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
+      auto GatherPartsExt(this SELF&&, Many const&) -> TMany<LglsMutIf(SELF, T*)>;
 
       ///                                                                     
       /// MARK: Gather tags                                                   
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTags(this auto&&, TMeta = {}) -> TagList;
-      template<CT::DefineTag T, Seek = Seek::HereAndAbove> requires CT::Decayed<T>
-      auto GatherTags(this auto&&) -> TagList;
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto GatherTags(this SELF&&, TMeta = {}) -> TagList;
+      template<CT::DefineTag T, Seek = Seek::HereAndAbove, class SELF> requires CT::Decayed<T>
+      auto GatherTags(this SELF&&) -> TagList;
 
       template<class D, Seek = Seek::HereAndAbove, class SELF>
       auto GatherValues(this SELF const&) -> TMany<D>;
       
      
    #if LANGULUS_FEATURE(MANAGED_REFLECTION)
-      ///                                                                     
       /// MARK: Token based interface                                         
       /// Available only when managed reflection is enabled                   
-      ///                                                                     
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
       auto SeekPart(this SELF&&, Token const&, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
@@ -130,20 +128,20 @@ namespace Langulus::Things
       auto SeekPartAux(this SELF&&, Many const&, Token const&, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
       
-      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
-      auto SeekTag(this auto&&, Token const&, IDX&& = 0) -> Tag;
-      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
-      auto SeekTagAux(this auto&&, Many const&, Token const&, IDX&& = 0) -> Tag;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekTag(this SELF&&, Token const&, IDX&& = 0) -> Tag;
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      auto SeekTagAux(this SELF&&, Many const&, Token const&, IDX&& = 0) -> Tag;
 
-      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
-      bool SeekValue(this auto const&, Token const&, CT::NotVoid auto&, IDX&& = 0);
-      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
-      bool SeekValueAux(this auto const&, Token const&, Neat const&, CT::NotVoid auto&, IDX&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValue(this SELF const&, Token const&, CT::NotVoid auto&, IDX&& = 0);
+      template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
+      bool SeekValueAux(this SELF const&, Token const&, Neat const&, CT::NotVoid auto&, IDX&& = 0);
 
       template<Seek = Seek::HereAndAbove, class SELF>
       auto GatherParts(this SELF&&, Token const&) -> TMany<LglsMutIf(SELF, Part*)>;
-      template<Seek = Seek::HereAndAbove>
-      auto GatherTags(this auto&&, Token const&) -> TagList;
+      template<Seek = Seek::HereAndAbove, class SELF>
+      auto GatherTags(this SELF&&, Token const&) -> TagList;
    #endif
    };
 
@@ -153,7 +151,6 @@ namespace Langulus::Things
    ///                                                                        
    /// Container of Things, with various quality-of-life functions related to 
    /// hierarchical retrieval of sub-things, parts and tags.                  
-   ///                                                                        
    using Hierarchy = TMany<Thing*>;
    /*struct Hierarchy : TMany<Thing*>, SeekInterface {
       using Base        = TMany<Thing*>;

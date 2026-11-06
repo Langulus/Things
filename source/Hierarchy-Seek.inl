@@ -79,7 +79,8 @@ namespace Langulus::Things
    template<Seek SEEK, CT::Index IDX, class SELF>
    auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, DMeta meta, IDX&& offset) 
    -> LglsMutIf(SELF, Part*) {
-      LglsMutIf(SELF, Part*) result = nullptr;
+      using R = LglsMutIf(SELF, Part*);
+      R result = nullptr;
 
       // Scan descriptor even if hierarchy is empty                     
       if constexpr (SEEK & Seek::Here) {
@@ -88,7 +89,7 @@ namespace Langulus::Things
                // Found match                                           
                if (offset == 0) {
                   // We're done                                         
-                  result = part;
+                  result = const_cast<R>(part);
                   return Loop::Break;
                }
                else --offset;
@@ -108,10 +109,8 @@ namespace Langulus::Things
       if constexpr (SEEK & Seek::Above) {
          aux.ForEachDeep([&](Tags::Parent const& tag) -> LoopControl {
             tag.ForEach([&](Thing const& parent) {
-               if (nullptr != (result = parent.SeekPart<Seek::HereAndAbove>(meta, offset)))
-                  // Value was found                                    
-                  return Loop::Break;
-               return Loop::Continue;
+               result = const_cast<R>(parent.SeekPart<Seek::HereAndAbove>(meta, offset));
+               return result ? Loop::Break : Loop::Continue;
             });
             return result == nullptr;
          });
@@ -120,10 +119,8 @@ namespace Langulus::Things
       if constexpr (SEEK & Seek::Below) {
          aux.ForEachDeep([&](Tags::Child const& tag) -> LoopControl {
             tag.ForEach([&](Thing const& child) {
-               if (nullptr != (result = child.SeekPart<Seek::HereAndBelow>(meta, offset)))
-                  // Value was found                                    
-                  return Loop::Break;
-               return Loop::Continue;
+               result = const_cast<R>(child.SeekPart<Seek::HereAndBelow>(meta, offset));
+               return result ? Loop::Break : Loop::Continue;
             });
             return result == nullptr;
          });
@@ -211,7 +208,8 @@ namespace Langulus::Things
    template<Seek SEEK, CT::Index IDX, class SELF>
    auto SeekInterface::SeekPartAuxExt(this SELF&& self, DMeta meta, Many const& aux, Many const& ext, IDX&& offset)
    -> LglsMutIf(SELF, Part*) {
-      LglsMutIf(SELF, Part*) result = nullptr;
+      using R = LglsMutIf(SELF, Part*);
+      R result = nullptr;
 
       // Scan descriptor even if hierarchy is empty                     
       aux.ForEachDeep([&](Part const* u) {
@@ -220,7 +218,7 @@ namespace Langulus::Things
             // Found match                                              
             if (offset == 0) {
                // We're done                                            
-               result = u;
+               result = const_cast<R>(u);
                return Loop::Break;
             }
             else --offset;

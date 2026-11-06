@@ -31,6 +31,8 @@
 #include <Langulus/Annies/Functional/Compare.hpp>
 #include <Langulus/Annies/Functional/Merge.hpp>
 #include <Langulus/Annies/Functional/Insert.hpp>
+#include <Langulus/Annies/Functional/ForEach.hpp>
+#include <Langulus/Annies/Functional/Assign.hpp>
 
 #if LANGULUS_OS(WINDOWS)
    #include <Windows.h>

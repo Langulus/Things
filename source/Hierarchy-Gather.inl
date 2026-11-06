@@ -40,7 +40,7 @@ namespace Langulus::Things
 
          if constexpr (SEEK & Seek::Below) {
             // Seek children, if requested                              
-            for (auto& child : self.mChildren)
+            for (auto child : self.mChildren)
                result.Concat(child->template GatherParts<Seek::HereAndBelow>(meta));
          }
       }
@@ -73,12 +73,12 @@ namespace Langulus::Things
             // Handle some predefined tags here                         
             if (tag == MetaTagOf<Tags::Part>()) {
                // Gather all parts                                      
-               for (auto& part : self.mPartsList)
+               for (auto part : self.mPartsList)
                   result << Tags::Part {part};
             }
             else if (tag == MetaTagOf<Tags::Child>()) {
                // Gather all children                                   
-               for (auto& child : self.mChildren)
+               for (auto child : self.mChildren)
                   result << Tags::Part {child};
             }
             else if (tag == MetaTagOf<Tags::Runtime>()) {
@@ -96,9 +96,9 @@ namespace Langulus::Things
                result += found.GetVal();
 
             // Then check each part's static tags                     
-            for (auto& part : self.mPartsList) {
+            for (auto part : self.mPartsList) {
                size_t index = 0;
-               auto t = part->GetMember(tag, index);
+               auto t = part->GetMember(tag, {}, index);
                while (t) {
                   result <<= Tag::From(tag, t);
                   t = part->GetMember(tag, ++index);
@@ -114,7 +114,7 @@ namespace Langulus::Things
 
          if constexpr (SEEK & Seek::Below) {
             // Seek children, if requested                              
-            for (auto& child : self.mChildren)
+            for (auto child : self.mChildren)
                result += child->template GatherTags<Seek::HereAndBelow>(tag);
          }
       }
@@ -197,8 +197,8 @@ namespace Langulus::Things
          );
       }
       
-      template<Seek SEEK>
-      auto SeekInterface::GatherTags(this auto&& self, Token const& token)
+      template<Seek SEEK, class SELF>
+      auto SeekInterface::GatherTags(this SELF&& self, Token const& token)
       -> TagList {
          return self.template GatherTags<SEEK>(
             RTTI::Registry::GetMetaTagByToken(token)

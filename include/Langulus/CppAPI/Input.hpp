@@ -18,15 +18,14 @@ namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract input module                                                
-   ///                                                                        
    struct InputModule : virtual Module {
       using CTTI_Bases = Module;
-      InputModule() : Downcastable {this}, Module {nullptr} {}
+      InputModule() : Downcastable {this}
+                    , Module {nullptr} {}
    };
 
    ///                                                                        
    ///   Abstract input part                                                  
-   ///                                                                        
    struct Input : virtual Part {
       using CTTI_Bases = Part;
       Input() : Downcastable {this} {}
@@ -34,7 +33,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract input gatherer                                              
-   ///                                                                        
    struct InputGatherer : virtual Input {
       using CTTI_Bases = Input;
       using CTTI_Producer = InputModule;
@@ -48,8 +46,8 @@ namespace Langulus::Things
 
       /// Push an event to the queue                                          
       void PushEvent(Event const& e) {
-         const auto pair  = ::std::pair {e.GetEvent(), e.GetEventState()};
-         const auto found = mEventQueue.Find(pair);
+         const auto pair = ::std::pair {e.GetEvent(), e.GetEventState()};
+         auto found = mEventQueue.Find(pair);
          if (found) {
             // Event-state pair already exists, merge payload           
             found.GetVal().Concat(e.GetPayload());
@@ -63,7 +61,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract input listener                                              
-   ///                                                                        
    struct InputListener : virtual Input {
       using CTTI_Bases = Input;
       using CTTI_Producer = InputGatherer;

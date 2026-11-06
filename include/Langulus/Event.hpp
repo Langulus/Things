@@ -311,8 +311,8 @@ namespace Langulus
       namespace Langulus::Events { \
          EVENT::EVENT(Describe&& descriptor) { \
             SetEvent(MetaDataOf<EVENT>()); \
-            descriptor.ExtractData(*Get<EventState, 2>()); \
-            descriptor.ExtractTag<Tags::Data>(*this); \
+            descriptor->ExtractData(*Get<EventState, 2>()); \
+            descriptor->ExtractTag<Tags::Data>(*this); \
          } \
       }
 
@@ -339,8 +339,8 @@ namespace Langulus
       namespace Langulus::Keys { \
          EVENT::EVENT(Describe&& descriptor) { \
             SetEvent(MetaDataOf<EVENT>()); \
-            descriptor.ExtractData(*Get<EventState, 2>()); \
-            descriptor.ExtractTag<Tags::Data>(*this); \
+            descriptor->ExtractData(*Get<EventState, 2>()); \
+            descriptor->ExtractTag<Tags::Data>(*this); \
          } \
       }
 }

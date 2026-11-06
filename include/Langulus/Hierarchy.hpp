@@ -85,11 +85,11 @@ namespace Langulus::Things
       bool SeekValue(this SELF const&, CT::Tagged auto&, IDX&& = 0);
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      bool SeekValueAux(this SELF const&, TMeta, Many const&, auto&, IDX&& = 0);
+      bool SeekValueAux(this SELF const&, TMeta, Neat const&, auto&, IDX&& = 0);
       template<CT::DefineTag, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      bool SeekValueAux(this SELF const&, Many const&, CT::NotTagged auto&, IDX&& = 0);
+      bool SeekValueAux(this SELF const&, Neat const&, CT::NotTagged auto&, IDX&& = 0);
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      bool SeekValueAux(this SELF const&, Many const&, CT::Tagged auto&, IDX&& = 0);
+      bool SeekValueAux(this SELF const&, Neat const&, CT::Tagged auto&, IDX&& = 0);
 
       ///                                                                     
       /// MARK: Gather parts                                                  
@@ -138,7 +138,7 @@ namespace Langulus::Things
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
       bool SeekValue(this auto const&, Token const&, CT::NotVoid auto&, IDX&& = 0);
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t>
-      bool SeekValueAux(this auto const&, Token const&, Many const&, CT::NotVoid auto&, IDX&& = 0);
+      bool SeekValueAux(this auto const&, Token const&, Neat const&, CT::NotVoid auto&, IDX&& = 0);
 
       template<Seek = Seek::HereAndAbove, class SELF>
       auto GatherParts(this SELF&&, Token const&) -> TMany<LglsMutIf(SELF, Part*)>;

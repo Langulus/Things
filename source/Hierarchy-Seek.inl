@@ -421,7 +421,7 @@ namespace Langulus::Things
    ///   @param offset the Nth matching tag to use                            
    ///   @return shallow copy of the tag if found                             
    template<Seek SEEK, CT::Index IDX, class SELF>
-   bool SeekInterface::SeekValueAux(this SELF const& self, TMeta meta, Many const& aux, auto& output, IDX&& offset) {
+   bool SeekInterface::SeekValueAux(this SELF const& self, TMeta meta, Neat const& aux, auto& output, IDX&& offset) {
       using D = Deref<decltype(output)>;
       if constexpr (CT::Pinnable<D>) {
          // Never touch pinned values                                   
@@ -539,7 +539,7 @@ namespace Langulus::Things
    
    /// Same as above, but derives the tag we search from the output           
    template<Seek SEEK, CT::Index IDX, class SELF>
-   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::Tagged auto& output, IDX&& offset) {
+   bool SeekInterface::SeekValueAux(this SELF const& self, Neat const& aux, CT::Tagged auto& output, IDX&& offset) {
       using TAGS = TagsOf<decltype(output)>;
       return ForEachOr(TAGS{}, [&]<class T>() {
          return self.template SeekValueAux<SEEK>(MetaTagOf<T>(), aux, output, offset);
@@ -548,7 +548,7 @@ namespace Langulus::Things
 
    /// Same as above, but you can specify tag manually at compile-time        
    template<CT::DefineTag T, Seek SEEK, CT::Index IDX, class SELF>
-   bool SeekInterface::SeekValueAux(this SELF const& self, Many const& aux, CT::NotTagged auto& output, IDX&& offset) {
+   bool SeekInterface::SeekValueAux(this SELF const& self, Neat const& aux, CT::NotTagged auto& output, IDX&& offset) {
       return self.template SeekValueAux<SEEK>(MetaTagOf<T>(), aux, output, offset);
    }
 
@@ -599,7 +599,7 @@ namespace Langulus::Things
       }
      
       template<Seek SEEK, CT::Index IDX, class SELF>
-      bool SeekInterface::SeekValueAux(this SELF const& self, Token const& tag, Many const& aux, CT::NotVoid auto& output, IDX&& offset) {
+      bool SeekInterface::SeekValueAux(this SELF const& self, Token const& tag, Neat const& aux, CT::NotVoid auto& output, IDX&& offset) {
          return self.template SeekValueAux<SEEK>(
             RTTI::Registry::GetMetaTagByToken(tag),
             aux, output, offset

@@ -8,6 +8,10 @@
 #include <Langulus/SerializeText.hpp>
 #include <Langulus/Annies/Functional/Compare.hpp>
 #include <Langulus/Annies/Functional/Describe.hpp>
+#include <Langulus/Annies/Functional/Deepen.hpp>
+#include <Langulus/Annies/Functional/Insert.hpp>
+#include <Langulus/Annies/Functional/Assign.hpp>
+#include <Langulus/Annies/Functional/ForEach.hpp>
 #include <Langulus/Annies/Components/Stack.hpp>
 #include <Langulus/Event.hpp>
 
@@ -16,9 +20,9 @@ namespace Langulus
 {
    /// Descriptor-construction                                                
    Event::Event(Describe&& describe) : Event {} {
-      LglsAssert(describe.ExtractData(*Get<DMeta, 1>()), "Invalid event");
-      describe.ExtractData(*Get<EventState, 2>());
-      describe.ExtractTag<Tags::Data>(*this);
+      LglsAssert(describe->ExtractData(*Get<DMeta, 1>()), "Invalid event");
+      describe->ExtractData(*Get<EventState, 2>());
+      describe->ExtractTag<Tags::Data>(*this);
       SetTimestamp(SteadyClock::Now());
    }
 

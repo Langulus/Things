@@ -27,6 +27,11 @@
 #include <Langulus/CppAPI/User.hpp>
 #include <Langulus/CppAPI/Economy.hpp>
 
+#include <Langulus/Annies/Functional/Remove.hpp>
+#include <Langulus/Annies/Functional/Compare.hpp>
+#include <Langulus/Annies/Functional/Merge.hpp>
+#include <Langulus/Annies/Functional/Insert.hpp>
+
 #if LANGULUS_OS(WINDOWS)
    #include <Windows.h>
 #endif
@@ -110,7 +115,7 @@ namespace
          UnregisterAllBases(map, module, base.type);
       }
 
-      const auto found = map.Find(type);
+      auto found = map.Find(type);
       if (found) {
          auto& list = found.GetVal();
          if (list.Erase(module) and not list) {
@@ -345,7 +350,7 @@ namespace Langulus::Things
          Logger::Error("Registering module `", info->mName, "` failed");
 
          // Make sure we end up in an invariant state                   
-         const auto found = mModules.Find(info->mPriority);
+         auto found = mModules.Find(info->mPriority);
          if (found) {
             found.GetVal().Erase(module);
             if (not found.GetVal())

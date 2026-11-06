@@ -19,7 +19,8 @@ namespace Langulus::Things
    ///   Abstract physical module                                             
    struct PhysicalModule : virtual Module {
       using CTTI_Bases = Module;
-      PhysicalModule() : Downcastable {this}, Module {nullptr} {}
+      PhysicalModule() : Downcastable {this}
+                       , Module {nullptr} {}
    };
 
    ///                                                                        

@@ -31,6 +31,9 @@ namespace Langulus
                      // once, immediately                               
          Begin = 1,  // The beginning of an event, such as key press    
          End   = 2,  // The end of an event, such as key release        
+
+         // Hold event, generated inbetween Begin and End events        
+         Hold  = Begin|End  
       };
 
       using CTTI_Values = Values<Enum::Point, Enum::Begin, Enum::End>;

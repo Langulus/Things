@@ -7,9 +7,15 @@
 ///                                                                           
 #include <Langulus/Thing.hpp>
 #include <Langulus/Temporal.hpp>
+#include <Langulus/Profiler.hpp>
+
 #include <Langulus/Annies/Functional/Describe.hpp>
 #include <Langulus/Annies/Functional/Compare.hpp>
-#include <Langulus/Profiler.hpp>
+#include <Langulus/Annies/Functional/Merge.hpp>
+#include <Langulus/Annies/Functional/Assign.hpp>
+#include <Langulus/Annies/Functional/Remove.hpp>
+#include <Langulus/Annies/Functional/Deepen.hpp>
+#include <Langulus/Annies/Functional/ForEach.hpp>
 #include "Thing.inl"
 
 

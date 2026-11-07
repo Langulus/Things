@@ -31,6 +31,9 @@ namespace Langulus::Things
       Input() : Downcastable {this} {}
    };
 
+   using EventSignature = ::std::pair<RTTI::DMeta, EventState>;
+   using EventQueue = TMapUnsorted<EventSignature, Event>;
+
    ///                                                                        
    ///   Abstract input gatherer                                              
    struct InputGatherer : virtual Input {
@@ -39,22 +42,22 @@ namespace Langulus::Things
 
    protected:
       // Accumulated events, dispatched on each Update() to listeners   
-      TMapUnsorted<::std::pair<RTTI::DMeta, EventState>, Event> mEventQueue;
+      EventQueue mEventQueue;
 
    public:
       InputGatherer() : Downcastable {this} {}
 
       /// Push an event to the queue                                          
       void PushEvent(Event const& e) {
-         const auto pair = ::std::pair {e.GetEvent(), e.GetEventState()};
-         auto found = mEventQueue.Find(pair);
+         const auto signature = EventSignature {e.GetEvent(), e.GetEventState()};
+         auto found = mEventQueue.Find(signature);
          if (found) {
             // Event-state pair already exists, merge payload           
             found.GetVal().Concat(e.GetPayload());
          }
          else {
             // Event-state pair doesn't exist yet                       
-            mEventQueue.Merge(pair, e);
+            mEventQueue.Merge(signature, e);
          }
       }
    };

@@ -292,12 +292,15 @@ namespace Langulus::Things
          return {};
 
       Many soughtDecayed;
-      if (soughtt->template CastsTo<Math::Triangle3>())
-         soughtDecayed = soughtt->template ReinterpretAs<TMany<Math::Vec3>>();
-      else if (soughtt->template CastsTo<Math::Triangle2>())
-         soughtDecayed = soughtt->template ReinterpretAs<TMany<Math::Vec2>>();
-      else
-         soughtDecayed = *soughtt;
+      if (soughtt->template CastsTo<Math::Triangle3>()) {
+         soughtDecayed.SetType<Math::Vec3>();
+         soughtt->ConvertTo(soughtDecayed);
+      }
+      else if (soughtt->template CastsTo<Math::Triangle2>()) {
+         soughtDecayed.SetType<Math::Vec2>();
+         soughtt->ConvertTo(soughtDecayed);
+      }
+      else soughtDecayed = *soughtt;
 
       Many result;
       result.Concat(soughtDecayed.GetHandle() + indices[0]);
@@ -382,12 +385,15 @@ namespace Langulus::Things
          return {};
 
       Many soughtDecayed;
-      if (soughtt->template CastsTo<Math::Triangle3>())
-         soughtDecayed = soughtt->template ReinterpretAs<Math::Vec3>();
-      else if (soughtt->template CastsTo<Math::Triangle2>())
-         soughtDecayed = soughtt->template ReinterpretAs<Math::Vec2>();
-      else
-         soughtDecayed = *soughtt;
+      if (soughtt->template CastsTo<Math::Triangle3>()) {
+         soughtDecayed.SetType<Math::Vec3>();
+         soughtt->ConvertTo(soughtDecayed);
+      }
+      else if (soughtt->template CastsTo<Math::Triangle2>()) {
+         soughtDecayed.SetType<Math::Vec2>();
+         soughtt->ConvertTo(soughtDecayed);
+      }
+      else soughtDecayed = *soughtt;
 
       Many result;
       result.Concat(soughtDecayed.GetHandle() + indices[0]);

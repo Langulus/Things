@@ -101,7 +101,7 @@ namespace Langulus::Things
                auto t = part->GetMember(tag, {}, index);
                while (t) {
                   result <<= Tag::From(tag, t);
-                  t = part->GetMember(tag, ++index);
+                  t = part->GetMember(tag, {}, ++index);
                }
             }
          }

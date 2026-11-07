@@ -293,9 +293,9 @@ namespace Langulus::Things
 
       Many soughtDecayed;
       if (soughtt->template CastsTo<Math::Triangle3>())
-         soughtDecayed = soughtt->template ReinterpretAs<Math::Vec3>();
+         soughtDecayed = soughtt->template ReinterpretAs<TMany<Math::Vec3>>();
       else if (soughtt->template CastsTo<Math::Triangle2>())
-         soughtDecayed = soughtt->template ReinterpretAs<Math::Vec2>();
+         soughtDecayed = soughtt->template ReinterpretAs<TMany<Math::Vec2>>();
       else
          soughtDecayed = *soughtt;
 

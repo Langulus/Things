@@ -11,6 +11,10 @@
 #include "Hierarchy-Seek.inl"
 
 #include <Langulus/Annies/Functional/Compare.hpp>
+#include <Langulus/Annies/Functional/Insert.hpp>
+#include <Langulus/Annies/Functional/Merge.hpp>
+#include <Langulus/Annies/Functional/Remove.hpp>
+#include <Langulus/Annies/Functional/Assign.hpp>
 
 
 namespace Langulus::Things

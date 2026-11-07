@@ -159,13 +159,14 @@ namespace Langulus
       ///   @param event what is the event?                                   
       ///   @param arguments... arguments for the descriptor                  
       ///   @return the new event instance                                    
-      static Event Of(DMeta event, auto&&...arguments) {
+      static Event From(DMeta event, EventState state, auto&&...arguments) {
          Event result {LglsFwd(arguments)...};
          result.SetEvent(event);
+         result.SetEventState(state);
          return Abandon(result);
       }
    
-      static Event Of(Event const& event, auto&&...arguments) {
+      static Event Like(Event const& event, auto&&...arguments) {
          Event result {LglsFwd(arguments)...};
          result.SetEvent(event.GetType());
          return Abandon(result);

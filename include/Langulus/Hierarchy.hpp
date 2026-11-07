@@ -94,17 +94,14 @@ namespace Langulus::Things
       ///                                                                     
       /// MARK: Gather parts                                                  
       template<Seek = Seek::HereAndAbove, class SELF>
-      auto GatherParts(this SELF&&, DMeta)
-         -> TMany<LglsMutIf(SELF, Part*)>;
-
+      auto GatherParts(this SELF&&, DMeta) -> TMany<LglsMutIf(SELF, Part*)>;
       template<CT::Part P, Seek = Seek::HereAndAbove, class SELF> requires CT::Decayed<P>
-      auto GatherParts(this SELF&&)
-         -> TMany<LglsMutIf(SELF, Part*)>;
+      auto GatherParts(this SELF&&) -> TMany<LglsMutIf(SELF, Part*)>;
 
-      template<Seek = Seek::HereAndAbove, class SELF>
+      /*template<Seek = Seek::HereAndAbove, class SELF>
       auto GatherPartsExt(this SELF&&, DMeta, Many const&) -> TMany<LglsMutIf(SELF, Part*)>;
       template<CT::Part T = Part, Seek = Seek::HereAndAbove, class SELF>
-      auto GatherPartsExt(this SELF&&, Many const&) -> TMany<LglsMutIf(SELF, T*)>;
+      auto GatherPartsExt(this SELF&&, Many const&) -> TMany<LglsMutIf(SELF, Part*)>;*/
 
       ///                                                                     
       /// MARK: Gather tags                                                   

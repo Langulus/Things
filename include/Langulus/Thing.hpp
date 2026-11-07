@@ -481,7 +481,7 @@ namespace Langulus::Things
    extern template auto SeekInterface::GatherParts<Seek::HereAndAbove,  Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
    extern template auto SeekInterface::GatherParts<Seek::HereAndBelow,  Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
 
-   extern template auto SeekInterface::GatherPartsExt<Seek::Below,         Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+   /*extern template auto SeekInterface::GatherPartsExt<Seek::Below,         Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
    extern template auto SeekInterface::GatherPartsExt<Seek::Above,         Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
    extern template auto SeekInterface::GatherPartsExt<Seek::Duplex,        Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
    extern template auto SeekInterface::GatherPartsExt<Seek::Here,          Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
@@ -512,7 +512,7 @@ namespace Langulus::Things
    extern template auto SeekInterface::GatherPartsExt<Part, Seek::Everywhere,    Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
    extern template auto SeekInterface::GatherPartsExt<Part, Seek::HereAndAbove,  Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
    extern template auto SeekInterface::GatherPartsExt<Part, Seek::HereAndBelow,  Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
-
+*/
    extern template auto SeekInterface::GatherTags<Seek::Below,         Thing>(this Thing&&, TMeta) -> TagList;
    extern template auto SeekInterface::GatherTags<Seek::Above,         Thing>(this Thing&&, TMeta) -> TagList;
    extern template auto SeekInterface::GatherTags<Seek::Duplex,        Thing>(this Thing&&, TMeta) -> TagList;

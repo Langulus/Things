@@ -16,9 +16,6 @@
 
 namespace Langulus::Things
 {
-   using Flow::Seek;
-
-
    ///                                                                        
    /// MARK: Seek interface                                                   
    ///                                                                        

@@ -694,7 +694,7 @@ namespace Langulus::CTTI
 
          const bool state_depicted = static_cast<bool>(event.GetEventState());
          if (state_depicted)
-            out += Annies::Text::Named(event.GetEventState());
+            out += event.GetEventState();
 
          if (event.GetPayload()) {
             if (state_depicted)
@@ -707,6 +707,13 @@ namespace Langulus::CTTI
    };
 }
 
+/// Convert EventState -> Text                                                
+LANGULUS_MORPHISM_CUSTOM(EventState,
+   { return Annies::Text::Named(from); },
+   Annies::Text
+);
+
+/// Convert Event -> Text                                                     
 LANGULUS_MORPHISM_CUSTOM(Langulus::Event, {
    Annies::Text text;
    Langulus::Serialize(from, text);

@@ -137,7 +137,7 @@ TEMPLATE_TEST_CASE("Testing Thing with different kidns of descriptors",
       }
 
       WHEN("Creating a new part") {
-         auto part = root.CreateUnit<TestUnit1>();
+         auto part = root.CreatePart<TestUnit1>();
 
          REQUIRE(root.GetOwner() == nullptr);
          REQUIRE(root.GetRuntime() == nullptr);

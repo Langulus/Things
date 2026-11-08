@@ -7,21 +7,21 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
 namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract life module                                                 
-   ///                                                                        
    struct Life : virtual Module {
       using CTTI_Bases = Module;
-      Life() : Downcastable {this}, Module {nullptr} {}
+      Life() : Downcastable {this}
+             , Module {nullptr} {}
    };
 
    ///                                                                        
    ///   Abstract life part                                                   
-   ///                                                                        
    struct LifeUnit : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = Life;
@@ -30,7 +30,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract ecosystem                                                   
-   ///                                                                        
    struct Ecosystem : virtual LifeUnit {
       using CTTI_Bases = LifeUnit;
       Ecosystem() : Downcastable {this} {}
@@ -38,7 +37,6 @@ namespace Langulus::Things
    
    ///                                                                        
    ///   Abstract organism                                                    
-   ///                                                                        
    struct Organism : virtual LifeUnit {
       using CTTI_Bases = LifeUnit;
       using CTTI_Producer = Ecosystem;

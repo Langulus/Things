@@ -152,7 +152,7 @@ namespace Langulus
       }
 
       /// Descriptor-construction                                             
-      Event(Describe&&);
+      LANGULUS_API(THINGS) Event(Describe&&);
 
       constexpr ~Event() noexcept {
          this->Destroy();
@@ -276,7 +276,7 @@ namespace Langulus
       using Comparison<>::operator <=>;
       //using Comparison<>::operator ==;
 
-      bool operator == (Event const& other) const noexcept;
+      LANGULUS_API(THINGS) bool operator == (Event const& other) const noexcept;
 
       template<CT::Event C> requires (not Same<C, Event>)
       constexpr bool operator == (C const& other) const noexcept {
@@ -303,7 +303,7 @@ namespace Langulus
             using CTTI_Bases        = Event; \
             using CTTI_DefineEvent  = Yes<#EVENT>; \
             EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
-            EVENT(Describe&&); \
+            LANGULUS_API(THINGS) EVENT(Describe&&); \
             EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \
                SetEvent(MetaDataOf<EVENT>()); \
                SetEventState(state); \
@@ -331,7 +331,7 @@ namespace Langulus
             using CTTI_Bases        = Event; \
             using CTTI_DefineEvent  = Yes<#EVENT>; \
             EVENT() { SetEvent(MetaDataOf<EVENT>()); } \
-            EVENT(Describe&&); \
+            LANGULUS_API(THINGS) EVENT(Describe&&); \
             EVENT(EventState state, auto&&...a) : Event {LglsFwd(a)...} { \
                SetEvent(MetaDataOf<EVENT>()); \
                SetEventState(state); \

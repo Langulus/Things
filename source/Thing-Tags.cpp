@@ -8,8 +8,7 @@
 #include <Langulus/TTable.hpp>
 #include <Langulus/Thing.hpp>
 #include "Thing.inl"
-#include "Hierarchy-Seek.inl"
-
+#include <Langulus/Things/Hierarchy-Seek.inl>
 #include <Langulus/Annies/Functional/Compare.hpp>
 #include <Langulus/Annies/Functional/Insert.hpp>
 #include <Langulus/Annies/Functional/Merge.hpp>

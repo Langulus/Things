@@ -303,6 +303,7 @@ static_assert(    ::fmt::is_formattable<::Langulus::Things::Thing>::value);
 static_assert(not ::fmt::is_formattable<::Langulus::Things::Thing*>::value);        // libfmt never formats pointers
 static_assert(not ::fmt::is_formattable<::Langulus::Things::Thing const*>::value);  // libfmt never formats pointers
 
+#if defined(LANGULUS_EXPORT_ALL) or defined(LANGULUS_EXPORT_THINGS)
 namespace Langulus::Things
 {
    extern template auto SeekInterface::SeekPart<Seek::Below,         size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
@@ -627,3 +628,330 @@ namespace Langulus::Things
    extern template auto SeekInterface::GatherTags<Seek::HereAndBelow,  Thing const>(this Thing const&&, Token const&) -> TagList;
 #endif
 }
+#else
+namespace Langulus::Things
+{
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Below,         size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Above,         size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Duplex,        size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Here,          size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Everywhere,    size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, DMeta, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Below,         size_t, Thing const>(this Thing const&&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Above,         size_t, Thing const>(this Thing const&&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Duplex,        size_t, Thing const>(this Thing const&&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Here,          size_t, Thing const>(this Thing const&&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, DMeta, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Below,         size_t, Thing>(this Thing&&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Above,         size_t, Thing>(this Thing&&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Duplex,        size_t, Thing>(this Thing&&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Here,          size_t, Thing>(this Thing&&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Everywhere,    size_t, Thing>(this Thing&&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::HereAndAbove,  size_t, Thing>(this Thing&&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::HereAndBelow,  size_t, Thing>(this Thing&&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Below,         size_t, Thing const>(this Thing const&&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Above,         size_t, Thing const>(this Thing const&&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Duplex,        size_t, Thing const>(this Thing const&&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Here,          size_t, Thing const>(this Thing const&&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::Everywhere,    size_t, Thing const>(this Thing const&&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Part, Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Below,         size_t, Thing>(this Thing&&, Many const&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Above,         size_t, Thing>(this Thing&&, Many const&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Duplex,        size_t, Thing>(this Thing&&, Many const&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Here,          size_t, Thing>(this Thing&&, Many const&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Everywhere,    size_t, Thing>(this Thing&&, Many const&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Many const&, DMeta, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Many const&, DMeta, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Below,         size_t, Thing const>(this Thing const&&, Many const&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Above,         size_t, Thing const>(this Thing const&&, Many const&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Duplex,        size_t, Thing const>(this Thing const&&, Many const&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Here,          size_t, Thing const>(this Thing const&&, Many const&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Many const&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Many const&, DMeta, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Many const&, DMeta, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Below,         size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Above,         size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Duplex,        size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Here,          size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Everywhere,    size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Below,         size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Above,         size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Duplex,        size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Here,          size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Part, Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Below,         size_t, Thing>(this Thing&&, DMeta, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Above,         size_t, Thing>(this Thing&&, DMeta, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Duplex,        size_t, Thing>(this Thing&&, DMeta, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Here,          size_t, Thing>(this Thing&&, DMeta, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Everywhere,    size_t, Thing>(this Thing&&, DMeta, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, DMeta, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, DMeta, Many const&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Below,         size_t, Thing const>(this Thing const&&, DMeta, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Above,         size_t, Thing const>(this Thing const&&, DMeta, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Duplex,        size_t, Thing const>(this Thing const&&, DMeta, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Here,          size_t, Thing const>(this Thing const&&, DMeta, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, DMeta, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, DMeta, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, DMeta, Many const&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Below,         size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Above,         size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Duplex,        size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Here,          size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Everywhere,    size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Many const&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Below,         size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Above,         size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Duplex,        size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Here,          size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartExt<Part, Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Many const&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Below,         size_t, Thing>(this Thing&&, DMeta, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Above,         size_t, Thing>(this Thing&&, DMeta, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Duplex,        size_t, Thing>(this Thing&&, DMeta, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Here,          size_t, Thing>(this Thing&&, DMeta, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Everywhere,    size_t, Thing>(this Thing&&, DMeta, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, DMeta, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, DMeta, Many const&, Many const&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Below,         size_t, Thing const>(this Thing const&&, DMeta, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Above,         size_t, Thing const>(this Thing const&&, DMeta, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Duplex,        size_t, Thing const>(this Thing const&&, DMeta, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Here,          size_t, Thing const>(this Thing const&&, DMeta, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, DMeta, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, DMeta, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, DMeta, Many const&, Many const&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Below,         size_t, Thing>(this Thing&&, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Above,         size_t, Thing>(this Thing&&, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Duplex,        size_t, Thing>(this Thing&&, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Here,          size_t, Thing>(this Thing&&, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Everywhere,    size_t, Thing>(this Thing&&, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Many const&, Many const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Many const&, Many const&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Below,         size_t, Thing const>(this Thing const&&, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Above,         size_t, Thing const>(this Thing const&&, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Duplex,        size_t, Thing const>(this Thing const&&, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Here,          size_t, Thing const>(this Thing const&&, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Many const&, Many const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAuxExt<Part, Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Many const&, Many const&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Below,         size_t, Thing>(this Thing&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Above,         size_t, Thing>(this Thing&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Duplex,        size_t, Thing>(this Thing&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Here,          size_t, Thing>(this Thing&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Everywhere,    size_t, Thing>(this Thing&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, TMeta, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Below,         size_t, Thing const>(this Thing const&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Above,         size_t, Thing const>(this Thing const&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Duplex,        size_t, Thing const>(this Thing const&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Here,          size_t, Thing const>(this Thing const&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, TMeta, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Below,         size_t, Thing>(this Thing&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Above,         size_t, Thing>(this Thing&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Duplex,        size_t, Thing>(this Thing&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Here,          size_t, Thing>(this Thing&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Everywhere,    size_t, Thing>(this Thing&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Many const&, TMeta, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Below,         size_t, Thing const>(this Thing const&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Above,         size_t, Thing const>(this Thing const&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Duplex,        size_t, Thing const>(this Thing const&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Here,          size_t, Thing const>(this Thing const&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Many const&, TMeta, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Many const&, TMeta, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Below,         Thing>(this Thing&&, DMeta) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Above,         Thing>(this Thing&&, DMeta) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Duplex,        Thing>(this Thing&&, DMeta) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Here,          Thing>(this Thing&&, DMeta) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Everywhere,    Thing>(this Thing&&, DMeta) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndAbove,  Thing>(this Thing&&, DMeta) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndBelow,  Thing>(this Thing&&, DMeta) -> TMany<Part*>;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Below,         Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Above,         Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Duplex,        Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Here,          Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Everywhere,    Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndAbove,  Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndBelow,  Thing const>(this Thing const&&, DMeta) -> TMany<Part const*>;
+
+   /*
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Below,         Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Above,         Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Duplex,        Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Here,          Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Everywhere,    Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::HereAndAbove,  Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::HereAndBelow,  Thing>(this Thing&&, DMeta, Many const&) -> TMany<Part*>;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Below,         Thing const>(this Thing const&&, DMeta, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Above,         Thing const>(this Thing const&&, DMeta, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Duplex,        Thing const>(this Thing const&&, DMeta, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Here,          Thing const>(this Thing const&&, DMeta, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::Everywhere,    Thing const>(this Thing const&&, DMeta, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::HereAndAbove,  Thing const>(this Thing const&&, DMeta, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Seek::HereAndBelow,  Thing const>(this Thing const&&, DMeta, Many const&) -> TMany<Part const*>;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Below,         Thing>(this Thing&&, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Above,         Thing>(this Thing&&, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Duplex,        Thing>(this Thing&&, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Here,          Thing>(this Thing&&, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Everywhere,    Thing>(this Thing&&, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::HereAndAbove,  Thing>(this Thing&&, Many const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::HereAndBelow,  Thing>(this Thing&&, Many const&) -> TMany<Part*>;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Below,         Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Above,         Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Duplex,        Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Here,          Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::Everywhere,    Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::HereAndAbove,  Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherPartsExt<Part, Seek::HereAndBelow,  Thing const>(this Thing const&&, Many const&) -> TMany<Part const*>;
+*/
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Below,         Thing>(this Thing&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Above,         Thing>(this Thing&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Duplex,        Thing>(this Thing&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Here,          Thing>(this Thing&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Everywhere,    Thing>(this Thing&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndAbove,  Thing>(this Thing&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndBelow,  Thing>(this Thing&&, TMeta) -> TagList;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Below,         Thing const>(this Thing const&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Above,         Thing const>(this Thing const&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Duplex,        Thing const>(this Thing const&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Here,          Thing const>(this Thing const&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Everywhere,    Thing const>(this Thing const&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndAbove,  Thing const>(this Thing const&&, TMeta) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndBelow,  Thing const>(this Thing const&&, TMeta) -> TagList;
+
+#if LANGULUS_FEATURE(MANAGED_REFLECTION)
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Below,         size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Above,         size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Duplex,        size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Here,          size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Everywhere,    size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Below,         size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Above,         size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Duplex,        size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Here,          size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPart<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Below,         size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Above,         size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Duplex,        size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Here,          size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Everywhere,    size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Part*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Part*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Below,         size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Above,         size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Duplex,        size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Here,          size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Part const*;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekPartAux<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Part const*;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Below,         size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Above,         size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Duplex,        size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Here,          size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Everywhere,    size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Token const&, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Below,         size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Above,         size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Duplex,        size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Here,          size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTag<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Token const&, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Below,         size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Above,         size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Duplex,        size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Here,          size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Everywhere,    size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndAbove,  size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndBelow,  size_t, Thing>(this Thing&&, Many const&, Token const&, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Below,         size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Above,         size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Duplex,        size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Here,          size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::Everywhere,    size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndAbove,  size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Tag;
+   template LANGULUS_IMPORT() auto SeekInterface::SeekTagAux<Seek::HereAndBelow,  size_t, Thing const>(this Thing const&&, Many const&, Token const&, size_t&&) -> Tag;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Below,         Thing>(this Thing&&, Token const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Above,         Thing>(this Thing&&, Token const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Duplex,        Thing>(this Thing&&, Token const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Here,          Thing>(this Thing&&, Token const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Everywhere,    Thing>(this Thing&&, Token const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndAbove,  Thing>(this Thing&&, Token const&) -> TMany<Part*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndBelow,  Thing>(this Thing&&, Token const&) -> TMany<Part*>;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Below,         Thing const>(this Thing const&&, Token const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Above,         Thing const>(this Thing const&&, Token const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Duplex,        Thing const>(this Thing const&&, Token const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Here,          Thing const>(this Thing const&&, Token const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::Everywhere,    Thing const>(this Thing const&&, Token const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndAbove,  Thing const>(this Thing const&&, Token const&) -> TMany<Part const*>;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherParts<Seek::HereAndBelow,  Thing const>(this Thing const&&, Token const&) -> TMany<Part const*>;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Below,         Thing>(this Thing&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Above,         Thing>(this Thing&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Duplex,        Thing>(this Thing&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Here,          Thing>(this Thing&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Everywhere,    Thing>(this Thing&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndAbove,  Thing>(this Thing&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndBelow,  Thing>(this Thing&&, Token const&) -> TagList;
+
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Below,         Thing const>(this Thing const&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Above,         Thing const>(this Thing const&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Duplex,        Thing const>(this Thing const&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Here,          Thing const>(this Thing const&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::Everywhere,    Thing const>(this Thing const&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndAbove,  Thing const>(this Thing const&&, Token const&) -> TagList;
+   template LANGULUS_IMPORT() auto SeekInterface::GatherTags<Seek::HereAndBelow,  Thing const>(this Thing const&&, Token const&) -> TagList;
+#endif
+}
+#endif

@@ -9,7 +9,6 @@
 #include <Langulus/Thing.hpp>
 #include <Langulus/Part.hpp>
 #include <Langulus/Annies/Functional/Describe.hpp>
-//#include <Langulus/CT/Pinnable.hpp>
 
 
 namespace Langulus::Things

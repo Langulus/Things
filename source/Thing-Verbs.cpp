@@ -11,8 +11,7 @@
 #include <Langulus/Verbs/Interpret.hpp>
 #include <Langulus/CppAPI/AI.hpp>
 #include "Thing.inl"
-#include "Hierarchy-Gather.inl"
-
+#include <Langulus/Things/Hierarchy-Gather.inl>
 #include <Langulus/Annies/Functional/Compare.hpp>
 #include <Langulus/Annies/Functional/ForEach.hpp>
 #include <Langulus/Annies/Functional/Deepen.hpp>

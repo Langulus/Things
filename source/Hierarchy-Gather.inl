@@ -49,8 +49,10 @@ namespace Langulus::Things
    }
 
    template<CT::Part P, Seek SEEK, class SELF> requires CT::Decayed<P>
-   auto SeekInterface::GatherParts(this SELF&& self) -> TMany<LglsMutIf(SELF, Part*)> {
-      return self.template GatherParts<SEEK>(MetaDataOf<P>());
+   auto SeekInterface::GatherParts(this SELF&& self) -> TMany<LglsMutIf(SELF, P*)> {
+      TMany<LglsMutIf(SELF, P*)> concretized;
+      self.template GatherParts<SEEK>(MetaDataOf<P>()).ConvertTo(concretized); //TODO could probably be optimized in place to avoid new allocation with a dedicated conversion routine
+      return concretized;
    }
 
    /// Collects all tags of the given type inside the hierarchy               

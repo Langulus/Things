@@ -16,7 +16,8 @@ namespace Langulus::Things
    ///   Abstract graphics module                                             
    struct GraphicsModule : virtual Module {
       using CTTI_Bases = Module;
-      GraphicsModule() : Downcastable {this}, Module {nullptr} {}
+      GraphicsModule() : Downcastable {this}
+                       , Module {nullptr} {}
    };
 
    ///                                                                        

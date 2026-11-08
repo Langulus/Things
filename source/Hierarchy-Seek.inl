@@ -61,12 +61,12 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   template<CT::Part P, Seek SEEK, CT::Index IDX, class SELF> requires CT::Decayed<P>
    auto SeekInterface::SeekPart(this SELF&& self, IDX&& offset)
-   -> LglsMutIf(SELF, Decay<T>*) {
-      return self.template SeekPart<SEEK>(
-         MetaDataOf<Decay<T>>(), LglsFwd(offset)
-      );
+   -> LglsMutIf(SELF, P*) {
+      return static_cast<LglsMutIf(SELF, P*)>(
+         self.template SeekPart<SEEK>(MetaDataOf<P>(), LglsFwd(offset)
+      ));
    }
 
    /// Find part by type and optional offset, but search first in an          
@@ -134,12 +134,12 @@ namespace Langulus::Things
       return self.template SeekPart<SEEK>(meta, offset);
    }
 
-   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   template<CT::Part P, Seek SEEK, CT::Index IDX, class SELF> requires CT::Decayed<P>
    auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, IDX&& offset)
-   -> LglsMutIf(SELF, Decay<T>*) {
-      return self.template SeekPartAux<SEEK>(
-         aux, MetaDataOf<Decay<T>>(), LglsFwd(offset)
-      );
+   -> LglsMutIf(SELF, P*) {
+      return static_cast<LglsMutIf(SELF, P*)>(
+         self.template SeekPartAux<SEEK>(aux, MetaDataOf<P>(), LglsFwd(offset)
+      ));
    }
       
    /// Find part by type and specific properties and optional offset          
@@ -191,10 +191,12 @@ namespace Langulus::Things
       return nullptr;
    }
 
-   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   template<CT::Part P, Seek SEEK, CT::Index IDX, class SELF> requires CT::Decayed<P>
    auto SeekInterface::SeekPartExt(this SELF&& self, Many const& ext, IDX&& offset)
-   -> LglsMutIf(SELF, Decay<T>*) {
-      return self.template SeekPartExt<SEEK>(MetaDataOf<Decay<T>>(), ext, LglsFwd(offset));
+   -> LglsMutIf(SELF, P*) {
+      return static_cast<LglsMutIf(SELF, P*)>(
+         self.template SeekPartExt<SEEK>(MetaDataOf<P>(), ext, LglsFwd(offset))
+      );
    }
 
    /// Find part by type, specific properties, and optional offset, but       
@@ -235,10 +237,12 @@ namespace Langulus::Things
       return self.template SeekPartExt<SEEK>(meta, ext, offset);
    }
 
-   template<CT::Part T, Seek SEEK, CT::Index IDX, class SELF>
+   template<CT::Part P, Seek SEEK, CT::Index IDX, class SELF> requires CT::Decayed<P>
    auto SeekInterface::SeekPartAuxExt(this SELF&& self, Many const& aux, Many const& ext, IDX&& offset)
-   -> LglsMutIf(SELF, Decay<T>*) {
-      return self.template SeekPartAuxExt<SEEK>(MetaDataOf<Decay<T>>(), aux, ext, LglsFwd(offset));
+   -> LglsMutIf(SELF, P*) {
+      return static_cast<LglsMutIf(SELF, P*)>(
+         self.template SeekPartAuxExt<SEEK>(MetaDataOf<P>(), aux, ext, LglsFwd(offset))
+      );
    }
       
    /// Find a tag by type and optional offset                                 

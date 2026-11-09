@@ -7,21 +7,21 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
 namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract user module                                                 
-   ///                                                                        
    struct UserModule : virtual Module {
       using CTTI_Bases = Module;
-      UserModule() : Downcastable {this}, Module {nullptr} {}
+      UserModule() : Downcastable {this}
+                   , Module {nullptr} {}
    };
 
    ///                                                                        
    ///   Abstract user part                                                   
-   ///                                                                        
    struct User : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = UserModule;

@@ -7,21 +7,21 @@
 ///                                                                           
 #pragma once
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
 namespace Langulus::Things
 {
    ///                                                                        
    ///   Abstract network module                                              
-   ///                                                                        
    struct Network : virtual Module {
       using CTTI_Bases = Module;
-      Network() : Downcastable {this}, Module {nullptr} {}
+      Network() : Downcastable {this}
+                , Module {nullptr} {}
    };
 
    ///                                                                        
    ///   Abstract network part                                                
-   ///                                                                        
    struct NetworkPart : virtual Part {
       using CTTI_Bases = Part;
       using CTTI_Producer = Network;
@@ -30,7 +30,6 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract network client                                              
-   ///                                                                        
    struct Client : virtual NetworkPart {
       using CTTI_Bases = NetworkPart;
       Client() : Downcastable {this} {}
@@ -38,7 +37,6 @@ namespace Langulus::Things
    
    ///                                                                        
    ///   Abstract network server                                              
-   ///                                                                        
    struct Server : virtual NetworkPart {
       using CTTI_Bases = NetworkPart;
       Server() : Downcastable {this} {}
@@ -46,7 +44,6 @@ namespace Langulus::Things
    
    ///                                                                        
    ///   Abstract network shared object                                       
-   ///                                                                        
    struct Shared : virtual NetworkPart {
       using CTTI_Bases = NetworkPart;
       using CTTI_Producer = NetworkPart;

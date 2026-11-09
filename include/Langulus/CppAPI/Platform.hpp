@@ -8,6 +8,7 @@
 #pragma once
 #include <Langulus/Math/Scale.hpp>
 #include <Langulus/Thing.hpp>
+#include <Langulus/Part.hpp>
 
 
 namespace Langulus::Things
@@ -17,15 +18,14 @@ namespace Langulus::Things
 
    ///                                                                        
    ///   Abstract platform module                                             
-   ///                                                                        
    struct PlatformModule : virtual Module {
       using CTTI_Bases = Module;
-      PlatformModule() : Downcastable {this}, Module {nullptr} {}
+      PlatformModule() : Downcastable {this}
+                       , Module {nullptr} {}
    };
 
    ///                                                                        
    ///   Abstract platform part                                               
-   ///                                                                        
    struct Platform : virtual Part {
       using CTTI_Bases = Part;
       Platform() : Downcastable {this} {}
@@ -33,7 +33,6 @@ namespace Langulus::Things
    
    ///                                                                        
    ///   Abstract platform window                                             
-   ///                                                                        
    struct Window : virtual Platform {
       using CTTI_Bases = Platform;
       using CTTI_Producer = PlatformModule;
@@ -44,12 +43,11 @@ namespace Langulus::Things
       virtual void* GetNativeHandle() const noexcept = 0;
       virtual auto GetSize() const noexcept -> Scale2 = 0;
       virtual bool IsMinimized() const noexcept = 0;
-      virtual bool Draw(const Ref<Image>&) const { return false; }
+      virtual bool Draw(Ref<Image> const&) const { return false; }
    };
    
    ///                                                                        
    ///   Abstract platform cursor                                             
-   ///                                                                        
    struct Cursor : virtual Platform {
       using CTTI_Producer = PlatformModule;
       using CTTI_Bases = Platform;

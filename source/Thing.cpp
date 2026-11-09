@@ -250,10 +250,10 @@ namespace Langulus::Things
          child->Teardown();
 
       if (not mFlow.IsPinned())
-         (*mFlow).Reset();
+         mFlow.Reset();
 
       if (not mRuntime.IsPinned())
-         (*mRuntime).Reset();
+         mRuntime.Reset();
 
       THINGS_VERBOSE_SELF("Teardown complete: ", GetReferences(), " uses remain");
    }
@@ -529,13 +529,13 @@ namespace Langulus::Things
 
    /// Get the current runtime                                                
    ///   @return the pointer to the runtime                                   
-   /*auto Thing::GetRuntime() const noexcept -> Pin<Ref<Runtime>> const& {
+   /*auto Thing::GetRuntime() const noexcept -> Pin<Runtime*> const& {
       return mRuntime;
    }
 
    /// Get the current temporal flow                                          
    ///   @return the pointer to the flow                                      
-   auto Thing::GetFlow() const noexcept -> Pin<Ref<Temporal>> const& {
+   auto Thing::GetFlow() const noexcept -> Pin<Temporal*> const& {
       return mFlow;
    }*/
 
@@ -543,34 +543,34 @@ namespace Langulus::Things
    ///   @return the new runtime instance, or the old one if already created  
    auto Thing::CreateRuntime() -> Runtime* {
       if (mRuntime.IsPinned())
-         return **mRuntime;
+         return *mRuntime;
 
       mRuntime.New(this);
       mRuntime.Pin();
 
       // Dispatch the change to all children                            
       for (auto child : mChildren)
-         child->ResetRuntime(**mRuntime);
+         child->ResetRuntime(*mRuntime);
 
       THINGS_VERBOSE_SELF("New runtime: ", &*mRuntime);
-      return **mRuntime;
+      return *mRuntime;
    }
 
    /// Create a local flow for this thing                                     
    ///   @return the new flow instance, or the old one, if already created    
    auto Thing::CreateFlow() -> Temporal* {
       if (mFlow.IsPinned())
-         return **mFlow;
+         return *mFlow;
 
       mFlow.New();
       mFlow.Pin();
 
       // Dispatch the change to all children                            
       for (auto child : mChildren)
-         child->ResetFlow(**mFlow);
+         child->ResetFlow(*mFlow);
 
       THINGS_VERBOSE_SELF("New flow: ", *mFlow);
-      return **mFlow;
+      return *mFlow;
    }
 
    /// Uses the current runtime to load a shared library module, and          

@@ -48,9 +48,9 @@ namespace Langulus::Things
 
       // The order of members is critical!                              
       // Runtime should be destroyed last, hence it is the first member 
-      Pin<Ref<Runtime>> mRuntime;
+      Pin<Runtime*> mRuntime;
       // Temporal flow                                                  
-      Pin<Ref<Temporal>> mFlow;
+      Pin<Temporal*> mFlow;
       // Hierarchy                                                      
       Hierarchy mChildren;
       // Parts indexed by concrete type, in order of addition           
@@ -93,11 +93,11 @@ namespace Langulus::Things
       bool RequiresRefresh() const noexcept;
 
       auto GetRuntime() const noexcept -> Runtime* {
-         return const_cast<Runtime*>(**mRuntime);
+         return const_cast<Runtime*>(*mRuntime);
       }
 
       auto GetFlow() const noexcept -> Temporal* {
-         return const_cast<Temporal*>(**mFlow);
+         return const_cast<Temporal*>(*mFlow);
       }
 
       LANGULUS_API(THINGS) void Do(Verb&);

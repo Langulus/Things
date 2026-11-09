@@ -71,7 +71,7 @@ namespace Langulus::Things
          }
          else if (id.template IsTag<Tags::Runtime>()) {
             // Get the nearest runtime                                  
-            return Tags::Runtime {**mRuntime};
+            return Tags::Runtime {*mRuntime};
          }
          else if (id.template IsTag<Tags::Parent>()) {
             // Get the parent                                           

@@ -17,7 +17,7 @@ namespace Langulus::Things
    ///   @tparam CREATE_FLOW should a temporal flow be created in the root?   
    ///   @param modules... names of modules to load                           
    ///   @return a root thing, with a runtime, a flow, and a name "ROOT"      
-   template<bool CREATE_FLOW>
+   /*template<bool CREATE_FLOW>
    Thing Thing::Root(CT::Text auto&&...modules) {
       Thing root;
       root.SetName("ROOT");
@@ -27,7 +27,7 @@ namespace Langulus::Things
       (root.LoadMod(modules), ...);
       root.Reference(-1);
       return Abandon(root);
-   }
+   }*/
 
    /// Create a child Thing with the provided arguments                       
    ///   @param arguments instructions for the thing's creation               

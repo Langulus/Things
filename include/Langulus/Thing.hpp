@@ -86,8 +86,36 @@ namespace Langulus::Things
       // Assignment is disabled                                         
       auto operator = (auto) = delete;
 
+      /// Create a root thing (convenience function)                          
+      ///   @tparam CREATE_FLOW should a temporal flow be created at root?    
+      ///   @param modules... names of modules to load                        
+      ///   @return a root thing, with a runtime, a flow, and a name "ROOT"   
+      ///                     ⠰⣶⣶⣶⣄⠀⠀⠀⢀⣀⠀⠀⣠⣄⡀⠀⠀⠀⠀⠀⠀⠀                          
+      ///                     ⠀⠻⣿⣿⣿⡀⠀⠀⣿⠿⠷⢾⡏⠉⣿⣄⢀⣿⣷⡆⠀⠀                          
+      ///                     ⢀⣠⣬⡁⢸⣿⣶⣿⣿⡇⠀⣾⡇⠀⣿⡏⠛⢻⣿⢧⣤⠀                          
+      ///                     ⢸⣿⡿⡿⢻⠇⠀⢿⣿⡇⣠⣿⡇⣼⡿⠀⠀⣼⡏⢠⣾⠀                          
+      ///                     ⢸⣿⡀⢀⣿⠀⣴⠈⣿⣿⣿⣿⣿⣿⠃⣾⣤⣿⠀⣼⣿⠀                          
+      ///                     ⢸⣿⣧⢸⣿⣧⣿⣇⣿⣿⣿⣿⣿⣿⣾⣿⣿⣏⣼⣿⣿⠀                          
+      ///                     ⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄                          
+      ///                     ⠈⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠁                          
+      ///                     ⠀⢹⣿⣿⣿⣿⣿⠉⠙⣿⣿⣿⣿⣿⡯⠉⢻⣿⣿⣿⣿⠀                          
+      ///                     ⠀⠸⣿⣿⣿⣧⡀⠀⣠⣿⣿⣿⣿⣄⠀⢀⣼⣿⣿⣿⠇⠀                          
+      ///                     ⠀⠀⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠀⠀                          
+      ///                     ⠀⠀⠘⣿⣿⣿⣿⣿⡿⠿⠿⢿⣿⣿⣿⣿⣿⣿⡟⠁⠀⠀                          
+      ///                     ⠀⠀⠀⠘⣿⣿⣿⣿⣷⣄⣀⣀⣠⣿⣿⣿⣿⠏⠀⠀⠀⠀                          
+      ///                     ⠀⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀                          
+      ///                     ⠀⠀⠀⠀⠀⠀⠀⠈⠛⠿⠿⠟⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀                          
       template<bool CREATE_FLOW = true>
-      static Thing Root(CT::Text auto&&...);
+      static Thing Root(CT::Text auto&&...modules) {
+         Thing root;
+         root.SetName("ROOT");
+         root.CreateRuntime();
+         if constexpr (CREATE_FLOW)
+            root.CreateFlow();
+         (root.LoadMod(modules), ...);
+         root.Reference(-1);
+         return Abandon(root);
+      }
 
       LANGULUS_API(THINGS)
       bool RequiresRefresh() const noexcept;

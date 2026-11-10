@@ -104,13 +104,13 @@ namespace Langulus::Things
       auto GetOwner() const noexcept { return mOwner; }
 
       LANGULUS_API(THINGS)
-      auto InstantiateModulePath(Path const&, Many const& = {}) -> Module*;
+      auto InstantiateModulePath(Path const&, Neat const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
-      auto InstantiateModule(Token const&, Many const& = {}) -> Module*;
+      auto InstantiateModule(Token const&, Neat const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
-      auto InstantiateModule(const SharedLibrary&, Many const& = {}) -> Module*;
+      auto InstantiateModule(const SharedLibrary&, Neat const& = {}) -> Module*;
 
       LANGULUS_API(THINGS)
       auto GetDependency(DMeta) const noexcept -> SharedLibrary;

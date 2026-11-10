@@ -409,12 +409,15 @@ namespace Langulus::Things
    size_t Mesh::ForEachVertex(auto&& call) const {
       using F = Deref<decltype(call)>;
       using A = ArgumentsOf<F>;
+      constexpr auto decayed_tags = Expand(A{}, []<class...T> {
+         return Types<Decay<T>...> {};
+      });
 
       const auto indices = GetDataList<Tags::Index>();
       if (not indices or not *indices)
-         return ForEachVertexInner<false>(A {}, LglsFwd(call));
+         return ForEachVertexInner<false>(decayed_tags, LglsFwd(call));
       else
-         return ForEachVertexInner<true> (A {}, LglsFwd(call));
+         return ForEachVertexInner<true> (decayed_tags, LglsFwd(call));
    }
 
    /// Inner vertex iteration                                                 
@@ -555,14 +558,27 @@ namespace Langulus::Things
       // Data was found, always decay it down to a vector type to       
       // simplify things a bit on the other end                         
       //TODO this can be made more elegant by CastsTo<float/double, true>(count)
-      if (found->template CastsTo<Math::Triangle3>(1, true))
-         return Disown(found->template ReinterpretAs<Math::Vec3>());
-      else if (found->template CastsTo<Math::Triangle2>(1, true))
-         return Disown(found->template ReinterpretAs<Math::Vec2>());
-      else if (found->template CastsTo<Math::Vec3>(1, true))
-         return Disown(found->template ReinterpretAs<Math::Vec3>());
-      else if (found->template CastsTo<Math::Vec2>(1, true))
-         return Disown(found->template ReinterpretAs<Math::Vec2>());
+      Many soughtDecayed;
+      if (found->template CastsTo<Math::Triangle3>(1, true)) {
+         soughtDecayed.SetType<Math::Vec3>();
+         found->ConvertTo(soughtDecayed);
+         return soughtDecayed;
+      }
+      else if (found->template CastsTo<Math::Triangle2>(1, true)) {
+         soughtDecayed.SetType<Math::Vec2>();
+         found->ConvertTo(soughtDecayed);
+         return soughtDecayed;
+      }
+      else if (found->template CastsTo<Math::Vec3>(1, true)) {
+         soughtDecayed.SetType<Math::Vec3>();
+         found->ConvertTo(soughtDecayed);
+         return soughtDecayed;
+      }
+      else if (found->template CastsTo<Math::Vec2>(1, true)) {
+         soughtDecayed.SetType<Math::Vec2>();
+         found->ConvertTo(soughtDecayed);
+         return soughtDecayed;
+      }
 
       LglsError("Unsupported tag format");
       return {};
@@ -630,13 +646,13 @@ namespace Langulus::Things
       else if (indices.GetCount() == mView.mIndexCount) {
          // Per-vertex indexing strategy                                
          if (indices.template IsExact<uint32_t>())
-            return stream.Select(indices.template GetRaw<uint32_t>()[i], 1);
+            return stream.Select(indices.template GetRawAs<uint32_t>()[i], 1);
          else if (indices.template IsExact<uint64_t>())
-            return stream.Select(indices.template GetRaw<uint64_t>()[i], 1);
+            return stream.Select(indices.template GetRawAs<uint64_t>()[i], 1);
          else if (indices.template IsExact<uint16_t>())
-            return stream.Select(indices.template GetRaw<uint16_t>()[i], 1);
+            return stream.Select(indices.template GetRawAs<uint16_t>()[i], 1);
          else if (indices.template IsExact<uint8_t>())
-            return stream.Select(indices.template GetRaw<uint8_t> ()[i], 1);
+            return stream.Select(indices.template GetRawAs<uint8_t> ()[i], 1);
          else
             LglsError("Unsupported index format");
       }
@@ -645,52 +661,52 @@ namespace Langulus::Things
          if constexpr (CT::Triangle<T>) {
             const auto p_i = i / 3;
             if (indices.template IsExact<uint32_t>())
-               return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
-               return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
-               return stream.Select(indices.template GetRaw<uint8_t >()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint8_t >()[p_i], 1);
             else
                LglsError("Unsupported index format");
          }
          else if constexpr (CT::TriangleStrip<T> or CT::TriangleFan<T>) {
             const auto p_i = i < 2 ? 0 : i - 2;
             if (indices.template IsExact<uint32_t>())
-               return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
-               return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
-               return stream.Select(indices.template GetRaw<uint8_t >()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint8_t >()[p_i], 1);
             else
                LglsError("Unsupported index format");
          }
          else if constexpr (CT::Line<T>) {
             const auto p_i = i / 2;
             if (indices.template IsExact<uint32_t>())
-               return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
-               return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
-               return stream.Select(indices.template GetRaw<uint8_t >()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint8_t >()[p_i], 1);
             else
                LglsError("Unsupported index format");
          }
          else if constexpr (CT::LineStrip<T> or CT::LineLoop<T>) {
             const auto p_i = i < 1 ? 0 : i - 1;
             if (indices.template IsExact<uint32_t>())
-               return stream.Select(indices.template GetRaw<uint32_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint32_t>()[p_i], 1);
             else if (indices.template IsExact<uint64_t>())
-               return stream.Select(indices.template GetRaw<uint64_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint64_t>()[p_i], 1);
             else if (indices.template IsExact<uint16_t>())
-               return stream.Select(indices.template GetRaw<uint16_t>()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint16_t>()[p_i], 1);
             else if (indices.template IsExact<uint8_t>())
-               return stream.Select(indices.template GetRaw<uint8_t >()[p_i], 1);
+               return stream.Select(indices.template GetRawAs<uint8_t >()[p_i], 1);
             else
                LglsError("Unsupported index format");
          }

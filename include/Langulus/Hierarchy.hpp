@@ -37,27 +37,27 @@ namespace Langulus::Things
          -> LglsMutIf(SELF, P*);
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      auto SeekPartAux(this SELF&&, Many const&, DMeta, IDX&& = 0)
+      auto SeekPartAux(this SELF&&, Neat const&, DMeta, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
 
       template<CT::Part P = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF> requires CT::Decayed<P>
-      auto SeekPartAux(this SELF&&, Many const&, IDX&& = 0)
+      auto SeekPartAux(this SELF&&, Neat const&, IDX&& = 0)
          -> LglsMutIf(SELF, P*);
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      auto SeekPartExt(this SELF&&, DMeta, Many const&, IDX&& = 0)
+      auto SeekPartExt(this SELF&&, DMeta, Neat const&, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
 
       template<CT::Part P = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF> requires CT::Decayed<P>
-      auto SeekPartExt(this SELF&&, Many const&, IDX&& = 0)
+      auto SeekPartExt(this SELF&&, Neat const&, IDX&& = 0)
          -> LglsMutIf(SELF, P*);
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      auto SeekPartAuxExt(this SELF&&, DMeta, Many const&, Many const&, IDX&& = 0)
+      auto SeekPartAuxExt(this SELF&&, DMeta, Neat const&, Neat const&, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
 
       template<CT::Part P = Part, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF> requires CT::Decayed<P>
-      auto SeekPartAuxExt(this SELF&&, Many const&, Many const&, IDX&& = 0)
+      auto SeekPartAuxExt(this SELF&&, Neat const&, Neat const&, IDX&& = 0)
          -> LglsMutIf(SELF, P*);
 
       ///                                                                     
@@ -68,9 +68,9 @@ namespace Langulus::Things
       auto SeekTag(this SELF&&, IDX&& = 0) -> Tag;
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      auto SeekTagAux(this SELF&&, Many const&, TMeta = {}, IDX&& = 0) -> Tag;
+      auto SeekTagAux(this SELF&&, Neat const&, TMeta = {}, IDX&& = 0) -> Tag;
       template<CT::DefineTag, Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      auto SeekTagAux(this SELF&&, Many const&, IDX&& = 0) -> Tag;
+      auto SeekTagAux(this SELF&&, Neat const&, IDX&& = 0) -> Tag;
 
       ///                                                                     
       /// MARK: Seek data                                                     
@@ -119,13 +119,13 @@ namespace Langulus::Things
          -> LglsMutIf(SELF, Part*);
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      auto SeekPartAux(this SELF&&, Many const&, Token const&, IDX&& = 0)
+      auto SeekPartAux(this SELF&&, Neat const&, Token const&, IDX&& = 0)
          -> LglsMutIf(SELF, Part*);
       
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
       auto SeekTag(this SELF&&, Token const&, IDX&& = 0) -> Tag;
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
-      auto SeekTagAux(this SELF&&, Many const&, Token const&, IDX&& = 0) -> Tag;
+      auto SeekTagAux(this SELF&&, Neat const&, Token const&, IDX&& = 0) -> Tag;
 
       template<Seek = Seek::HereAndAbove, CT::Index IDX = size_t, class SELF>
       bool SeekValue(this SELF const&, Token const&, CT::NotVoid auto&, IDX&& = 0);

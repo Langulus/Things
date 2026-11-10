@@ -52,7 +52,7 @@ namespace Langulus::Things
 
       virtual bool Generate(TMeta, size_t = 0) { return true; }
 
-      template<CT::DefineTag>
+      template<class = void>
       void Commit(auto&&);
 
       template<CT::DefineTag, class C>

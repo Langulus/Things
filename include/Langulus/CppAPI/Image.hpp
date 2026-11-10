@@ -22,7 +22,7 @@ namespace Langulus::Things
       uint32_t mFrames = 1;
       RTTI::DMeta mFormat {};
       // Reverse RGBA to BGRA                                           
-      // This is not a scalable solution and would eventually fail      
+      //TODO This is not a scalable solution and would eventually fail      
       bool mReverseFormat {};
 
       bool operator == (ImageView const&) const noexcept = default;
@@ -61,59 +61,16 @@ namespace Langulus::Things
 
       void Upload(CT::Container auto&&);
 
-      ///   Iteration                                                         
-      /*template<bool MUTABLE>
-      struct Iterator;
+      /// MARK: Iteration                                                     
+      decltype(auto) begin(this auto&& self) noexcept {
+         return self.template GetData<Tags::Color>()->GetHandle();
+      }
 
-      auto begin()       noexcept -> Iterator<true>;
-      auto begin() const noexcept -> Iterator<false>;
-      auto end()   const noexcept -> A::IteratorEnd { return {}; }*/
+      decltype(auto) end(this auto&& self) noexcept {
+         auto color_data = self.template GetData<Tags::Color>();
+         return color_data->GetHandle() + color_data->GetCount();
+      }
    };
-  
-
-   ///                                                                        
-   /// Image iterator                                                         
-   /*template<bool MUTABLE>
-   struct Image::Iterator : A::Iterator {
-      static constexpr bool Mutable = MUTABLE;
-      using CTTI_Abstract = No;
-
-   protected:
-      friend struct Image;
-
-      // Current iterator position pointer                              
-      Byte const* mValue;
-      // Iterator position which is considered the 'end' iterator       
-      Byte const* mEnd;
-      // Iterator position which is considered the 'end' iterator       
-      Image* mImage;
-
-      constexpr Iterator(Image*, Byte const* it, Byte const* end) noexcept;
-
-   public:
-      Iterator() noexcept = delete;
-      constexpr Iterator(const Iterator&) noexcept = default;
-      constexpr Iterator(Iterator&&) noexcept = default;
-      constexpr Iterator(const A::IteratorEnd&) noexcept;
-
-      constexpr auto operator = (const Iterator&) noexcept -> Iterator& = default;
-      constexpr auto operator = (Iterator&&) noexcept -> Iterator& = default;
-
-      constexpr bool operator == (const Iterator&) const noexcept;
-      constexpr bool operator == (const A::IteratorEnd&) const noexcept;
-
-      // Prefix operator                                                
-      constexpr auto operator ++ () noexcept -> Iterator&;
-
-      // Suffix operator                                                
-      constexpr auto operator ++ (int) noexcept -> Iterator;
-
-      constexpr explicit operator bool() const noexcept;
-      constexpr operator Iterator<false>() const noexcept requires Mutable;
-
-      template<CT::ColorBased T>
-      T As() const;
-   };*/
 
 
    ///                                                                        

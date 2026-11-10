@@ -10,15 +10,7 @@
 #include <Langulus/Verbs/Conjunct.hpp>
 #include <Langulus/Verbs/Interpret.hpp>
 #include <Langulus/CppAPI/AI.hpp>
-#include "Thing.inl"
 #include <Langulus/Things/Hierarchy-Gather.inl>
-#include <Langulus/Annies/Functional/Compare.hpp>
-#include <Langulus/Annies/Functional/ForEach.hpp>
-#include <Langulus/Annies/Functional/Deepen.hpp>
-#include <Langulus/Annies/Functional/Insert.hpp>
-#include <Langulus/Annies/Functional/Describe.hpp>
-#include <Langulus/Annies/Functional/Assign.hpp>
-#include <Langulus/Annies/Functional/Remove.hpp>
 
 
 namespace Langulus::Things

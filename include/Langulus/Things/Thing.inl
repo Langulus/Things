@@ -9,6 +9,8 @@
 #include <Langulus/Thing.hpp>
 #include <Langulus/Part.hpp>
 #include <Langulus/Neat.hpp>
+#include <Langulus/Things/Hierarchy-Seek.inl>
+#include <Langulus/Things/Hierarchy-Gather.inl>
 
 
 namespace Langulus::Things
@@ -91,6 +93,7 @@ namespace Langulus::Things
       else if constexpr (CT::Recipe<T>) {
          // Instantiate a type, with charge and arguments               
          const auto count = static_cast<int>(std::ceil(stuff.GetCharge().mass));
+         const Neat tidy {stuff.GetDescriptor()};
          for (int i = 0; i < count; ++i) {
             if (count != 1) {
                THINGS_CREATION_VERBOSE_SELF(Logger::Yellow,
@@ -100,7 +103,7 @@ namespace Langulus::Things
 
             if (stuff.template Is<Thing>()) {
                // Instantiate a child Thing                             
-               output << CreateChild(stuff.GetDescriptor());
+               output << CreateChild(tidy);
             }
             else if (stuff.template Is<Runtime>()) {
                // Instantiate a runtime                                 
@@ -113,7 +116,7 @@ namespace Langulus::Things
             else if (stuff.template CastsTo<Module>()) {
                // Instantiate a module from the runtime                 
                auto dependency = mRuntime->GetDependency(stuff.GetType());
-               output << mRuntime->InstantiateModule(dependency, stuff.GetDescriptor());
+               output << mRuntime->InstantiateModule(dependency, tidy);
             }
             else {
                // Instantiate anything else                             
@@ -367,20 +370,20 @@ namespace Langulus::Things
    ///   @tparam A... arguments for the part's creation                       
    ///   @param arguments... the arguments to provide for recipe              
    ///   @return the created part(s)                                          
-   template<CT::Part T, class...A>
+   /*template<CT::Part T, class...A>
    Many Thing::CreatePart(A&&...arguments) {
       return CreateData(Recipe::For<Decay<T>>(LglsFwd(arguments)...));
-   }
+   }*/
 
    /// Create default-initialized instances of each part type                 
    ///   @tparam T... the part types to instantiate                           
    ///   @return the created part(s)                                          
-   template<CT::Part...T>
+   /*template<CT::Part...T>
    Many Thing::CreateParts() {
       Many result;
       (result.Compose(CreatePart<T>()), ...);
       return result;
-   }
+   }*/
 
 #if LANGULUS_FEATURE(MANAGED_REFLECTION)
    /// Create a part by type token and arguments, relying on producers        

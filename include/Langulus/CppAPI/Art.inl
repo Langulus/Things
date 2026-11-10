@@ -86,13 +86,16 @@ namespace Langulus::Things
    ///         disparity and confusion in art libraries. Still useful when    
    ///         you don't use factories, and just want some local content      
    ///         representation.                                                
-   template<CT::DefineTag T> LANGULUS(INLINED)
+   template<class T> LANGULUS(INLINED)
    void Art::Commit(auto&& content) {
-      const auto tag = MetaTagOf<T>();
-      auto found = mDataListMap.Find(tag);
-      if (found)
-         found.GetVal() << Many {LglsFwd(content)};
-      else
-         mDataListMap.Merge(tag, Many {LglsFwd(content)});
+      if constexpr (CT::DefineTag<T>) {
+         const auto tag = MetaTagOf<T>();
+         auto found = mDataListMap.Find(tag);
+         if (found)
+            found.GetVal() << Many {LglsFwd(content)};
+         else
+            mDataListMap.Merge(tag, Many {LglsFwd(content)});
+      }
+      else mDataListMap.Merge(TMeta{}, Many {LglsFwd(content)});
    }
 }

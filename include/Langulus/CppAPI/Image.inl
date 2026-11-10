@@ -171,83 +171,10 @@ namespace Langulus::Things
       Commit<Tags::Color>(LglsFwd(data));
    }
 
-   /*LANGULUS(INLINED)
-   auto Image::begin() noexcept -> Iterator<true> {
-      return {
-         this,
-         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRaw()),
-         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRawEnd())
-      };
-   }
 
-   LANGULUS(INLINED)
-   auto Image::begin() const noexcept -> Iterator<false> {
-      return {
-         const_cast<Image*>(this),
-         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRaw()),
-         reinterpret_cast<const Byte*>(GetData<Tags::Color>()->GetRawEnd())
-      };
-   }*/
-
-   /// Construct an iterator                                                  
-   ///   @param start - the current iterator position                         
-   ///   @param end - the ending marker                                       
-   /*template<bool M> LANGULUS(INLINED)
-   constexpr Image::Iterator<M>::Iterator(Image* image, Byte const* it, Byte const* end) noexcept
-      : mValue {it}
-      , mEnd   {end}
-      , mImage {image} {}
-
-   /// Construct an end iterator                                              
-   template<bool M> LANGULUS(INLINED)
-   constexpr Image::Iterator<M>::Iterator(const A::IteratorEnd&) noexcept
-      : mValue {nullptr}
-      , mEnd   {nullptr}
-      , mImage {nullptr} {}
-
-   /// Compare two iterators                                                  
-   ///   @param rhs - the other iterator                                      
-   ///   @return true if iterators point to the same element                  
-   template<bool M> LANGULUS(INLINED)
-   constexpr bool Image::Iterator<M>::operator == (const Iterator& rhs) const noexcept {
-      return mValue == rhs.mValue;
-   }
-
-   /// Compare iterator with an end marker                                    
-   ///   @param rhs - the end iterator                                        
-   ///   @return true element is at or beyond the end marker                  
-   template<bool M> LANGULUS(INLINED)
-   constexpr bool Image::Iterator<M>::operator == (const A::IteratorEnd&) const noexcept {
-      return mValue >= mEnd;
-   }
-
-   /// Prefix increment operator                                              
-   ///   @attention assumes iterator points to a valid element                
-   ///   @return the modified iterator                                        
-   template<bool M> LANGULUS(INLINED)
-   constexpr auto Image::Iterator<M>::operator ++ () noexcept -> Iterator& {
-      mValue += mImage->GetView().GetPixelBytesize();
-      return *this;
-   }
-
-   /// Suffix increment operator                                              
-   ///   @attention assumes iterator points to a valid element                
-   ///   @return the previous value of the iterator                           
-   template<bool M> LANGULUS(INLINED)
-   constexpr auto Image::Iterator<M>::operator ++ (int) noexcept -> Iterator {
-      const auto backup = *this;
-      operator ++ ();
-      return backup;
-   }
-
-   /// Check if iterator is valid                                             
-   template<bool M> LANGULUS(INLINED)
-   constexpr Image::Iterator<M>::operator bool() const noexcept {
-      return *this != A::IteratorEnd {};
-   }
 
    /// Interpret the pixel as a desired color format                          
-   template<bool M> template<CT::ColorBased T>
+   /*template<bool M> template<CT::ColorBased T>
    T Image::Iterator<M>::As() const {
       const auto from = mImage->GetView().mFormat;
       LglsAssumeDev(from, "No color type");

@@ -76,7 +76,7 @@ namespace Langulus::Things
    ///   @param offset the Nth match to return                                
    ///   @return a pointer to the found part, or nullptr if not found         
    template<Seek SEEK, CT::Index IDX, class SELF>
-   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, DMeta meta, IDX&& offset) 
+   auto SeekInterface::SeekPartAux(this SELF&& self, Neat const& aux, DMeta meta, IDX&& offset) 
    -> LglsMutIf(SELF, Part*) {
       using R = LglsMutIf(SELF, Part*);
       R result = nullptr;
@@ -134,7 +134,7 @@ namespace Langulus::Things
    }
 
    template<CT::Part P, Seek SEEK, CT::Index IDX, class SELF> requires CT::Decayed<P>
-   auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, IDX&& offset)
+   auto SeekInterface::SeekPartAux(this SELF&& self, Neat const& aux, IDX&& offset)
    -> LglsMutIf(SELF, P*) {
       return dynamic_cast<LglsMutIf(SELF, P*)>(
          self.template SeekPartAux<SEEK>(aux, MetaDataOf<P>(), LglsFwd(offset)
@@ -148,7 +148,7 @@ namespace Langulus::Things
    ///   @param offset the Nth match to return                                
    ///   @return a pointer to the found part, or nullptr if not found         
    template<Seek SEEK, CT::Index IDX, class SELF>
-   auto SeekInterface::SeekPartExt(this SELF&& self, DMeta meta, Many const& ext, IDX&& offset)
+   auto SeekInterface::SeekPartExt(this SELF&& self, DMeta meta, Neat const& ext, IDX&& offset)
    -> LglsMutIf(SELF, Part*) {
       LglsMutIf(SELF, Part*) result;
 
@@ -191,7 +191,7 @@ namespace Langulus::Things
    }
 
    template<CT::Part P, Seek SEEK, CT::Index IDX, class SELF> requires CT::Decayed<P>
-   auto SeekInterface::SeekPartExt(this SELF&& self, Many const& ext, IDX&& offset)
+   auto SeekInterface::SeekPartExt(this SELF&& self, Neat const& ext, IDX&& offset)
    -> LglsMutIf(SELF, P*) {
       return dynamic_cast<LglsMutIf(SELF, P*)>(
          self.template SeekPartExt<SEEK>(MetaDataOf<P>(), ext, LglsFwd(offset))
@@ -207,7 +207,7 @@ namespace Langulus::Things
    ///   @param offset the Nth match to return                                
    ///   @return a pointer to the found part, or nullptr if not found         
    template<Seek SEEK, CT::Index IDX, class SELF>
-   auto SeekInterface::SeekPartAuxExt(this SELF&& self, DMeta meta, Many const& aux, Many const& ext, IDX&& offset)
+   auto SeekInterface::SeekPartAuxExt(this SELF&& self, DMeta meta, Neat const& aux, Neat const& ext, IDX&& offset)
    -> LglsMutIf(SELF, Part*) {
       using R = LglsMutIf(SELF, Part*);
       R result = nullptr;
@@ -237,7 +237,7 @@ namespace Langulus::Things
    }
 
    template<CT::Part P, Seek SEEK, CT::Index IDX, class SELF> requires CT::Decayed<P>
-   auto SeekInterface::SeekPartAuxExt(this SELF&& self, Many const& aux, Many const& ext, IDX&& offset)
+   auto SeekInterface::SeekPartAuxExt(this SELF&& self, Neat const& aux, Neat const& ext, IDX&& offset)
    -> LglsMutIf(SELF, P*) {
       return dynamic_cast<LglsMutIf(SELF, P*)>(
          self.template SeekPartAuxExt<SEEK>(MetaDataOf<P>(), aux, ext, LglsFwd(offset))
@@ -301,7 +301,7 @@ namespace Langulus::Things
    ///   @param offset the Nth match to return                                
    ///   @return a shallow copy of the found tag                              
    template<Seek SEEK, CT::Index IDX, class SELF>
-   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, TMeta meta, IDX&& offset) -> Tag {
+   auto SeekInterface::SeekTagAux(this SELF&& self, Neat const& aux, TMeta meta, IDX&& offset) -> Tag {
       // Scan descriptor                                                
       Tag result;
       aux.ForEachDeep([&](Tag const& tag) {
@@ -324,7 +324,7 @@ namespace Langulus::Things
    }
 
    template<CT::DefineTag T, Seek SEEK, CT::Index IDX, class SELF>
-   auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, IDX&& offset) -> Tag {
+   auto SeekInterface::SeekTagAux(this SELF&& self, Neat const& aux, IDX&& offset) -> Tag {
       return self.template SeekTagAux<SEEK>(aux, MetaTagOf<T>(), offset);
    }
 
@@ -545,7 +545,7 @@ namespace Langulus::Things
       }
 
       template<Seek SEEK, CT::Index IDX, class SELF>
-      auto SeekInterface::SeekPartAux(this SELF&& self, Many const& aux, Token const& dataToken, IDX&& offset)
+      auto SeekInterface::SeekPartAux(this SELF&& self, Neat const& aux, Token const& dataToken, IDX&& offset)
       -> LglsMutIf(SELF, Part*) {
          return self.template SeekPartAux<SEEK>(
             aux, RTTI::Registry::GetMetaDataByToken(dataToken),
@@ -562,7 +562,7 @@ namespace Langulus::Things
       }
 
       template<Seek SEEK, CT::Index IDX, class SELF>
-      auto SeekInterface::SeekTagAux(this SELF&& self, Many const& aux, Token const& tag, IDX&& offset) -> Tag {
+      auto SeekInterface::SeekTagAux(this SELF&& self, Neat const& aux, Token const& tag, IDX&& offset) -> Tag {
          return self.template SeekTagAux<SEEK>(
             aux, RTTI::Registry::GetMetaTagByToken(tag),
             offset

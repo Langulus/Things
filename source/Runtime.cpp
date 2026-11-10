@@ -273,7 +273,7 @@ namespace Langulus::Things
    ///   @param path explicit relative path                                   
    ///   @param d module initialization descriptor                            
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModulePath(Path const& path, Many const& d) -> Module* {
+   auto Runtime::InstantiateModulePath(Path const& path, Neat const& d) -> Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibraryPath(path);
 
@@ -295,7 +295,7 @@ namespace Langulus::Things
    ///   @param name module name                                              
    ///   @param d module initialization descriptor                            
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(Token const& name, Many const& d) -> Module* {
+   auto Runtime::InstantiateModule(Token const& name, Neat const& d) -> Module* {
       // Load the library if not loaded yet                             
       const auto library = LoadSharedLibrary(name);
 
@@ -317,7 +317,7 @@ namespace Langulus::Things
    ///   @param library the library handle                                    
    ///   @param d module initialization descriptor                            
    ///   @return the new module instance                                      
-   auto Runtime::InstantiateModule(const SharedLibrary& library, Many const& d) -> Module* {
+   auto Runtime::InstantiateModule(const SharedLibrary& library, Neat const& d) -> Module* {
       if (not library.IsValid())
          return nullptr;
 

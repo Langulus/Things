@@ -44,7 +44,7 @@ bool Part::CompareDescriptor(Neat const& descriptor) const {
    const auto concrete = Downcast();
    descriptor.ForEachDeep([&concrete,&memberOffset,&mismatch](Tag const& tag) {
       const auto member = concrete.GetMember(tag.GetTag(), {}, memberOffset);
-      if (not member or Many {Annies::Absorb, member}.CompareEqual(tag.GetData())) {
+      if (not member or Many {Absorb, member}.CompareEqual(tag.GetData())) {
          mismatch = true;
          return Loop::Break;
       }
@@ -58,7 +58,7 @@ bool Part::CompareDescriptor(Neat const& descriptor) const {
    memberOffset = 0;
    descriptor.ForEachDeep([&concrete,&memberOffset,&mismatch](Many const& anythingElse) {
       const auto member = concrete.GetMember({}, anythingElse.GetType(), memberOffset);
-      if (not member or Many {Annies::Absorb, member}.CompareEqual(anythingElse)) {
+      if (not member or Many {Absorb, member}.CompareEqual(anythingElse)) {
          mismatch = true;
          return Loop::Break;
       }

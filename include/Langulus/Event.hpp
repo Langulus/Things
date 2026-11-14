@@ -202,7 +202,7 @@ namespace Langulus
    
       /// Get the payload of the event                                        
       Many GetPayload() const noexcept {
-         return Many {Annies::Absorb, *this};
+         return Many {Langulus::Absorb, *this};
       }
    
       /// Construction that either absorbs the provided containers, or        

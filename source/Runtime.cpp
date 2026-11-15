@@ -506,7 +506,7 @@ namespace Langulus::Things
          Logger::Info("Module `", library.mInfo()->mName, 
             "` exposed the following types: ", Logger::DarkGreen);
          bool first = true;
-         for (auto t : types) {
+         for (auto t : ::std::as_const(types)) {
             if (not first) Logger::Append(", ");
             Logger::Append(DMeta(t));
             first = false;

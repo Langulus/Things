@@ -23,8 +23,8 @@ using namespace Langulus::Things;
 
 /// Part destructor decouples part from all owners                            
 Part::~Part() {
-   for (auto entity : mOwners)
-      Decouple(entity);
+   for (auto entity : ::std::as_const(mOwners))
+      const_cast<Thing*>(entity)->RemovePart<false>(this);
 }
 
 /// Default part selection simply relays to the owner                         

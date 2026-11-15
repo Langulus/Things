@@ -392,17 +392,17 @@ namespace Langulus::Things
    auto Thing::GetPartExt(DMeta meta, Neat const& what, size_t index) -> Part* {
       if (meta) {
          // Search a typed part                                         
-         auto found = mPartsAmbiguous.Find(meta);
+         auto found = ::std::as_const(mPartsAmbiguous).Find(meta);
          if (found) {
             auto& bucket = found.GetVal();
             if (not what)
-               return bucket[index];
+               return const_cast<Part*>(bucket[index]);
 
             // Check all parts in that bucket for required properties   
             for (auto part : bucket) {
                if (part->CompareDescriptor(what)) {
                   // Match found                                        
-                  if (index == 0) return part;
+                  if (index == 0) return const_cast<Part*>(part);
                   else --index;
                }
             }
@@ -410,10 +410,10 @@ namespace Langulus::Things
       }
       else {
          // Search part by index and properties only                    
-         for (auto part : mPartsList) {
+         for (auto part : ::std::as_const(mPartsList)) {
             if (part->CompareDescriptor(what)) {
                // Match found                                           
-               if (index == 0) return part;
+               if (index == 0) return const_cast<Part*>(part);
                else --index;
             }
          }
@@ -465,10 +465,10 @@ namespace Langulus::Things
    ///   @return the child entity, or nullptr of none was found               
    auto Thing::GetNamedChild(Token const& name, size_t offset) -> Thing* {
       size_t matches = 0;
-      for (auto child : mChildren) {
+      for (auto child : ::std::as_const(mChildren)) {
          if (child->GetName() == name) {
             if (matches == offset)
-               return child;
+               return const_cast<Thing*>(child);
             ++matches;
          }
       }

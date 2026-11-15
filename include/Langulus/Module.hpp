@@ -7,7 +7,7 @@
 ///                                                                           
 #pragma once
 #include <Langulus/CT/Module.hpp>
-#include <Langulus/MetaOf.hpp>
+//#include <Langulus/MetaOf.hpp>
 #include <Langulus/TSet.hpp>
 #include <Langulus/TMany.hpp>
 #include <Langulus/Neat.hpp>

@@ -22,7 +22,7 @@
 namespace Langulus::Things
 {
    using PartList = TMany<Part*>;
-   using PartMap  = TMapUnsorted<RTTI::DMeta, TMany<Part*>>;
+   using PartMap  = TMapUnsorted<RTTI::DMeta, PartList>;
    using TagMap   = TMapUnsorted<RTTI::TMeta, TagList>;
 
 

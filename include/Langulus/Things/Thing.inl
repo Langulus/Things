@@ -197,7 +197,7 @@ namespace Langulus::Things
       if (found)
          found.GetVal() << part;
       else
-         mPartsAmbiguous.Merge(type, part);
+         mPartsAmbiguous.Merge(type, TMany {part});
 
       const auto abstract_part = MetaDataOf<Part>();
       for (auto& base : type.GetBases()) {

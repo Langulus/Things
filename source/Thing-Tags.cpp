@@ -97,7 +97,7 @@ namespace Langulus::Things
          return found.GetVal().GetAt(Index::Last);
       }
 
-      found = mTags.Merge(tmeta, tag);
+      found = mTags.Merge(tmeta, TagList {tag});
       mRefreshRequired = true;
       THINGS_VERBOSE_SELF(tag, " added");
       return found.GetVal().Get();

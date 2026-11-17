@@ -97,7 +97,7 @@ namespace
       if (found)
          found.GetVal().Insert(module);
       else
-         map.Merge(type, module);
+         map.Merge(type, TMany {module});
 
       for (auto& base : type.GetBases()) {
          //if (base.type.IsExact<Resolvable>())//TODO explain why is this exception here?

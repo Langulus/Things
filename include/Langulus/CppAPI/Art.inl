@@ -92,10 +92,10 @@ namespace Langulus::Things
          const auto tag = MetaTagOf<T>();
          auto found = mDataListMap.Find(tag);
          if (found)
-            found.GetVal() << Many {LglsFwd(content)};
+            found.GetVal() << LglsFwd(content);
          else
-            mDataListMap.Merge(tag, Many {LglsFwd(content)});
+            mDataListMap.Merge(tag, TMany {LglsFwd(content)});
       }
-      else mDataListMap.Merge(TMeta{}, Many {LglsFwd(content)});
+      else mDataListMap.Merge(TMeta{}, TMany {LglsFwd(content)});
    }
 }

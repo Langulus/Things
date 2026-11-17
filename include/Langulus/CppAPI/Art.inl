@@ -88,14 +88,9 @@ namespace Langulus::Things
    ///         representation.                                                
    template<class T> LANGULUS(INLINED)
    void Art::Commit(auto&& content) {
-      if constexpr (CT::DefineTag<T>) {
-         const auto tag = MetaTagOf<T>();
-         auto found = mDataListMap.Find(tag);
-         if (found)
-            found.GetVal() << LglsFwd(content);
-         else
-            mDataListMap.Merge(tag, TMany {LglsFwd(content)});
-      }
-      else mDataListMap.Merge(TMeta{}, TMany {LglsFwd(content)});
+      if constexpr (CT::DefineTag<T>)
+         mDataListMap[MetaTagOf<T>()] << LglsFwd(content);
+      else
+         mDataListMap[TMeta{}] << LglsFwd(content);
    }
 }

@@ -6,6 +6,7 @@
 /// SPDX-License-Identifier: GPL-3.0-or-later                                 
 ///                                                                           
 #include <Langulus/SerializeText.hpp>
+#include <Langulus/Flow/Export.hpp>
 #include <Langulus/Annies/Functional/Compare.hpp>
 #include <Langulus/Annies/Functional/Describe.hpp>
 #include <Langulus/Annies/Functional/Deepen.hpp>

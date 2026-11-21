@@ -714,8 +714,8 @@ LANGULUS_MORPHISM_CUSTOM(EventState,
 );
 
 /// Convert Event -> Text                                                     
-LANGULUS_MORPHISM_CUSTOM(Langulus::Event, {
+/*LANGULUS_MORPHISM_CUSTOM(Langulus::Event, {
    Annies::Text text;
    Langulus::Serialize(from, text);
    return text;
-}, Annies::Text);
+}, Annies::Text);*/
